@@ -1,11 +1,11 @@
 import { ImageSourcePropType } from "react-native";
 
-export default interface OrbitIconType {
+export interface OrbitIconType {
   image: ImageSourcePropType;
   initialAngle: number;
 }
 
-export default interface OrbitAnimationProps {
+export interface OrbitAnimationProps {
   innerOrbitalIcons: OrbitIconType[];
   outerOrbitalIcons: OrbitIconType[];
   innerOrbitRadius?: number;

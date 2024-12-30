@@ -1,5 +1,7 @@
+import { OrbitAnimationProps } from "@/types/orbit-animation.types";
+import { describeArc } from "@/utils/orbital-animation.utils";
 import { useEffect } from "react";
-import { View, StyleSheet, Image, ImageSourcePropType } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,45 +11,6 @@ import Animated, {
   ReduceMotion,
 } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
-
-function polarToCartesian(
-  centerX: number,
-  centerY: number,
-  radius: number,
-  angleInDegrees: number,
-) {
-  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
-  return {
-    x: centerX + radius * Math.cos(angleInRadians),
-    y: centerY + radius * Math.sin(angleInRadians),
-  };
-}
-
-function describeArc(
-  radius: number,
-  startAngle: number,
-  endAngle: number,
-  cx: number,
-  cy: number,
-) {
-  const start = polarToCartesian(cx, cy, radius, endAngle);
-  const end = polarToCartesian(cx, cy, radius, startAngle);
-  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-
-  return [
-    "M",
-    start.x,
-    start.y,
-    "A",
-    radius,
-    radius,
-    0,
-    largeArcFlag,
-    0,
-    end.x,
-    end.y,
-  ].join(" ");
-}
 
 export default function OrbitAnimation({
   innerOrbitalIcons,
