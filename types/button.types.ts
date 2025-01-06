@@ -8,7 +8,6 @@ import {
 export interface CustomButtonProps {
   label: string;
   onPress: () => void;
-  //variant?: "spotify" | "deezer" | "apple" | "message" | "participate";
   containerStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   leftIcon?: ImageSourcePropType;
@@ -21,4 +20,6 @@ export interface CustomButtonProps {
   textColor?: string;
   colors?: { base: string; pressed: string };
   responseStatus?: number;
+  successMessage?: string;
+  errorMessage?: string;
 }

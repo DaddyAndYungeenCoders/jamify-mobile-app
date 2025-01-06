@@ -7,7 +7,6 @@ import {
   Image,
   TouchableOpacity,
   Platform,
-  View,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -20,39 +19,14 @@ import Animated, {
   Easing,
   ReduceMotion,
 } from "react-native-reanimated";
+import CircularLoader from "./CircularLoading";
 
 const AnimatedTouchableOpacity =
   Animated.createAnimatedComponent(TouchableOpacity);
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-interface ExtendedCustomButtonProps extends CustomButtonProps {
-  responseStatus?: number;
-}
-
-const CircularLoader = () => {
-  const rotation = useSharedValue(0);
-
-  useEffect(() => {
-    rotation.value = withRepeat(
-      withTiming(360, {
-        duration: 1000,
-        easing: Easing.linear,
-      }),
-      -1,
-    );
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${rotation.value}deg` }],
-  }));
-
-  return (
-    <Animated.View style={[styles.loaderContainer, animatedStyle]}>
-      <View style={styles.loader} />
-    </Animated.View>
-  );
-};
+interface ExtendedCustomButtonProps extends CustomButtonProps {}
 
 const Button: React.FC<ExtendedCustomButtonProps> = ({
   label,
@@ -64,15 +38,18 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   size = "medium",
   disabled = false,
   loading = false,
-  borderRadius = 8,
+  borderRadius = 5,
   textColor,
   colors = { base: "#87CEEB", pressed: "#FFF" },
   responseStatus,
+  successMessage = "Success",
+  errorMessage = "Error",
 }) => {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
   const textTranslateY = useSharedValue(0);
-  const textOpacity = useSharedValue(1);
+  const mainTextOpacity = useSharedValue(1);
+  const statusTextOpacity = useSharedValue(0);
+  const statusTextTranslateY = useSharedValue(20);
   const loaderOpacity = useSharedValue(0);
   const shake = useSharedValue(0);
   const backgroundColor = useSharedValue(colors.base);
@@ -93,31 +70,70 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
     "worklet";
     if (success) {
       return withSequence(
-        withTiming(-3, { duration: 50 }),
-        withTiming(3, { duration: 50 }),
-        withTiming(0, { duration: 50 }),
+        withTiming(-3, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(3, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(0, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
       );
     } else {
       return withSequence(
-        withTiming(-5, { duration: 50 }),
-        withTiming(5, { duration: 50 }),
-        withTiming(-5, { duration: 50 }),
-        withTiming(5, { duration: 50 }),
-        withTiming(-5, { duration: 50 }),
-        withTiming(5, { duration: 50 }),
-        withTiming(0, { duration: 50 }),
+        withTiming(-5, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(5, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(-5, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(5, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(-5, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(5, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
+        withTiming(0, {
+          duration: 50,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        }),
       );
     }
   };
 
   useEffect(() => {
     if (loading) {
-      // Disparition rapide du texte
       textTranslateY.value = withTiming(50, {
         duration: 200,
         easing: Easing.inOut(Easing.ease),
       });
-      textOpacity.value = withTiming(0, {
+      mainTextOpacity.value = withTiming(0, {
         duration: 150,
         easing: Easing.inOut(Easing.ease),
       });
@@ -130,9 +146,8 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
           reduceMotion: ReduceMotion.System,
         });
 
-        // Commencer la rotation après que l'icône soit centrée
         iconRotation.value = withDelay(
-          500, // Délai correspondant à la durée du slide
+          500,
           withRepeat(
             withTiming(360, {
               duration: 1000,
@@ -148,76 +163,87 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
           withTiming(1, {
             duration: 200,
             easing: Easing.cubic,
-            reduceMotion: ReduceMotion.System,
           }),
         );
       }
     } else if (responseStatus !== undefined) {
-      loaderOpacity.value = withTiming(0, { duration: 200 });
-      iconRotation.value = withTiming(0, { duration: 200 });
-      iconTranslateX.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.bounce,
-        reduceMotion: ReduceMotion.System,
-      });
+      loaderOpacity.value = withTiming(0, { duration: 100 });
+      iconRotation.value = withTiming(0, { duration: 100 });
+      iconTranslateX.value = withTiming(0, { duration: 100 });
 
-      // Changement de couleur instantané
+      mainTextOpacity.value = withTiming(0, { duration: 100 });
+
       backgroundColor.value = responseStatus === 200 ? "#4CAF50" : "#F44336";
-
-      // Animation de secouement
       shake.value = shakeAnimation(responseStatus === 200);
 
-      // Retour à l'état initial après 1.5s
+      statusTextTranslateY.value = withSequence(
+        withTiming(0, { duration: 200 }),
+        withDelay(1500, withTiming(20, { duration: 200 })),
+      );
+      statusTextOpacity.value = withSequence(
+        withTiming(1, { duration: 200 }),
+        withDelay(1500, withTiming(0, { duration: 200 })),
+      );
+
+      const delay = 2000;
+
       backgroundColor.value = withDelay(
-        2000,
+        delay,
         withTiming(colors.base, { duration: 300 }),
       );
 
-      // Réapparition du texte
-      textTranslateY.value = withDelay(1000, withTiming(0, { duration: 300 }));
-      textOpacity.value = withDelay(1100, withTiming(1, { duration: 300 }));
+      textTranslateY.value = withDelay(delay, withTiming(0, { duration: 300 }));
+      mainTextOpacity.value = withDelay(
+        delay,
+        withTiming(1, { duration: 300 }),
+      );
     } else {
-      // Retour direct à l'état initial
       loaderOpacity.value = withTiming(0, { duration: 200 });
+      statusTextOpacity.value = withTiming(0, { duration: 200 });
+      statusTextTranslateY.value = withTiming(20, { duration: 200 });
       iconRotation.value = withTiming(0, { duration: 200 });
       iconTranslateX.value = withTiming(0, {
         duration: 300,
         easing: Easing.inOut(Easing.ease),
       });
       textTranslateY.value = withTiming(0, { duration: 300 });
-      textOpacity.value = withTiming(1, { duration: 300 });
+      mainTextOpacity.value = withTiming(1, { duration: 300 });
       backgroundColor.value = colors.base;
     }
   }, [loading, responseStatus]);
 
-  const animatedContainerStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }, { translateX: shake.value }],
-      backgroundColor: backgroundColor.value,
-    };
-  });
+  const animatedContainerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }, { translateX: shake.value }],
+    backgroundColor: backgroundColor.value,
+  }));
 
-  const animatedTextStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: textTranslateY.value }],
-      opacity: textOpacity.value,
-    };
-  });
+  const animatedMainTextStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: textTranslateY.value }],
+    opacity: mainTextOpacity.value,
+  }));
 
-  const animatedLoaderStyle = useAnimatedStyle(() => {
-    return {
-      opacity: loaderOpacity.value,
-    };
-  });
+  const animatedStatusTextStyle = useAnimatedStyle(() => ({
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    top: 0,
+    left: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    transform: [{ translateY: statusTextTranslateY.value }],
+    opacity: statusTextOpacity.value,
+  }));
 
-  const animatedIconStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: iconTranslateX.value },
-        { rotate: `${iconRotation.value}deg` },
-      ],
-    };
-  });
+  const animatedLoaderStyle = useAnimatedStyle(() => ({
+    opacity: loaderOpacity.value,
+  }));
+
+  const animatedIconStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: iconTranslateX.value },
+      { rotate: `${iconRotation.value}deg` },
+    ],
+  }));
 
   const getVariantStyles = (): ViewStyle => {
     const baseStyle: ViewStyle = {
@@ -229,10 +255,10 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
-            height: 2,
+            height: 8,
           },
-          shadowOpacity: 0.5,
-          shadowRadius: 8,
+          shadowOpacity: 0.65,
+          shadowRadius: 3,
         },
         android: {
           elevation: 5,
@@ -280,7 +306,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
             />
           </Animated.View>
         )}
-        <Animated.View style={styles.centerSection}>
+        <Animated.View style={[styles.centerSection]}>
           {!leftIcon && !rightIcon && (
             <Animated.View style={[styles.loaderWrapper, animatedLoaderStyle]}>
               <CircularLoader />
@@ -291,11 +317,27 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
               styles.text,
               { color: textColor || "#FFFFFF" },
               textStyle,
-              animatedTextStyle,
+              animatedMainTextStyle,
             ]}
           >
             {label}
           </AnimatedText>
+          <Animated.View style={[animatedStatusTextStyle]}>
+            <AnimatedText
+              style={[
+                styles.text,
+                styles.statusText,
+                { color: textColor || "#FFFFFF" },
+                textStyle,
+              ]}
+            >
+              {responseStatus !== undefined
+                ? responseStatus === 200
+                  ? successMessage.toUpperCase()
+                  : errorMessage.toUpperCase()
+                : ""}
+            </AnimatedText>
+          </Animated.View>
         </Animated.View>
         {rightIcon && (
           <Animated.View style={[styles.rightSection, animatedIconStyle]}>
@@ -328,11 +370,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   centerSection: {
-    width: "80%",
+    flex: 1,
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
+    overflow: "hidden",
   },
   rightSection: {
     width: "20%",
@@ -345,25 +388,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  loaderContainer: {
-    width: 24,
-    height: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  loader: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "white",
-    borderTopColor: "transparent",
-  },
   text: {
     fontSize: 20,
     textAlign: "center",
-    fontFamily: "Jost_600Bold",
-    fontWeight: "600",
+    fontFamily: "Jost_600SemiBold",
+  },
+  statusText: {
+    textAlign: "center",
   },
   icon: {
     width: 30,
