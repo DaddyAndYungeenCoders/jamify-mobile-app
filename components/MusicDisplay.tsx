@@ -5,6 +5,9 @@ import {ThemedText} from "@/components/ThemedText";
 import * as Progress from "react-native-progress";
 import JamerDisplay from "@/components/JamerDisplay";
 import ClassicButton from "@/components/ClassicButton";
+import {JamerDisplayProps} from "@/types/jamer-display.types";
+import {IconSymbol} from "@/components/ui/IconSymbol";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const MusicDisplay = ({
                           title,
@@ -34,18 +37,20 @@ const MusicDisplay = ({
     };
 
     const playButtonImage = {
-        image: require("../assets/images/music-logos/play.png"),
+        play: require("../assets/images/music-logos/play.png"),
+        pause: require("../assets/images/music-logos/pause.png"),
     };
 
-    let jamer = {
-        name: "Marcel",
-        image: require('@/assets/images/jamer-exemple.png'),
-        listening: 15
-    }
-    jamer = null;
+    const [jamer, setJamer] : JamerDisplayProps = useState(null)
+    const [playing, setPlaying] : boolean = useState(false)
 
 function creerUnJam() {
     Alert.alert("Jam créé");
+    setJamer({
+        name: "Marcel",
+        image: require('@/assets/images/jamer-exemple.png'),
+        listening: 15
+    })
 }
 
 return (
@@ -57,9 +62,16 @@ return (
             <View style={styles.banner}>
                 <ThemedText style={styles.title}>{title}</ThemedText>
                 <ThemedText>{artist}</ThemedText>
-                <Image
-                    style={styles.playButton}
-                    source={playButtonImage.image}/>
+                {/*<Image*/}
+                {/*    style={styles.playButton}*/}
+                {/*    source={playButtonImage.play}/>*/}
+                {playing ? (
+                    <ClassicButton title={""} onPress={() => {setPlaying(false)}} style={styles.playButton} logo={playButtonImage.pause}/>
+                ):(
+                    <ClassicButton title={""} onPress={() => {setPlaying(true)}} style={styles.playButton} logo={playButtonImage.play}/>
+                    // <IconSymbol name={"play"} color={"white"}/>
+                    // <IconSymbol size={28} onPress={() => {setPlaying(true)}} name="playing.fill" />
+                )}
                 <View style={styles.progressSection}>
                     {/* Temps actuel et durée totale */}
                     <ThemedText style={styles.time}>{formatTime(currentTime)}</ThemedText>
@@ -83,7 +95,9 @@ return (
                         <JamerDisplay Name={jamer.name} image={jamer.image} listening={jamer.listening}/>
 
                     ) : (
-                    <ClassicButton title={"Créer un JAM"} onPress={creerUnJam}/>
+                    <ClassicButton title={"Créer un JAM"} onPress={creerUnJam}
+                    width={"100%"}
+                    />
                 )
                 }
             </View>
