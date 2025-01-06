@@ -68,63 +68,25 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
 
   const shakeAnimation = (success: boolean) => {
     "worklet";
-    if (success) {
-      return withSequence(
-        withTiming(-3, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(3, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(0, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-      );
-    } else {
-      return withSequence(
-        withTiming(-5, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(5, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(-5, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(5, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(-5, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(5, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-        withTiming(0, {
-          duration: 50,
-          easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
-        }),
-      );
-    }
+    return withSequence(
+      withTiming(-10, { duration: 100 }),
+      withRepeat(
+        withSequence(
+          withTiming(3, {
+            duration: 100,
+            easing: Easing.out(Easing.cubic),
+            reduceMotion: ReduceMotion.System,
+          }),
+          withTiming(-3, {
+            duration: 100,
+            easing: Easing.out(Easing.cubic),
+            reduceMotion: ReduceMotion.System,
+          }),
+        ),
+        success ? 1 : 3,
+      ),
+      withTiming(0, { duration: 100 }),
+    );
   };
 
   useEffect(() => {
@@ -143,7 +105,6 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
         iconTranslateX.value = withTiming(targetX, {
           duration: 500,
           easing: Easing.bounce,
-          reduceMotion: ReduceMotion.System,
         });
 
         iconRotation.value = withDelay(
@@ -152,7 +113,6 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
             withTiming(360, {
               duration: 1000,
               easing: Easing.cubic,
-              reduceMotion: ReduceMotion.System,
             }),
             -1,
           ),
@@ -168,36 +128,37 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       }
     } else if (responseStatus !== undefined) {
       loaderOpacity.value = withTiming(0, { duration: 100 });
-      iconRotation.value = withTiming(0, { duration: 100 });
-      iconTranslateX.value = withTiming(0, { duration: 100 });
-
       mainTextOpacity.value = withTiming(0, { duration: 100 });
 
-      backgroundColor.value = responseStatus === 200 ? "#4CAF50" : "#F44336";
+      iconTranslateX.value = withTiming(0, {
+        duration: 500,
+        easing: Easing.bounce,
+      });
+      iconRotation.value = withTiming(0, { duration: 300 });
+
       shake.value = shakeAnimation(responseStatus === 200);
 
-      statusTextTranslateY.value = withSequence(
-        withTiming(0, { duration: 200 }),
-        withDelay(1500, withTiming(20, { duration: 200 })),
-      );
-      statusTextOpacity.value = withSequence(
-        withTiming(1, { duration: 200 }),
-        withDelay(1500, withTiming(0, { duration: 200 })),
+      // Changer la couleur
+      backgroundColor.value = withTiming(
+        responseStatus === 200 ? "#4CAF50" : "#F44336",
+        { duration: 300 },
       );
 
+      // Animation du texte de statut
+      statusTextTranslateY.value = withTiming(0, { duration: 200 });
+      statusTextOpacity.value = withTiming(1, { duration: 200 });
+
+      // Reset après un délai
       const delay = 2000;
-
-      backgroundColor.value = withDelay(
-        delay,
-        withTiming(colors.base, { duration: 300 }),
-      );
-
-      textTranslateY.value = withDelay(delay, withTiming(0, { duration: 300 }));
-      mainTextOpacity.value = withDelay(
-        delay,
-        withTiming(1, { duration: 300 }),
-      );
+      setTimeout(() => {
+        backgroundColor.value = withTiming(colors.base, { duration: 300 });
+        statusTextOpacity.value = withTiming(0, { duration: 200 });
+        statusTextTranslateY.value = withTiming(20, { duration: 200 });
+        textTranslateY.value = withTiming(0, { duration: 300 });
+        mainTextOpacity.value = withTiming(1, { duration: 300 });
+      }, delay);
     } else {
+      // Reset complet des animations
       loaderOpacity.value = withTiming(0, { duration: 200 });
       statusTextOpacity.value = withTiming(0, { duration: 200 });
       statusTextTranslateY.value = withTiming(20, { duration: 200 });
@@ -210,7 +171,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       mainTextOpacity.value = withTiming(1, { duration: 300 });
       backgroundColor.value = colors.base;
     }
-  }, [loading, responseStatus]);
+  }, [loading, responseStatus, colors.base]);
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }, { translateX: shake.value }],
