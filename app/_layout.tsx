@@ -10,7 +10,8 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import AnimatedSplash from "./splash-screen";
+import SplashScreen from "./splash-screen";
+import AuthenticationScreen from "./authentication-screen";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 //SplashScreen.preventAutoHideAsync();
@@ -29,7 +30,7 @@ export default function RootLayout() {
           //          await SplashScreen.hideAsync();
           const timer = setTimeout(() => {
             setIsAppReady(true);
-          }, 30000);
+          }, 3000);
           return () => clearTimeout(timer);
         }
       } catch (error) {
@@ -41,7 +42,10 @@ export default function RootLayout() {
   }, [loaded]);
 
   if (!loaded || !isAppReady) {
-    return <AnimatedSplash />;
+    return <SplashScreen />;
+  }
+  if (true) {
+    return <AuthenticationScreen />;
   }
 
   return (
