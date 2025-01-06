@@ -29,7 +29,7 @@ export default function RootLayout() {
           //          await SplashScreen.hideAsync();
           const timer = setTimeout(() => {
             setIsAppReady(true);
-          }, 30000);
+          }, 1000);
           return () => clearTimeout(timer);
         }
       } catch (error) {

@@ -1,11 +1,15 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {Image, StyleSheet, Platform, Alert} from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import ClassicButton from "@/components/ClassicButton";
 
 export default function HomeScreen() {
+    const handlePress = () => {
+        Alert.alert('Bouton Pressé', 'Vous avez cliqué sur le bouton!');
+    };
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -49,6 +53,11 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
+        <ClassicButton
+            title={"Amaz"}
+            onPress={handlePress}
+            logo={require('@/assets/images/music-logos/amazon.png')}
+        />
       </ThemedView>
     </ParallaxScrollView>
   );
