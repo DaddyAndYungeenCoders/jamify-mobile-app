@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Image, StyleSheet, View} from "react-native";
+import {Alert, Image, StyleSheet, View} from "react-native";
 import {musicDisplayProps} from "@/types/music-display.types";
 import {ThemedText} from "@/components/ThemedText";
 import * as Progress from "react-native-progress";
 import JamerDisplay from "@/components/JamerDisplay";
+import ClassicButton from "@/components/ClassicButton";
 
 const MusicDisplay = ({
                           title,
@@ -36,7 +37,18 @@ const MusicDisplay = ({
         image: require("../assets/images/music-logos/play.png"),
     };
 
-    return (
+    let jamer = {
+        name: "Marcel",
+        image: require('@/assets/images/jamer-exemple.png'),
+        listening: 15
+    }
+    jamer = null;
+
+function creerUnJam() {
+    Alert.alert("Jam créé");
+}
+
+return (
         <View style={styles.body}>
             {/* Image de la musique */}
             <Image source={image} style={styles.images}/>
@@ -65,11 +77,15 @@ const MusicDisplay = ({
                 </View>
 
 
-
             </View>
             <View style={styles.banner}>
-                <JamerDisplay Name={"Henry"} image={require('@/assets/images/jamer-exemple.png')} listening={10}/>
+                {jamer ? (
+                        <JamerDisplay Name={jamer.name} image={jamer.image} listening={jamer.listening}/>
 
+                    ) : (
+                    <ClassicButton title={"Créer un JAM"} onPress={creerUnJam}/>
+                )
+                }
             </View>
 
             {/* Description */}
