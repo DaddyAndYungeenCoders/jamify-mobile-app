@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  View,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -15,7 +16,9 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
-  interpolateColor,
+  withDelay,
+  Easing,
+  ReduceMotion,
 } from "react-native-reanimated";
 
 const AnimatedTouchableOpacity =
@@ -23,7 +26,35 @@ const AnimatedTouchableOpacity =
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-const Button: React.FC<CustomButtonProps> = ({
+interface ExtendedCustomButtonProps extends CustomButtonProps {
+  responseStatus?: number;
+}
+
+const CircularLoader = () => {
+  const rotation = useSharedValue(0);
+
+  useEffect(() => {
+    rotation.value = withRepeat(
+      withTiming(360, {
+        duration: 1000,
+        easing: Easing.linear,
+      }),
+      -1,
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotateZ: `${rotation.value}deg` }],
+  }));
+
+  return (
+    <Animated.View style={[styles.loaderContainer, animatedStyle]}>
+      <View style={styles.loader} />
+    </Animated.View>
+  );
+};
+
+const Button: React.FC<ExtendedCustomButtonProps> = ({
   label,
   onPress,
   containerStyle,
@@ -33,72 +64,164 @@ const Button: React.FC<CustomButtonProps> = ({
   size = "medium",
   disabled = false,
   loading = false,
-  borderRadius,
+  borderRadius = 8,
   textColor,
   colors = { base: "#87CEEB", pressed: "#FFF" },
+  responseStatus,
 }) => {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
-  const loadingRotation = useSharedValue(0);
-  const loadingColorProgress = useSharedValue(0);
+  const textTranslateY = useSharedValue(0);
+  const textOpacity = useSharedValue(1);
+  const loaderOpacity = useSharedValue(0);
+  const shake = useSharedValue(0);
+  const backgroundColor = useSharedValue(colors.base);
+  const iconRotation = useSharedValue(0);
+  const iconTranslateX = useSharedValue(0);
 
   const handlePressIn = useCallback(() => {
     "worklet";
     scale.value = withSpring(0.98, { damping: 15, stiffness: 120 });
-    opacity.value = withSpring(0.95);
   }, []);
 
   const handlePressOut = useCallback(() => {
     "worklet";
     scale.value = withSpring(1, { damping: 15, stiffness: 120 });
-    opacity.value = withSpring(1);
   }, []);
+
+  const shakeAnimation = (success: boolean) => {
+    "worklet";
+    if (success) {
+      return withSequence(
+        withTiming(-3, { duration: 50 }),
+        withTiming(3, { duration: 50 }),
+        withTiming(0, { duration: 50 }),
+      );
+    } else {
+      return withSequence(
+        withTiming(-5, { duration: 50 }),
+        withTiming(5, { duration: 50 }),
+        withTiming(-5, { duration: 50 }),
+        withTiming(5, { duration: 50 }),
+        withTiming(-5, { duration: 50 }),
+        withTiming(5, { duration: 50 }),
+        withTiming(0, { duration: 50 }),
+      );
+    }
+  };
 
   useEffect(() => {
     if (loading) {
-      loadingRotation.value = withRepeat(
-        withTiming(360, { duration: 1000 }),
-        -1,
-        false,
+      // Disparition rapide du texte
+      textTranslateY.value = withTiming(50, {
+        duration: 200,
+        easing: Easing.inOut(Easing.ease),
+      });
+      textOpacity.value = withTiming(0, {
+        duration: 150,
+        easing: Easing.inOut(Easing.ease),
+      });
+
+      if (leftIcon || rightIcon) {
+        const targetX = rightIcon ? -120 : 120;
+        iconTranslateX.value = withTiming(targetX, {
+          duration: 500,
+          easing: Easing.bounce,
+          reduceMotion: ReduceMotion.System,
+        });
+
+        // Commencer la rotation après que l'icône soit centrée
+        iconRotation.value = withDelay(
+          500, // Délai correspondant à la durée du slide
+          withRepeat(
+            withTiming(360, {
+              duration: 1000,
+              easing: Easing.cubic,
+              reduceMotion: ReduceMotion.System,
+            }),
+            -1,
+          ),
+        );
+      } else {
+        loaderOpacity.value = withDelay(
+          200,
+          withTiming(1, {
+            duration: 200,
+            easing: Easing.cubic,
+            reduceMotion: ReduceMotion.System,
+          }),
+        );
+      }
+    } else if (responseStatus !== undefined) {
+      loaderOpacity.value = withTiming(0, { duration: 200 });
+      iconRotation.value = withTiming(0, { duration: 200 });
+      iconTranslateX.value = withTiming(0, {
+        duration: 300,
+        easing: Easing.bounce,
+        reduceMotion: ReduceMotion.System,
+      });
+
+      // Changement de couleur instantané
+      backgroundColor.value = responseStatus === 200 ? "#4CAF50" : "#F44336";
+
+      // Animation de secouement
+      shake.value = shakeAnimation(responseStatus === 200);
+
+      // Retour à l'état initial après 1.5s
+      backgroundColor.value = withDelay(
+        2000,
+        withTiming(colors.base, { duration: 300 }),
       );
 
-      loadingColorProgress.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 1000 }),
-          withTiming(0, { duration: 1000 }),
-        ),
-        -1,
-        true,
-      );
+      // Réapparition du texte
+      textTranslateY.value = withDelay(1000, withTiming(0, { duration: 300 }));
+      textOpacity.value = withDelay(1100, withTiming(1, { duration: 300 }));
     } else {
-      loadingRotation.value = withTiming(0);
-      loadingColorProgress.value = withTiming(0);
+      // Retour direct à l'état initial
+      loaderOpacity.value = withTiming(0, { duration: 200 });
+      iconRotation.value = withTiming(0, { duration: 200 });
+      iconTranslateX.value = withTiming(0, {
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+      });
+      textTranslateY.value = withTiming(0, { duration: 300 });
+      textOpacity.value = withTiming(1, { duration: 300 });
+      backgroundColor.value = colors.base;
     }
-  }, [loading]);
+  }, [loading, responseStatus]);
 
   const animatedContainerStyle = useAnimatedStyle(() => {
-    const bgColor = interpolateColor(
-      loadingColorProgress.value,
-      [0, 1],
-      [colors.base, colors.pressed],
-    );
-
     return {
-      transform: [{ scale: scale.value }],
-      opacity: opacity.value,
-      backgroundColor: loading ? bgColor : colors.base,
+      transform: [{ scale: scale.value }, { translateX: shake.value }],
+      backgroundColor: backgroundColor.value,
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: textTranslateY.value }],
+      opacity: textOpacity.value,
+    };
+  });
+
+  const animatedLoaderStyle = useAnimatedStyle(() => {
+    return {
+      opacity: loaderOpacity.value,
     };
   });
 
   const animatedIconStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${loadingRotation.value}deg` }],
+      transform: [
+        { translateX: iconTranslateX.value },
+        { rotate: `${iconRotation.value}deg` },
+      ],
     };
   });
 
   const getVariantStyles = (): ViewStyle => {
     const baseStyle: ViewStyle = {
-      borderRadius: borderRadius || 5,
+      borderRadius,
       alignItems: "center",
       justifyContent: "center",
       ...Platform.select({
@@ -149,27 +272,36 @@ const Button: React.FC<CustomButtonProps> = ({
     >
       <Animated.View style={styles.contentContainer}>
         {leftIcon && (
-          <Animated.View style={styles.leftSection}>
+          <Animated.View style={[styles.leftSection, animatedIconStyle]}>
             <AnimatedImage
               source={leftIcon}
-              style={[styles.icon, loading && animatedIconStyle]}
+              style={[styles.icon]}
               resizeMode="contain"
             />
           </Animated.View>
         )}
         <Animated.View style={styles.centerSection}>
+          {!leftIcon && !rightIcon && (
+            <Animated.View style={[styles.loaderWrapper, animatedLoaderStyle]}>
+              <CircularLoader />
+            </Animated.View>
+          )}
           <AnimatedText
-            style={[styles.text, { color: textColor || "#FFFFFF" }, textStyle]}
+            style={[
+              styles.text,
+              { color: textColor || "#FFFFFF" },
+              textStyle,
+              animatedTextStyle,
+            ]}
           >
-            {loading ? "Chargement..." : label}
+            {label}
           </AnimatedText>
         </Animated.View>
-
         {rightIcon && (
-          <Animated.View style={styles.rightSection}>
+          <Animated.View style={[styles.rightSection, animatedIconStyle]}>
             <AnimatedImage
               source={rightIcon}
-              style={[styles.icon, loading && animatedIconStyle]}
+              style={[styles.icon]}
               resizeMode="contain"
             />
           </Animated.View>
@@ -188,28 +320,44 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     flexDirection: "row",
-    //backgroundColor: "yellow",
   },
   leftSection: {
     width: "20%",
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "green",
   },
   centerSection: {
     width: "80%",
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "purple",
+    position: "relative",
   },
   rightSection: {
     width: "20%",
     height: "100%",
     justifyContent: "center",
-    alignItems: "flex-end",
-    //   backgroundColor: "red",
+    alignItems: "center",
+  },
+  loaderWrapper: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loaderContainer: {
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loader: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "white",
+    borderTopColor: "transparent",
   },
   text: {
     fontSize: 20,

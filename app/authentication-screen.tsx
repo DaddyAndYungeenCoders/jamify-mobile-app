@@ -34,6 +34,7 @@ const AuthenticationScreen = () => {
         loading={isLoading}
         onPress={handleSpotifyConnect}
         colors={{ base: "#ff9900", pressed: "#ffb74a" }}
+        responseStatus={200}
       />
     </LinearGradient>
   );

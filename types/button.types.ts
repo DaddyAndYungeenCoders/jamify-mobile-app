@@ -20,4 +20,5 @@ export interface CustomButtonProps {
   backgroundColor?: string;
   textColor?: string;
   colors?: { base: string; pressed: string };
+  responseStatus?: number;
 }
