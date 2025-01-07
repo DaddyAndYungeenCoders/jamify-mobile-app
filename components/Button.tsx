@@ -55,9 +55,19 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   const backgroundColor = useSharedValue(disabled ? "#a1a1a1" : colors.base);
   const iconRotation = useSharedValue(0);
   const iconTranslateX = useSharedValue(0);
+
+  // Utilise 1 pour true et 0 pour false
+  const isAnimating = useSharedValue(1);
+
   const handlePressIn = useCallback(() => {
     "worklet";
-    scale.value = withSpring(0.95, { damping: 20, stiffness: 120 });
+    if (isAnimating.value === 0) {
+      scale.value = withSpring(0.95, {
+        damping: 8,
+        stiffness: 40,
+        mass: 1.2,
+      });
+    }
   }, []);
 
   const handlePressOut = useCallback(() => {
@@ -89,8 +99,11 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   };
 
   useEffect(() => {
+    if (loading || responseStatus !== null) {
+      isAnimating.value = 1;
+    }
+
     if (disabled) {
-      // Lorsque le bouton est désactivé, on définit un fond gris
       backgroundColor.value = withTiming("#a1a1a1", { duration: 300 });
       return;
     } else if (loading) {
@@ -156,6 +169,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
         statusTextTranslateY.value = withTiming(20, { duration: 200 });
         textTranslateY.value = withTiming(0, { duration: 300 });
         mainTextOpacity.value = withTiming(1, { duration: 300 });
+        isAnimating.value = withDelay(200, withTiming(0, { duration: 100 }));
       }, delay);
     } else {
       loaderOpacity.value = withTiming(0, { duration: 200 });
@@ -169,6 +183,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       textTranslateY.value = withTiming(0, { duration: 300 });
       mainTextOpacity.value = withTiming(1, { duration: 300 });
       backgroundColor.value = colors.base;
+      isAnimating.value = withDelay(200, withTiming(0, { duration: 100 }));
     }
   }, [loading, responseStatus, colors.base]);
 
@@ -204,6 +219,12 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       { rotate: `${iconRotation.value}deg` },
     ],
   }));
+
+  const isDisabled = useAnimatedStyle(() => {
+    return {
+      pointerEvents: isAnimating.value === 1 ? "none" : "auto",
+    };
+  });
 
   const getVariantStyles = (): ViewStyle => {
     const baseStyle: ViewStyle = {
@@ -253,6 +274,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
         getVariantStyles(),
         getSizeStyles(),
         animatedContainerStyle,
+        isDisabled,
         containerStyle,
       ]}
     >
