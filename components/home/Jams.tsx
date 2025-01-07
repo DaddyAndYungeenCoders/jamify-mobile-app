@@ -12,12 +12,8 @@ const Jams = ({jams, style}) => {
                 {jams ? (
                     jams.map((jam, index) => (
                         <JamElement style={styles.jamElement}
-                                    name={jam.name}
                                     key={index}
-                                    image={jam.background}
-                                    autheur={jam.host.name}
-                                    heure={jam.status}
-                                    onPress={jam.onPress}
+                                    jam={jam}
                         />
 
                     ))

@@ -1,7 +1,7 @@
 import React from "react";
 import {View, Image, Text, StyleSheet, TouchableOpacity} from "react-native";
 
-const ProfilHeader = ({ Name, image, style, onPress}) => {
+const ProfilHeader = ({ name, image, style, onPress}) => {
     return (
         <TouchableOpacity style={[styles.container, style]}
         onPress={onPress}
@@ -13,13 +13,13 @@ const ProfilHeader = ({ Name, image, style, onPress}) => {
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: "center", // Centré horizontalement
-        justifyContent: "center", // Centré verticalement
+        alignItems: "center",
+        justifyContent: "center",
     },
     image: {
-        width: 50, // Taille de l'image (ajustez selon vos besoins)
-        height: 50, // Hauteur égale à la largeur pour un cercle parfait
-        borderRadius: 25, // Moitié de la largeur/hauteur pour rendre l'image ronde
+        width: 50,
+        height: 50,
+        borderRadius: 25,
     },
 });
 

@@ -20,14 +20,11 @@ export default function HomeScreen() {
     const [jams, setJams] = useState([]);
 
     useEffect(() => {
-        const levent = EventService.getEvents();
-        setEvents(levent);
+        setEvents(EventService.getEvents());
 
-        const lplaylist = PlaylistService.getPlaylists();
-        setPlaylists(lplaylist);
+        setPlaylists(PlaylistService.getPlaylists());
 
-        const ljams = JamService.getJams();
-        setJams(ljams);
+        setJams(JamService.getJams());
     }, [])
 
 
@@ -36,7 +33,7 @@ export default function HomeScreen() {
             <View style={styles.back}/>
 
                 <ScrollView style={styles.front}>
-                    <ProfilHeader Name={"TOTO"} image={require('@/assets/images/jamer-exemple.png')}
+                    <ProfilHeader name={"TOTO"} image={require('@/assets/images/jamer-exemple.png')}
                                   style={styles.profilHeader} onPress={handlePress}/>
                     <Playlists style={styles.playlist} playlists={playlists}></Playlists>
                     <Jams jams={jams}></Jams>

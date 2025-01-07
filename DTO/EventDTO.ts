@@ -5,6 +5,7 @@ export enum EventStatus {
     UPCOMING = "UPCOMING",
     ONGOING = "ONGOING",
     COMPLETED = "COMPLETED",
+    CANCELED = "CANCELED",
 }
 
 export interface EventDTO {

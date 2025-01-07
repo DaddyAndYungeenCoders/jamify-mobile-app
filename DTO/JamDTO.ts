@@ -3,9 +3,11 @@ import {CommentDTO} from "@/DTO/commentDTO";
 import {UserDTO} from "@/DTO/UserDTO";
 
 export enum JamStatus {
-    UPCOMING = "UPCOMING",
-    ONGOING = "ONGOING",
-    COMPLETED = "COMPLETED",
+    RUNNING = "RUNNING",
+    PAUSED= "PAUSED",
+    STOPPED = "STOPPED",
+    SCHEDULED = "SCHEDULED",
+    CANCELED = "CANCELED",
 }
 
 export interface JamDTO {

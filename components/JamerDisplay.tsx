@@ -5,7 +5,7 @@ import * as Progress from "react-native-progress";
 import {JamerDisplayProps} from "@/types/jamer-display.types";
 
 const JamerDisplay = ({
-                          Name,
+                          name,
                           image,
                           listening,
                       }: JamerDisplayProps) => {
@@ -13,7 +13,7 @@ const JamerDisplay = ({
     return (
         <View style={styles.body}>
             <Image source={image} style={styles.images}/>
-            <ThemedText style={styles.title}>{Name}</ThemedText>
+            <ThemedText style={styles.title}>{name}</ThemedText>
             <View style={styles.bottom}>
                 <ThemedText style={styles.listening}>Listening : {listening}</ThemedText>
                 <Image source={require('@/assets/images/people-logo.png')} style={styles.people}/>

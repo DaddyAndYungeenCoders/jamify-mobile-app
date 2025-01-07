@@ -2,18 +2,18 @@ import React from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 
-const JamElement = ({ name, onPress, image, autheur, heure, style }) => {
+const JamElement = ({ jam, style }) => {
     return (
-        <TouchableOpacity style={[styles.container, style]} onPress={onPress}>
+        <TouchableOpacity style={[styles.container, style]} onPress={jam.onPress}>
             <View style={styles.background} />
 
             <View style={styles.content}>
-                <Image source={image} style={styles.image} />
+                <Image source={jam.background} style={styles.image} />
                 <View style={styles.info}>
-                    <ThemedText style={styles.text}>{name}</ThemedText>
+                    <ThemedText style={styles.text}>{jam.name}</ThemedText>
                     <View style={styles.detail}>
-                        <ThemedText style={styles.text}>par {autheur}</ThemedText>
-                        <ThemedText style={[styles.text, styles.heure]}>{heure}</ThemedText>
+                        <ThemedText style={styles.text}>par {jam.host.name}</ThemedText>
+                        <ThemedText style={[styles.text, styles.heure]}>{jam.status}</ThemedText>
                     </View>
                 </View>
             </View>
