@@ -6,8 +6,8 @@ export interface OrbitIconType {
 }
 
 export interface OrbitAnimationProps {
-  innerOrbitalIcons: OrbitIconType[];
-  outerOrbitalIcons: OrbitIconType[];
+  innerOrbitalIcons?: OrbitIconType[];
+  outerOrbitalIcons?: OrbitIconType[];
   innerOrbitRadius?: number;
   outerOrbitRadius?: number;
   iconSize?: number;

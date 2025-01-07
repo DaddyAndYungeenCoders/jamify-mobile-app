@@ -9,23 +9,55 @@ import Animated, {
   withTiming,
   Easing,
   ReduceMotion,
+  withSpring,
 } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 
+const playButtonImage = {
+  image: require("../../assets/images/music-logos/play.png"),
+};
 export default function OrbitAnimation({
-  innerOrbitalIcons,
-  outerOrbitalIcons,
+  innerOrbitalIcons = [
+    {
+      image: require("../../assets/images/music-logos/apple.png"),
+      initialAngle: 0,
+    },
+    {
+      image: require("../../assets/images/music-logos/spotify.png"),
+      initialAngle: 120,
+    },
+    {
+      image: require("../../assets/images/music-logos/amazon.png"),
+      initialAngle: 240,
+    },
+  ],
+  outerOrbitalIcons = [
+    {
+      image: require("../../assets/images/music-logos/apple.png"),
+      initialAngle: 60,
+    },
+    {
+      image: require("../../assets/images/music-logos/spotify.png"),
+      initialAngle: 180,
+    },
+    {
+      image: require("../../assets/images/music-logos/amazon.png"),
+      initialAngle: 300,
+    },
+  ],
   innerOrbitRadius = 70,
   outerOrbitRadius = 120,
   iconSize = 30,
   ringWidth = 5,
-  animationDuration = 6000,
+  animationDuration = 8000,
   outerTimingMultiplier = 1.5,
 }: OrbitAnimationProps) {
   const innerRotation = useSharedValue(0);
   const outerRotation = useSharedValue(0);
   const innerRingsRotation = useSharedValue(0);
   const outerRingsRotation = useSharedValue(0);
+
+  const playButtonScale = useSharedValue(1);
 
   const createRotationAnimation = (
     sharedValue: Animated.SharedValue<number>,
@@ -48,6 +80,15 @@ export default function OrbitAnimation({
     );
     [outerRotation, outerRingsRotation].forEach((value) =>
       createRotationAnimation(value, outerTimingMultiplier),
+    );
+
+    playButtonScale.value = withRepeat(
+      withSpring(1.2, {
+        damping: 2,
+        stiffness: 80,
+      }),
+      -1,
+      true,
     );
   }, []);
 
@@ -108,66 +149,89 @@ export default function OrbitAnimation({
     return segments;
   };
 
+  const playButtonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: playButtonScale.value }],
+  }));
+
   return (
-    <View
-      style={[
-        styles.centerContainer,
-        {
-          width: (outerOrbitRadius + iconSize) * 2,
-          height: (outerOrbitRadius + iconSize) * 2,
-        },
-      ]}
-    >
-      <Animated.View style={[StyleSheet.absoluteFill, outerRingsAnimatedStyle]}>
-        <Svg height="100%" width="100%">
-          {createRingSegments(outerOrbitRadius, [45, 165, 285])}
-        </Svg>
-      </Animated.View>
+    <View style={styles.content}>
+      <View
+        style={[
+          styles.centerContainer,
+          {
+            width: (outerOrbitRadius + iconSize) * 2,
+            height: (outerOrbitRadius + iconSize) * 2,
+          },
+        ]}
+      >
+        <Animated.View
+          style={[StyleSheet.absoluteFill, outerRingsAnimatedStyle]}
+        >
+          <Svg height="100%" width="100%">
+            {createRingSegments(outerOrbitRadius, [45, 165, 285])}
+          </Svg>
+        </Animated.View>
 
-      <Animated.View style={[StyleSheet.absoluteFill, innerRingsAnimatedStyle]}>
-        <Svg height="100%" width="100%">
-          {createRingSegments(innerOrbitRadius, [-10, 110, 230], 80)}
-        </Svg>
-      </Animated.View>
+        <Animated.View
+          style={[StyleSheet.absoluteFill, innerRingsAnimatedStyle]}
+        >
+          <Svg height="100%" width="100%">
+            {createRingSegments(innerOrbitRadius, [-10, 110, 230], 80)}
+          </Svg>
+        </Animated.View>
 
-      {innerOrbitalIcons.map((item, index) => (
+        {innerOrbitalIcons.map((item, index) => (
+          <Animated.Image
+            key={`inner-${index}`}
+            source={item.image}
+            style={[
+              styles.orbitalIcon,
+              { width: iconSize, height: iconSize },
+              createOrbitalStyle(
+                innerOrbitRadius,
+                innerRotation,
+                item.initialAngle,
+              ),
+            ]}
+            resizeMode="contain"
+          />
+        ))}
+
+        {outerOrbitalIcons.map((item, index) => (
+          <Animated.Image
+            key={`outer-${index}`}
+            source={item.image}
+            style={[
+              styles.orbitalIcon,
+              { width: iconSize, height: iconSize },
+              createOrbitalStyle(
+                outerOrbitRadius,
+                outerRotation,
+                item.initialAngle,
+              ),
+            ]}
+            resizeMode="contain"
+          />
+        ))}
+      </View>
+
+      <Animated.View style={[styles.playButton, playButtonAnimatedStyle]}>
         <Animated.Image
-          key={`inner-${index}`}
-          source={item.image}
-          style={[
-            styles.orbitalIcon,
-            { width: iconSize, height: iconSize },
-            createOrbitalStyle(
-              innerOrbitRadius,
-              innerRotation,
-              item.initialAngle,
-            ),
-          ]}
+          source={playButtonImage.image}
+          style={{ height: iconSize, width: iconSize }}
           resizeMode="contain"
         />
-      ))}
-
-      {outerOrbitalIcons.map((item, index) => (
-        <Animated.Image
-          key={`outer-${index}`}
-          source={item.image}
-          style={[
-            styles.orbitalIcon,
-            { width: iconSize, height: iconSize },
-            createOrbitalStyle(
-              outerOrbitRadius,
-              outerRotation,
-              item.initialAngle,
-            ),
-          ]}
-          resizeMode="contain"
-        />
-      ))}
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  content: {
+    position: "relative",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   centerContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -175,5 +239,24 @@ const styles = StyleSheet.create({
   orbitalIcon: {
     position: "absolute",
     zIndex: 2,
+  },
+
+  playButton: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    zIndex: 3,
   },
 });
