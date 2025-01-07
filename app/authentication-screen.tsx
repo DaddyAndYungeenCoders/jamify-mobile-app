@@ -1,22 +1,59 @@
 import Button from "@/components/Button";
 import OrbitAnimation from "@/components/orbit-animation/orbit-animation";
 import { Colors } from "@/constants/Colors";
+import { useAuthenticationStore } from "@/store/authentication.store";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AuthenticationScreen = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { token, loading, error, getJWTToken, removeJWTToken } =
+    useAuthenticationStore();
+
+  const [buttonLoading, setButtonLoading] = useState({
+    spotify: false,
+    apple: false,
+    amazon: false,
+  });
+
+  const [buttonStatus, setButtonStatus] = useState<{
+    spotify: null | number;
+    apple: null | number;
+    amazon: null | number;
+  }>({
+    spotify: null,
+    apple: null,
+    amazon: null,
+  });
 
   const handleSpotifyConnect = async () => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simuler une connexion
-    } finally {
-      setIsLoading(false);
-    }
+    setButtonLoading((prev) => ({ ...prev, spotify: true }));
+    await getJWTToken(null);
+    setButtonLoading((prev) => ({ ...prev, spotify: false }));
   };
+
+  const handleAppleConnect = async () => {
+    setButtonLoading((prev) => ({ ...prev, apple: true }));
+    await getJWTToken(null);
+    setButtonLoading((prev) => ({ ...prev, apple: false }));
+  };
+
+  const handleAmazonConnect = async () => {
+    setButtonLoading((prev) => ({ ...prev, amazon: true }));
+    await getJWTToken(null);
+    setButtonLoading((prev) => ({ ...prev, amazon: false }));
+  };
+
+  // Mettre à jour le statut des boutons en fonction de `token`
+  useEffect(() => {
+    const status = token ? 200 : 400;
+    setButtonStatus({
+      spotify: status,
+      apple: null,
+      amazon: null,
+    });
+  }, [token]); // Recalcule à chaque fois que `token` change
 
   return (
     <LinearGradient colors={Colors.light.background} style={styles.container}>
@@ -35,28 +72,32 @@ const AuthenticationScreen = () => {
           <Button
             label="CONNECT WITH SPOTIFY"
             leftIcon={require("../assets/images/music-logos/spotify.png")}
-            loading={isLoading}
+            loading={buttonLoading.spotify || loading}
             onPress={handleSpotifyConnect}
             colors={{ base: "#35BE62", pressed: "#5dba7c" }}
-            //responseStatus={200}
+            responseStatus={buttonStatus.spotify}
+            successMessage={token ?? ""}
+            errorMessage={error ?? ""}
           />
 
           <Button
             label="CONNECT WITH APPLE"
             leftIcon={require("../assets/images/music-logos/apple.png")}
-            loading={isLoading}
-            onPress={handleSpotifyConnect}
+            loading={buttonLoading.apple}
+            onPress={handleAppleConnect}
             colors={{ base: "#fc3c44", pressed: "#f94c57" }}
-            responseStatus={200}
+            responseStatus={buttonStatus.apple}
+            disabled={true}
           />
 
           <Button
             label="CONNECT WITH AMAZON"
             leftIcon={require("../assets/images/music-logos/amazon.png")}
-            loading={isLoading}
-            onPress={handleSpotifyConnect}
+            loading={buttonLoading.amazon}
+            onPress={handleAmazonConnect}
             colors={{ base: "#ff9900", pressed: "#ffb74a" }}
-            responseStatus={400}
+            responseStatus={buttonStatus.amazon}
+            disabled={true}
           />
         </View>
       </SafeAreaView>

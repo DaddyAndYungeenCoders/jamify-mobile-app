@@ -26,7 +26,7 @@ const AnimatedTouchableOpacity =
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-interface ExtendedCustomButtonProps extends CustomButtonProps { }
+interface ExtendedCustomButtonProps extends CustomButtonProps {}
 
 const Button: React.FC<ExtendedCustomButtonProps> = ({
   label,
@@ -52,10 +52,9 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   const statusTextTranslateY = useSharedValue(20);
   const loaderOpacity = useSharedValue(0);
   const shake = useSharedValue(0);
-  const backgroundColor = useSharedValue(colors.base);
+  const backgroundColor = useSharedValue(disabled ? "#a1a1a1" : colors.base);
   const iconRotation = useSharedValue(0);
   const iconTranslateX = useSharedValue(0);
-
   const handlePressIn = useCallback(() => {
     "worklet";
     scale.value = withSpring(0.95, { damping: 20, stiffness: 120 });
@@ -90,7 +89,11 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   };
 
   useEffect(() => {
-    if (loading) {
+    if (disabled) {
+      // Lorsque le bouton est désactivé, on définit un fond gris
+      backgroundColor.value = withTiming("#a1a1a1", { duration: 300 });
+      return;
+    } else if (loading) {
       textTranslateY.value = withTiming(50, {
         duration: 200,
         easing: Easing.inOut(Easing.ease),
@@ -126,7 +129,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
           }),
         );
       }
-    } else if (responseStatus !== undefined) {
+    } else if (responseStatus !== null) {
       loaderOpacity.value = withTiming(0, { duration: 100 });
       mainTextOpacity.value = withTiming(0, { duration: 100 });
 
