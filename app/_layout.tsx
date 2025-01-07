@@ -30,7 +30,7 @@ export default function RootLayout() {
           //          await SplashScreen.hideAsync();
           const timer = setTimeout(() => {
             setIsAppReady(true);
-          }, 3000);
+          }, 1000);
           return () => clearTimeout(timer);
         }
       } catch (error) {
