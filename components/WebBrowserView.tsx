@@ -1,5 +1,3 @@
-// WebBrowserView.tsx
-
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -17,6 +15,7 @@ import Animated, {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useRef } from "react";
 import WebBrowserButton from "./WebBrowserButton";
+import Fontisto from "@expo/vector-icons/Fontisto";
 
 const WebBrowserView = ({
   showWebView,
@@ -24,8 +23,6 @@ const WebBrowserView = ({
 }: WebBrowserViewProps) => {
   const insets = useSafeAreaInsets();
   const rotation = useSharedValue(0);
-
-  // Référence à la WebView
   const webViewRef = useRef<WebView | null>(null);
 
   useEffect(() => {
@@ -33,7 +30,7 @@ const WebBrowserView = ({
       200,
       withRepeat(
         withTiming(360, {
-          duration: 1000, //
+          duration: 1000,
           easing: Easing.inOut(Easing.ease),
         }),
         -1,
@@ -42,11 +39,9 @@ const WebBrowserView = ({
     );
   }, []);
 
-  const animatedRotationStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ rotate: `${rotation.value}deg` }],
-    };
-  });
+  const animatedRotationStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
 
   const goBack = () => {
     if (webViewRef.current && webViewRef.current.goBack) {
@@ -82,31 +77,30 @@ const WebBrowserView = ({
         }}
       >
         <View style={styles.topNavigationBar}>
-          <View style={styles.emoji}>
-            <Animated.Text
-              style={[
-                styles.title,
-                animatedRotationStyle, // Appliquer la rotation animée ici
-              ]}
-            >
-              🌐
-            </Animated.Text>
+          <View style={styles.iconContainer}>
+            <View style={styles.iconWrapper}>
+              <Animated.View
+                style={[styles.animatedIcon, animatedRotationStyle]}
+              >
+                <Fontisto name="world-o" size={24} color="#1ca1bd" />
+              </Animated.View>
+            </View>
           </View>
           <Text style={styles.title}> JAMIFY WEB BROWSER</Text>
         </View>
         <View style={styles.webView}>
-          {/* Passer la référence à la WebView */}
-          <WebView
-            ref={webViewRef}
-            source={{ uri: "https://www.example.com" }}
-            style={{
-              flex: 1,
-              borderBottomLeftRadius: 20,
-              borderBottomRightRadius: 20,
-              overflow: "hidden",
-            }}
-          />
-
+          <View style={styles.webViewPage}>
+            <WebView
+              ref={webViewRef}
+              source={{ uri: "https://www.example.com" }}
+              style={{
+                flex: 1,
+                borderBottomLeftRadius: 20,
+                borderBottomRightRadius: 20,
+                overflow: "hidden",
+              }}
+            />
+          </View>
           <View style={styles.bottomNavigationBar}>
             <WebBrowserButton
               Icon={
@@ -114,7 +108,6 @@ const WebBrowserView = ({
               }
               onPress={goBack}
             />
-
             <WebBrowserButton
               Icon={
                 <Ionicons
@@ -125,7 +118,6 @@ const WebBrowserView = ({
               }
               onPress={goForward}
             />
-
             <WebBrowserButton
               Icon={<Ionicons name="reload-sharp" size={26} color="white" />}
               onPress={reloadPage}
@@ -141,17 +133,22 @@ const WebBrowserView = ({
   );
 };
 
-export default WebBrowserView;
-
 const styles = StyleSheet.create({
   webView: {
-    marginHorizontal: "0.5%",
     width: "99%",
     height: "90%",
     borderRadius: 15,
     overflow: "hidden",
     display: "flex",
     backgroundColor: "#212121",
+    margin: "0.5%",
+  },
+  webViewPage: {
+    width: "100%",
+    height: "92.5%",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    overflow: "hidden",
   },
   bottomNavigationBar: {
     width: "100%",
@@ -169,10 +166,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
   },
-  emoji: {
-    height: 30,
+  iconContainer: {
     width: 30,
-    display: "flex",
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  iconWrapper: {
+    width: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  animatedIcon: {
+    width: 24,
+    height: 24,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -183,3 +191,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
+export default WebBrowserView;

@@ -1,7 +1,11 @@
 import { WebBrowserButtonProps } from "@/types/web-browser-button.types";
 import React, { useCallback } from "react";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
-import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
+import { TouchableOpacity, StyleSheet } from "react-native";
+import Animated, {
+  useSharedValue,
+  withSpring,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 
 const WebBrowserButton: React.FC<WebBrowserButtonProps> = ({
   Icon,
@@ -9,12 +13,18 @@ const WebBrowserButton: React.FC<WebBrowserButtonProps> = ({
 }) => {
   const scale = useSharedValue(1);
 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
   const handlePressIn = useCallback(() => {
-    scale.value = withSpring(0.95, { damping: 10, stiffness: 100 });
+    scale.value = withSpring(0.9, { damping: 7, stiffness: 300 });
   }, []);
 
   const handlePressOut = useCallback(() => {
-    scale.value = withSpring(1, { damping: 10, stiffness: 100 });
+    scale.value = withSpring(1, { damping: 7, stiffness: 300 });
   }, []);
 
   return (
@@ -24,9 +34,7 @@ const WebBrowserButton: React.FC<WebBrowserButtonProps> = ({
       onPressOut={handlePressOut}
       style={styles.button}
     >
-      <Animated.View
-        style={[styles.iconContainer, { transform: [{ scale: scale.value }] }]}
-      >
+      <Animated.View style={[styles.iconContainer, animatedStyle]}>
         {Icon}
       </Animated.View>
     </TouchableOpacity>
