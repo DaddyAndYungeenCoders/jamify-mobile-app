@@ -1,12 +1,5 @@
+import { AuthenticationState } from "@/types/authentication.store.type";
 import { create } from "zustand";
-
-interface AuthenticationState {
-  token: string | null;
-  loading: boolean;
-  error: string | null;
-  getJWTToken: (urlProvider: string | null) => Promise<void>;
-  removeJWTToken: () => void;
-}
 
 export const useAuthenticationStore = create<AuthenticationState>((set) => ({
   token: null,

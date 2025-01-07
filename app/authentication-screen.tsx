@@ -4,14 +4,24 @@ import { Colors } from "@/constants/Colors";
 import { useAuthenticationStore } from "@/store/authentication.store";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import WebView from "react-native-webview";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AuthenticationScreen = () => {
+  const insets = useSafeAreaInsets();
+
+  const [showWebView, setShowWebView] = useState<boolean>(false);
+
   const { token, loading, error, getJWTToken, removeJWTToken } =
     useAuthenticationStore();
 
-  const [buttonLoading, setButtonLoading] = useState({
+  const [buttonLoading, setButtonLoading] = useState<{
+    spotify: boolean;
+    apple: boolean;
+    amazon: boolean;
+  }>({
     spotify: false,
     apple: false,
     amazon: false,
@@ -29,6 +39,7 @@ const AuthenticationScreen = () => {
 
   const handleSpotifyConnect = async () => {
     setButtonLoading((prev) => ({ ...prev, spotify: true }));
+    setShowWebView(true);
     await getJWTToken(null);
     setButtonLoading((prev) => ({ ...prev, spotify: false }));
   };
@@ -45,15 +56,22 @@ const AuthenticationScreen = () => {
     setButtonLoading((prev) => ({ ...prev, amazon: false }));
   };
 
-  // Mettre à jour le statut des boutons en fonction de `token`
   useEffect(() => {
-    const status = token ? 200 : 400;
-    setButtonStatus({
-      spotify: status,
-      apple: null,
-      amazon: null,
-    });
-  }, [token]); // Recalcule à chaque fois que `token` change
+    if (token != null) {
+      const status = token ? 200 : 400;
+      setButtonStatus({
+        spotify: status,
+        apple: null,
+        amazon: null,
+      });
+      if (status) {
+        removeJWTToken();
+      }
+    }
+  }, [token]);
+  useEffect(() => {
+    console.log("showWebView changed:", showWebView);
+  }, [showWebView]);
 
   return (
     <LinearGradient colors={Colors.light.background} style={styles.container}>
@@ -76,7 +94,7 @@ const AuthenticationScreen = () => {
             onPress={handleSpotifyConnect}
             colors={{ base: "#35BE62", pressed: "#5dba7c" }}
             responseStatus={buttonStatus.spotify}
-            successMessage={token ?? ""}
+            successMessage={token ?? "CONNECTED !"}
             errorMessage={error ?? ""}
           />
 
@@ -100,6 +118,39 @@ const AuthenticationScreen = () => {
             disabled={true}
           />
         </View>
+        <Modal
+          visible={showWebView}
+          onRequestClose={() => setShowWebView(false)}
+        >
+          <LinearGradient
+            colors={Colors.light.background}
+            style={{
+              flex: 1,
+              paddingTop: insets.top, // Ceci s'adaptera automatiquement à tous les iPhone
+              backgroundColor: "black",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View style={styles.webView}>
+              <TouchableOpacity
+                onPress={() => setShowWebView(false)}
+                style={{
+                  backgroundColor: "gray",
+                  padding: 10,
+                }}
+              >
+                <Text style={{ color: "white" }}>Fermer</Text>
+              </TouchableOpacity>
+
+              <WebView
+                source={{ uri: "https://www.example.com" }}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </LinearGradient>
+        </Modal>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -140,5 +191,13 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_700Bold",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  webView: {
+    marginHorizontal: 20,
+    width: "100%",
+    height: "95%",
+    borderRadius: 20,
+    overflow: "hidden",
+    display: "flex",
   },
 });
