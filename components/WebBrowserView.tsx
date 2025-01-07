@@ -18,6 +18,7 @@ import Animated, {
   useAnimatedStyle,
   withSequence,
   withRepeat,
+  withDelay,
 } from "react-native-reanimated";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useRef } from "react";
@@ -35,38 +36,44 @@ const WebBrowserView = ({
   const webViewRef = useRef<WebView | null>(null);
 
   useEffect(() => {
-    rotation.value = withRepeat(
-      withTiming(-360, {
-        duration: 2000,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      false,
-    );
     const animationSequence = () => {
-      translateX.value = withSequence(
-        withTiming(-100, {
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        withTiming(100, { duration: 0 }),
-        withTiming(0, {
-          duration: 2000,
+      // Rotation - maintenant dans la séquence
+      rotation.value = withSequence(
+        // Reset à 0 instantanément
+        withTiming(0, { duration: 0 }),
+        // Une rotation complète synchronisée avec la translation
+        withTiming(-720, {
+          duration: 1500,
           easing: Easing.inOut(Easing.ease),
         }),
       );
 
-      opacity.value = withSequence(
-        withTiming(0, {
-          duration: 1800,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        withTiming(0, { duration: 200 }),
-        withTiming(0, { duration: 0 }),
-        withTiming(1, {
+      // Translation
+      translateX.value = withSequence(
+        withTiming(-50, {
           duration: 1000,
           easing: Easing.inOut(Easing.ease),
         }),
+        withTiming(50, { duration: 0 }),
+        withTiming(0, {
+          duration: 500,
+          easing: Easing.inOut(Easing.ease),
+        }),
+      );
+
+      // Opacité
+      opacity.value = withSequence(
+        withTiming(0, {
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        withDelay(
+          200,
+          withTiming(1, {
+            duration: 1000,
+            easing: Easing.inOut(Easing.ease),
+          }),
+        ),
       );
     };
 
@@ -127,6 +134,7 @@ const WebBrowserView = ({
               </View>
             </View>
             <Text style={styles.title}>JAMIFY WEB BROWSER</Text>
+            <Text></Text>
           </View>
         </View>
         <View style={styles.webView}>
@@ -206,13 +214,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   titleContainer: {
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
+    justifyContent: "space-evenly",
+    gap: 8,
+    position: "absolute",
+    left: 0,
+    right: 0,
   },
   iconContainer: {
-    width: 200,
+    width: 60, // Réduit de 200 à 40
     height: 30,
     justifyContent: "center",
     alignItems: "center",
