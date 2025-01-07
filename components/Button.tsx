@@ -26,7 +26,7 @@ const AnimatedTouchableOpacity =
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-interface ExtendedCustomButtonProps extends CustomButtonProps {}
+interface ExtendedCustomButtonProps extends CustomButtonProps { }
 
 const Button: React.FC<ExtendedCustomButtonProps> = ({
   label,
@@ -58,12 +58,12 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
 
   const handlePressIn = useCallback(() => {
     "worklet";
-    scale.value = withSpring(0.98, { damping: 15, stiffness: 120 });
+    scale.value = withSpring(0.95, { damping: 20, stiffness: 120 });
   }, []);
 
   const handlePressOut = useCallback(() => {
     "worklet";
-    scale.value = withSpring(1, { damping: 15, stiffness: 120 });
+    scale.value = withSpring(1, { damping: 20, stiffness: 120 });
   }, []);
 
   const shakeAnimation = (success: boolean) => {
@@ -138,17 +138,14 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
 
       shake.value = shakeAnimation(responseStatus === 200);
 
-      // Changer la couleur
       backgroundColor.value = withTiming(
         responseStatus === 200 ? "#4CAF50" : "#F44336",
         { duration: 300 },
       );
 
-      // Animation du texte de statut
       statusTextTranslateY.value = withTiming(0, { duration: 200 });
       statusTextOpacity.value = withTiming(1, { duration: 200 });
 
-      // Reset après un délai
       const delay = 2000;
       setTimeout(() => {
         backgroundColor.value = withTiming(colors.base, { duration: 300 });
@@ -158,7 +155,6 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
         mainTextOpacity.value = withTiming(1, { duration: 300 });
       }, delay);
     } else {
-      // Reset complet des animations
       loaderOpacity.value = withTiming(0, { duration: 200 });
       statusTextOpacity.value = withTiming(0, { duration: 200 });
       statusTextTranslateY.value = withTiming(20, { duration: 200 });
@@ -216,9 +212,9 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
-            height: 8,
+            height: 5,
           },
-          shadowOpacity: 0.65,
+          shadowOpacity: 0.55,
           shadowRadius: 3,
         },
         android: {
