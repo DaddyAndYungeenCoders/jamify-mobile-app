@@ -1,17 +1,14 @@
 import Button from "@/components/Button";
 import OrbitAnimation from "@/components/orbit-animation/orbit-animation";
+import WebBrowserView from "@/components/WebBrowserView";
 import { Colors } from "@/constants/Colors";
 import { useAuthenticationStore } from "@/store/authentication.store";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import WebView from "react-native-webview";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AuthenticationScreen = () => {
-  const insets = useSafeAreaInsets();
-
   const [showWebView, setShowWebView] = useState<boolean>(false);
 
   const { token, loading, error, getJWTToken, removeJWTToken } =
@@ -118,39 +115,10 @@ const AuthenticationScreen = () => {
             disabled={true}
           />
         </View>
-        <Modal
-          visible={showWebView}
-          onRequestClose={() => setShowWebView(false)}
-        >
-          <LinearGradient
-            colors={Colors.light.background}
-            style={{
-              flex: 1,
-              paddingTop: insets.top, // Ceci s'adaptera automatiquement à tous les iPhone
-              backgroundColor: "black",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View style={styles.webView}>
-              <TouchableOpacity
-                onPress={() => setShowWebView(false)}
-                style={{
-                  backgroundColor: "gray",
-                  padding: 10,
-                }}
-              >
-                <Text style={{ color: "white" }}>Fermer</Text>
-              </TouchableOpacity>
-
-              <WebView
-                source={{ uri: "https://www.example.com" }}
-                style={{ flex: 1 }}
-              />
-            </View>
-          </LinearGradient>
-        </Modal>
+        <WebBrowserView
+          showWebView={showWebView}
+          setShowWebView={setShowWebView}
+        />
       </SafeAreaView>
     </LinearGradient>
   );
@@ -191,13 +159,5 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_700Bold",
     fontWeight: "bold",
     textAlign: "center",
-  },
-  webView: {
-    marginHorizontal: 20,
-    width: "100%",
-    height: "95%",
-    borderRadius: 20,
-    overflow: "hidden",
-    display: "flex",
   },
 });

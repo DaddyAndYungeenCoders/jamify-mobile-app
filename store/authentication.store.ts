@@ -1,4 +1,4 @@
-import { AuthenticationState } from "@/types/authentication.store.type";
+import { AuthenticationState } from "@/types/authentication.store.types";
 import { create } from "zustand";
 
 export const useAuthenticationStore = create<AuthenticationState>((set) => ({
