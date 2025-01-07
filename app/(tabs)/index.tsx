@@ -5,34 +5,30 @@ import ProfilHeader from "@/components/header/Profil-Header";
 import Playlists from "@/components/home/Playlists";
 import Jams from "@/components/home/Jams";
 import Events from "@/components/home/Events";
+import {useEffect, useState} from "react";
+import EventService from "@/service/EventService";
+import PlaylistService from "@/service/PlaylistService";
+import JamService from "@/service/JamService";
 
 export default function HomeScreen() {
     const handlePress = () => {
         Alert.alert('Bouton Pressé', 'Vous avez cliqué sur le bouton!');
     };
-    const playlists = [
-        {name:"CHILL & ROCK", image: require('@/assets/images/music-exemple.png') },
-        {name:"Techno", image: require('@/assets/images/music-exemple.png') },
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png')},
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png')},
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png')},
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png')},
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png')},
-    ]
-    const jams = [
-        {name:"CHILL & ROCK", image: require('@/assets/images/music-exemple.png'), autheur: "Bob", heure: "19h00", onPress: handlePress },
-        {name:"Techno", image: require('@/assets/images/music-exemple.png'), autheur: "Alice", heure: "En cours", onPress: handlePress },
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png'), autheur: "Max", heure: "20h00", onPress: handlePress },
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png'), autheur: "Max", heure: "20h00", onPress: handlePress },
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png'), autheur: "Max", heure: "20h00", onPress: handlePress },
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png'), autheur: "Max", heure: "20h00", onPress: handlePress },
-        {name:"Chicago rap", image: require('@/assets/images/music-exemple.png'), autheur: "Max", heure: "20h00", onPress: handlePress },
-    ]
 
-    const events = [
-        {name:"Fête de la musique", image: require('@/assets/images/music-exemple.png'), date:"15/03/2025", description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry...",participants: 15, onPress: handlePress },
-        {name:"Concert Jazz", image: require('@/assets/images/music-exemple.png'), date:"20/03/2025", description:"Lorem Ipsum is simply dummy text of the printing and typesetting industry...",participants: 18, onPress: handlePress },
-    ]
+    const [playlists, setPlaylists] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [jams, setJams] = useState([]);
+
+    useEffect(() => {
+        const levent = EventService.getEvents();
+        setEvents(levent);
+
+        const lplaylist = PlaylistService.getPlaylists();
+        setPlaylists(lplaylist);
+
+        const ljams = JamService.getJams();
+        setJams(ljams);
+    }, [])
 
 
     return (

@@ -14,9 +14,9 @@ const Jams = ({jams, style}) => {
                         <JamElement style={styles.jamElement}
                                     name={jam.name}
                                     key={index}
-                                    image={jam.image}
-                                    autheur={jam.autheur}
-                                    heure={jam.heure}
+                                    image={jam.background}
+                                    autheur={jam.host.name}
+                                    heure={jam.status}
                                     onPress={jam.onPress}
                         />
 

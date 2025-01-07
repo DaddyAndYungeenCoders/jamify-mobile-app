@@ -15,7 +15,7 @@ const Playlists = ({playlists, style}) => {
                         <PlaylistElement
                             key={index}
                             name={playlist.name}
-                            image={playlist.image}
+                            image={playlist.background}
                         />
                     ))
 

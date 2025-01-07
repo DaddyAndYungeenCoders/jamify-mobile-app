@@ -16,11 +16,11 @@ const Events = ({events, style}) => {
                         <EventElement
                             key={index}
                             name={event.name}
-                            image={event.image}
+                            image={event.background}
                             onPress={event.onPress}
-                            date={event.date}
+                            date={event.scheduledDate.toLocaleDateString()}
                             description={event.description}
-                            participants={event.participants}
+                            participants={event.participants.length}
                         />
                     ))
 
