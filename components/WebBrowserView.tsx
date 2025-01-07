@@ -1,16 +1,23 @@
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Dimensions,
+} from "react-native";
 import WebView from "react-native-webview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebBrowserViewProps } from "@/types/web-browser-view.types";
 import Animated, {
   useSharedValue,
-  withRepeat,
   withTiming,
   Easing,
   useAnimatedStyle,
-  withDelay,
+  withSequence,
+  withRepeat,
 } from "react-native-reanimated";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useRef } from "react";
@@ -23,24 +30,58 @@ const WebBrowserView = ({
 }: WebBrowserViewProps) => {
   const insets = useSafeAreaInsets();
   const rotation = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const opacity = useSharedValue(1);
   const webViewRef = useRef<WebView | null>(null);
 
   useEffect(() => {
-    rotation.value = withDelay(
-      200,
-      withRepeat(
-        withTiming(360, {
+    rotation.value = withRepeat(
+      withTiming(-360, {
+        duration: 2000,
+        easing: Easing.inOut(Easing.ease),
+      }),
+      -1,
+      false,
+    );
+    const animationSequence = () => {
+      translateX.value = withSequence(
+        withTiming(-100, {
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        withTiming(100, { duration: 0 }),
+        withTiming(0, {
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+        }),
+      );
+
+      opacity.value = withSequence(
+        withTiming(0, {
+          duration: 1800,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        withTiming(0, { duration: 200 }),
+        withTiming(0, { duration: 0 }),
+        withTiming(1, {
           duration: 1000,
           easing: Easing.inOut(Easing.ease),
         }),
-        -1,
-        false,
-      ),
-    );
+      );
+    };
+
+    const interval = setInterval(animationSequence, 4000);
+    animationSequence();
+
+    return () => clearInterval(interval);
   }, []);
 
-  const animatedRotationStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { rotate: `${rotation.value}deg` },
+    ],
+    opacity: opacity.value,
   }));
 
   const goBack = () => {
@@ -77,16 +118,16 @@ const WebBrowserView = ({
         }}
       >
         <View style={styles.topNavigationBar}>
-          <View style={styles.iconContainer}>
-            <View style={styles.iconWrapper}>
-              <Animated.View
-                style={[styles.animatedIcon, animatedRotationStyle]}
-              >
-                <Fontisto name="world-o" size={24} color="#1ca1bd" />
-              </Animated.View>
+          <View style={styles.titleContainer}>
+            <View style={styles.iconContainer}>
+              <View style={styles.iconWrapper}>
+                <Animated.View style={[styles.animatedIcon, animatedStyle]}>
+                  <Fontisto name="world-o" size={24} color="#1ca1bd" />
+                </Animated.View>
+              </View>
             </View>
+            <Text style={styles.title}>JAMIFY WEB BROWSER</Text>
           </View>
-          <Text style={styles.title}> JAMIFY WEB BROWSER</Text>
         </View>
         <View style={styles.webView}>
           <View style={styles.webViewPage}>
@@ -161,16 +202,21 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 35,
     display: "flex",
-    flexDirection: "row",
-    gap: 10,
     justifyContent: "center",
-    alignContent: "center",
+    alignItems: "center",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
   },
   iconContainer: {
-    width: 30,
+    width: 200,
     height: 30,
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
   },
   iconWrapper: {
     width: 24,
