@@ -22,11 +22,6 @@ const Playlists = ({playlists, style}) => {
                 ) : (
                     <ThemedText style={styles.error}>Aucune playlist</ThemedText>
                 )}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
             </ScrollView>
         </View>
     );
@@ -43,7 +38,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textDecorationLine: "underline",
         marginBottom: 10,
-        marginLeft: 10,
+        marginLeft: 15,
         fontFamily: "Jost",
     },
     scrollContainer: {

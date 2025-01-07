@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textDecorationLine: "underline",
         marginBottom: 10,
-        marginLeft: 10,
+        marginLeft: 15,
         fontFamily: "Jost",
     },
     scrollContainer: {

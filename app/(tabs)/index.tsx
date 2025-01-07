@@ -1,4 +1,4 @@
-import {Alert, ScrollView, StyleSheet} from 'react-native';
+import {Alert, ScrollView, StyleSheet, View} from 'react-native';
 import {LinearGradient} from "expo-linear-gradient";
 import {Colors} from "@/constants/Colors";
 import ProfilHeader from "@/components/header/Profil-Header";
@@ -33,13 +33,15 @@ export default function HomeScreen() {
 
     return (
         <LinearGradient colors={Colors.light.background} style={styles.container}>
-            <ScrollView>
-                <ProfilHeader Name={"TOTO"} image={require('@/assets/images/jamer-exemple.png')}
-                              style={styles.profilHeader} onPress={handlePress}/>
-                <Playlists style={styles.playlist} playlists={playlists}></Playlists>
-                <Jams jams={jams}></Jams>
-                <Events events={events}></Events>
-            </ScrollView>
+            <View style={styles.back}/>
+
+                <ScrollView style={styles.front}>
+                    <ProfilHeader Name={"TOTO"} image={require('@/assets/images/jamer-exemple.png')}
+                                  style={styles.profilHeader} onPress={handlePress}/>
+                    <Playlists style={styles.playlist} playlists={playlists}></Playlists>
+                    <Jams jams={jams}></Jams>
+                    <Events events={events}></Events>
+                </ScrollView>
         </LinearGradient>
     );
 }
@@ -59,6 +61,17 @@ const styles = StyleSheet.create({
     playlist: {
         marginTop: 80,
         marginBottom: 20,
+    },
+    back: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: "#6e6c6c",
+        borderRadius: 10,
+        opacity: 0.7,
+        marginTop: 30,
+        margin: 10,
+    },
+    front: {
+        flex: 1,
     }
 
 });
