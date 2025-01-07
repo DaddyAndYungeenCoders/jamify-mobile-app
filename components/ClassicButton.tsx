@@ -15,26 +15,49 @@ const ClassicButton = ({
                            logoSize = 20, // Taille du logo
                            style,
                        }: ClassicButtonProps) => {
-    return (
-        <TouchableOpacity
-            style={[
-                styles.button,
-                { backgroundColor, width, height },
-                style,
-            ]}
-            onPress={onPress}
-        >
-            <View style={styles.content}>
-                {logo && logoPosition === 'left' && (
-                    <Image source={logo} style={[styles.logo, { width: logoSize, height: logoSize }]} />
-                )}
-                <Text style={[styles.text, { color: textColor, fontSize }]}>{title}</Text>
-                {logo && logoPosition === 'right' && (
-                    <Image source={logo} style={[styles.logo, { width: logoSize, height: logoSize }]} />
-                )}
-            </View>
-        </TouchableOpacity>
-    );
+    if (backgroundColor != "none"){
+        return (
+            <TouchableOpacity
+                style={[
+                    styles.button,
+                    {backgroundColor, width, height},
+                    style,
+                ]}
+                onPress={onPress}
+            >
+                <View style={styles.content}>
+                    {logo && logoPosition === 'left' && (
+                        <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
+                    )}
+                    <Text style={[styles.text, {color: textColor, fontSize}]}>{title}</Text>
+                    {logo && logoPosition === 'right' && (
+                        <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
+                    )}
+                </View>
+            </TouchableOpacity>
+        );
+    } else {
+        return (
+            <TouchableOpacity
+                style={[
+                    styles.button,
+                    {width, height},
+                    style,
+                ]}
+                onPress={onPress}
+            >
+                <View style={styles.content}>
+                    {logo && logoPosition === 'left' && (
+                        <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
+                    )}
+                    <Text style={[styles.text, {color: textColor, fontSize}]}>{title}</Text>
+                    {logo && logoPosition === 'right' && (
+                        <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
+                    )}
+                </View>
+            </TouchableOpacity>
+        );
+    }
 };
 
 const styles = StyleSheet.create({
