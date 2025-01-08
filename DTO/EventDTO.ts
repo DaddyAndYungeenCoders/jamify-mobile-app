@@ -17,4 +17,5 @@ export interface EventDTO {
     scheduledDate: Date;
     participants: UserDTO[];
     themes: string[];
+    address: string;
 }

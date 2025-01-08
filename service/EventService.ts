@@ -11,6 +11,7 @@ const event1: EventDTO = {
     scheduledDate: new Date("2025-01-10T19:00:00"),
     participants: [],
     themes: ["Musique", "Rock", "Live"],
+    address:  "4 rue des lila 69003 LYON",
 };
 
 const user1: UserDTO = {
@@ -26,6 +27,7 @@ const event2: EventDTO = {
     scheduledDate: new Date("2025-01-20T19:00:00"),
     participants: [user1],
     themes: ["Musique", "Jazz", "Live"],
+    address: "78 chemin de la truite 69004 Lyon"
 };
 const EventService = {
 

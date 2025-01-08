@@ -14,24 +14,14 @@ const Events = ({events, style}) => {
                     events.map((event, index) => (
 
                         <EventElement
+                            event={event}
                             key={index}
-                            name={event.name}
-                            image={event.background}
-                            onPress={event.onPress}
-                            date={event.scheduledDate.toLocaleDateString()}
-                            description={event.description}
-                            participants={event.participants.length}
                         />
                     ))
 
                 ) : (
                     <ThemedText style={styles.error}>Aucun Event</ThemedText>
                 )}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
-                {/*<PlaylistElement name={"test"} image={require("@/assets/images/music-exemple.png")}/>*/}
             </ScrollView>
         </View>
     );
