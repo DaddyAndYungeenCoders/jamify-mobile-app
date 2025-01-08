@@ -46,6 +46,15 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
+                name="createEvent"
+                options={{
+                    title: "New Event",
+                    tabBarIcon: ({color}) => (
+                        <IconSymbol size={28} name="paperplane.fill" color={color}/>
+                    ),
+                }}
+            />
+            <Tabs.Screen
                 name="playing"
                 options={{
                     title: "Playing",

@@ -44,7 +44,7 @@ export default function RootLayout() {
   if (!loaded || !isAppReady) {
     return <SplashScreen />;
   }
-  if (true) {
+  if (false) {
     return <AuthenticationScreen />;
   }
 
