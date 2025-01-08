@@ -1,7 +1,7 @@
 import {ImageSourcePropType} from "react-native";
 
 export interface JamerDisplayProps {
-    Name : string;
+    name : string;
     image: ImageSourcePropType;
     listening: number;
 }
