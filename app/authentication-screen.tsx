@@ -14,6 +14,8 @@ const AuthenticationScreen = () => {
   const { token, loading, error, getJWTToken, removeJWTToken } =
     useAuthenticationStore();
 
+  const [url, setUrl] = useState<string>("");
+
   const [buttonLoading, setButtonLoading] = useState<{
     spotify: boolean;
     apple: boolean;
@@ -36,8 +38,9 @@ const AuthenticationScreen = () => {
 
   const handleSpotifyConnect = async () => {
     setButtonLoading((prev) => ({ ...prev, spotify: true }));
-    setShowWebView(true);
     await getJWTToken(null);
+    setUrl("http://localhost:8081/oauth2/authorization/spotify");
+    setShowWebView(true);
     setButtonLoading((prev) => ({ ...prev, spotify: false }));
   };
 
@@ -78,7 +81,7 @@ const AuthenticationScreen = () => {
           <OrbitAnimation
             innerOrbitRadius={60}
             outerOrbitRadius={95}
-            iconSize={24}
+            iconSize={25}
             ringWidth={4}
           />
         </View>
@@ -118,6 +121,7 @@ const AuthenticationScreen = () => {
         <WebBrowserView
           showWebView={showWebView}
           setShowWebView={setShowWebView}
+          url={url}
         />
       </SafeAreaView>
     </LinearGradient>

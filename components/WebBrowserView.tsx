@@ -1,13 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Dimensions,
-} from "react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
 import WebView from "react-native-webview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebBrowserViewProps } from "@/types/web-browser-view.types";
@@ -17,7 +10,6 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   withSequence,
-  withRepeat,
   withDelay,
 } from "react-native-reanimated";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -28,6 +20,7 @@ import Fontisto from "@expo/vector-icons/Fontisto";
 const WebBrowserView = ({
   showWebView,
   setShowWebView,
+  url,
 }: WebBrowserViewProps) => {
   const insets = useSafeAreaInsets();
   const rotation = useSharedValue(0);
@@ -37,12 +30,9 @@ const WebBrowserView = ({
 
   useEffect(() => {
     const animationSequence = () => {
-      // Rotation - maintenant dans la séquence
       rotation.value = withSequence(
-        // Reset à 0 instantanément
         withTiming(0, { duration: 0 }),
-        // Une rotation complète synchronisée avec la translation
-        withTiming(-720, {
+        withTiming(720, {
           duration: 1500,
           easing: Easing.inOut(Easing.ease),
         }),
@@ -50,11 +40,11 @@ const WebBrowserView = ({
 
       // Translation
       translateX.value = withSequence(
-        withTiming(-50, {
+        withTiming(50, {
           duration: 1000,
           easing: Easing.inOut(Easing.ease),
         }),
-        withTiming(50, { duration: 0 }),
+        withTiming(-20, { duration: 0 }),
         withTiming(0, {
           duration: 500,
           easing: Easing.inOut(Easing.ease),
@@ -64,13 +54,13 @@ const WebBrowserView = ({
       // Opacité
       opacity.value = withSequence(
         withTiming(0, {
-          duration: 800,
+          duration: 500,
           easing: Easing.inOut(Easing.ease),
         }),
         withDelay(
-          200,
+          500,
           withTiming(1, {
-            duration: 1000,
+            duration: 500,
             easing: Easing.inOut(Easing.ease),
           }),
         ),
@@ -134,19 +124,24 @@ const WebBrowserView = ({
               </View>
             </View>
             <Text style={styles.title}>JAMIFY WEB BROWSER</Text>
-            <Text></Text>
           </View>
         </View>
         <View style={styles.webView}>
           <View style={styles.webViewPage}>
             <WebView
               ref={webViewRef}
-              source={{ uri: "https://www.example.com" }}
+              source={{ uri: url }}
               style={{
                 flex: 1,
                 borderBottomLeftRadius: 20,
                 borderBottomRightRadius: 20,
                 overflow: "hidden",
+              }}
+              onError={(error) => {
+                console.log("ERROR : ", error);
+              }}
+              onHttpError={(error) => {
+                console.log("ERROR HTTP : ", error);
               }}
             />
           </View>
@@ -217,7 +212,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-evenly",
+    justifyContent: "flex-start",
     gap: 8,
     position: "absolute",
     left: 0,
@@ -247,6 +242,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "white",
     fontSize: 18,
+    paddingLeft: "10%",
   },
 });
 
