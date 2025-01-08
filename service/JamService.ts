@@ -1,18 +1,18 @@
-import {JamDTO, JamStatus} from "@/DTO/JamDTO";
-import {UserDTO} from "@/DTO/UserDTO";
+import {JamTypes, JamStatus} from "@/types/JamTypes";
+import {UserTypes} from "@/types/UserTypes";
 
-const user1: UserDTO = {
+const user1: UserTypes = {
     country: "", email: "", imgUrl: "", provider: "", roles: [], userProviderId: "",
     badges: [], events: [], id: 0, jams: [], name: "Titi", playlists: []
 }
 
 
-const user2: UserDTO = {
+const user2: UserTypes = {
     country: "", email: "", imgUrl: "", provider: "", roles: [], userProviderId: "",
     badges: [], events: [], id: 0, jams: [], name: "Toto", playlists: []
 }
 
-const jam1: JamDTO = {
+const jam1: JamTypes = {
     background: require('@/assets/images/music-exemple.png'),
     comments: [],
     description: "Bla bla",
@@ -25,7 +25,7 @@ const jam1: JamDTO = {
     themes: []
 };
 
-const jam2: JamDTO = {
+const jam2: JamTypes = {
     background: require('@/assets/images/music-exemple.png'),
     comments: [],
     description: "Bla bla",
@@ -39,7 +39,7 @@ const jam2: JamDTO = {
 };
 
 const JamService = {
-    getJams: () : JamDTO[] => {
+    getJams: () : JamTypes[] => {
         return [
             jam1, jam2,jam1, jam1
         ];
