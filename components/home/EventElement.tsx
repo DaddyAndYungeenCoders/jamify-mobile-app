@@ -2,6 +2,7 @@ import React from "react";
 import {TouchableOpacity, StyleSheet, View, Image, Text} from "react-native";
 import {ThemedText} from "@/components/ThemedText";
 import ClassicButton from "@/components/ClassicButton";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const EventElement = ({name, onPress, image, style, date, description, participants}) => {
     return (
@@ -24,7 +25,7 @@ const EventElement = ({name, onPress, image, style, date, description, participa
 
                     {/* Nombre de participants */}
                     <View style={styles.participantsContainer}>
-                        <Image source={require("@/assets/images/people-logo.png")} style={styles.participantIcon}/>
+                        <MaterialIcons name="people-outline" size={15} color="white" style={styles.participantIcon}/>
                         <ThemedText style={styles.participantsText}>{participants}</ThemedText>
                     </View>
                 </View>

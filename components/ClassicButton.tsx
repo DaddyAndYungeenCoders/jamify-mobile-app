@@ -1,6 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
 import {ClassicButtonProps} from "@/types/classic-button.types";
+import Fontisto from '@expo/vector-icons/Fontisto';
 
 const ClassicButton = ({
                            title,
@@ -8,14 +9,13 @@ const ClassicButton = ({
                            backgroundColor = '#94BBE9',
                            textColor = '#FFFFFF',
                            logo,
-                           logoPosition = 'left', // 'left' ou 'right'
-                           width = 'auto', // Largeur du bouton
-                           height = 50, // Hauteur du bouton
+                           width = 'auto',
+                           height = 50,
                            fontSize = 16, // Taille du texte
                            logoSize = 20, // Taille du logo
                            style,
                        }: ClassicButtonProps) => {
-    if (backgroundColor != "none"){
+    if (backgroundColor != "none") {
         return (
             <TouchableOpacity
                 style={[
@@ -26,13 +26,10 @@ const ClassicButton = ({
                 onPress={onPress}
             >
                 <View style={styles.content}>
-                    {logo && logoPosition === 'left' && (
-                        <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
-                    )}
+                    {logo ? (
+                        <Fontisto name={logo} size={24} color="white" style={styles.logo}/>
+                    ): (<View/>)}
                     <Text style={[styles.text, {color: textColor, fontSize}]}>{title}</Text>
-                    {logo && logoPosition === 'right' && (
-                        <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
-                    )}
                 </View>
             </TouchableOpacity>
         );

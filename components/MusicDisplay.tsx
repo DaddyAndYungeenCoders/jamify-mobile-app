@@ -36,11 +36,6 @@ const MusicDisplay = ({
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     };
 
-    const playButtonImage = {
-        play: require("../assets/images/music-logos/play.png"),
-        pause: require("../assets/images/music-logos/pause.png"),
-    };
-
     const [jamer, setJamer] : JamerDisplayProps = useState(null)
     const [playing, setPlaying] : boolean = useState(false)
 
@@ -66,9 +61,9 @@ return (
                 {/*    style={styles.playButton}*/}
                 {/*    source={playButtonImage.play}/>*/}
                 {playing ? (
-                    <ClassicButton title={""} onPress={() => {setPlaying(false)}} style={styles.playButton} logo={playButtonImage.pause}/>
+                    <ClassicButton title={""} onPress={() => {setPlaying(false)}} style={styles.playButton} logo={"pause"} logoSize={15}/>
                 ):(
-                    <ClassicButton title={""} onPress={() => {setPlaying(true)}} style={styles.playButton} logo={playButtonImage.play}/>
+                    <ClassicButton title={""} onPress={() => {setPlaying(true)}} style={styles.playButton} logo={"play"}/>
                     // <IconSymbol name={"play"} color={"white"}/>
                     // <IconSymbol size={28} onPress={() => {setPlaying(true)}} name="playing.fill" />
                 )}
@@ -157,9 +152,9 @@ const styles = StyleSheet.create({
         color: "#777",
     },
     playButton: {
-        marginTop: 10,
-        width: 20,
-        height: 20,
+        // marginTop: 10,
+        // width: 20,
+        // height: 20,
         backgroundColor: "transparent",
         justifyContent: "center",
         alignItems: "center",

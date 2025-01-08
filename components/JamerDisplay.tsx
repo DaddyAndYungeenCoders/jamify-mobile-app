@@ -3,6 +3,7 @@ import {Image, StyleSheet, View} from "react-native";
 import {ThemedText} from "@/components/ThemedText";
 import * as Progress from "react-native-progress";
 import {JamerDisplayProps} from "@/types/jamer-display.types";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const JamerDisplay = ({
                           name,
@@ -16,7 +17,7 @@ const JamerDisplay = ({
             <ThemedText style={styles.title}>{name}</ThemedText>
             <View style={styles.bottom}>
                 <ThemedText style={styles.listening}>Listening : {listening}</ThemedText>
-                <Image source={require('@/assets/images/people-logo.png')} style={styles.people}/>
+                <MaterialIcons name="people-outline" size={15} color="white" style={styles.people}/>
 
             </View>
         </View>
