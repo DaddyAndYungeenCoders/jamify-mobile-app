@@ -1,47 +1,61 @@
-import {StyleSheet, Image, Platform, View, ScrollView, Alert} from 'react-native';
-
-import {Collapsible} from '@/components/Collapsible';
-import {ExternalLink} from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import {ThemedText} from '@/components/ThemedText';
-import {ThemedView} from '@/components/ThemedView';
-import {IconSymbol} from '@/components/ui/IconSymbol';
-import webView from "react-native-webview/src/WebView";
-import {Colors} from "@/constants/Colors";
-import {LinearGradient} from "expo-linear-gradient";
-import {opacity} from "react-native-reanimated/lib/typescript/Colors";
-import MusicDisplay from "@/components/MusicDisplay";
-import {useState} from "react";
-import {musicDisplayProps} from "@/types/music-display.types";
+import React, { useState } from "react";
+import { StyleSheet, View, ScrollView, Alert, Platform } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { ThemedText } from "@/components/ThemedText";
+import { LinearGradient } from "expo-linear-gradient";
+import { Colors } from "@/constants/Colors";
 import ClassicButton from "@/components/ClassicButton";
-import InputAndLabel, {inputType} from "@/components/InputAndLabel";
-
+import InputAndLabel, { inputType } from "@/components/InputAndLabel";
 
 export default function CreateEvent() {
-    const [music, setMusic]: musicDisplayProps = useState(null);
+    const [music, setMusic] = useState(null);
+    const [date, setDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
+    const save = () => {
+        Alert.alert("Enregistré", `Date sélectionnée : ${date.toLocaleDateString()}`);
+    };
 
-    function save() {
-        Alert.alert("Enregistré");
-
-    }
+    const onChangeDate = (event, selectedDate) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setDate(selectedDate);
+        }
+    };
 
     return (
         <LinearGradient colors={Colors.light.background} style={styles.container}>
             <ScrollView>
-                <ThemedView style={styles.banner}>
+                <View style={styles.banner}>
                     <ThemedText style={styles.titles}>Create an Event</ThemedText>
-                </ThemedView>
-                <View style={styles.body}>
-                    <InputAndLabel title={"Nom de l'évènement"} type={inputType.TEXT}/>
-                    <InputAndLabel title={"Description de l'évènement"} type={inputType.TEXT}/>
-                    <InputAndLabel title={"Adresse"} type={inputType.TEXT}/>
-                    <InputAndLabel title={"Date de début"} type={inputType.TEXT} placeHolder={"??/??/????"}/>
-                    <InputAndLabel title={"Nombre de participant maximum"} type={inputType.NUMBER}
-                                   placeHolder={"Entrez un nombre..."}/>
                 </View>
+                <View style={styles.body}>
+                    <InputAndLabel title={"Nom de l'évènement"} type={inputType.TEXT} />
+                    <InputAndLabel title={"Description de l'évènement"} type={inputType.TEXT} />
+                    <InputAndLabel title={"Adresse"} type={inputType.TEXT} />
+
+                    <View>
+                        <ThemedText style={styles.label}>Date de début</ThemedText>
+                        <ClassicButton
+                            title={date.toLocaleDateString()}
+                            onPress={() => setShowDatePicker(true)}
+                            style={styles.dateButton}
+                        />
+                    </View>
+
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={date}
+                            mode="date"
+                            display={Platform.OS === "ios" ? "inline" : "default"}
+                            onChange={onChangeDate}
+                        />
+                    )}
+
+                    <InputAndLabel title={"Nombre de participant maximum"} type={inputType.NUMBER} placeHolder={"Entrez un nombre..."} />
+                </View>
+                <ClassicButton title={"Enregister"} onPress={save} style={styles.button} logo={require('@/assets/images/save-logo.png')}/>
             </ScrollView>
-            <ClassicButton title={"Enregister"} onPress={save} style={styles.button}/>
         </LinearGradient>
     );
 }
@@ -55,8 +69,9 @@ const styles = StyleSheet.create({
     button: {
         position: "relative",
         bottom: 20,
+        marginTop: 20,
         alignSelf: "center",
-        width: "80%",
+        width: "100%",
     },
     banner: {
         position: "absolute",
@@ -73,9 +88,19 @@ const styles = StyleSheet.create({
         color: "#fff",
     },
     body: {
-        marginTop: 100, // Ajustement pour éviter que le contenu soit caché par la bannière
-        width: "100%",
+        marginTop: 100,
+        width: "90%",
         paddingHorizontal: 20,
+        marginLeft: 15,
+        marginRight: 10,
+    },
+    label: {
+        fontSize: 16,
+        // marginBottom: 5,
+        color: "#fff",
+    },
+    dateButton: {
+        alignItems: "center",
+        justifyContent: "center",
     },
 });
-

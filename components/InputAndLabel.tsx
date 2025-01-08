@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 10,
         backgroundColor: "#737373",
-        minWidth: "90%",
-        maxWidth: "90%"
+        minWidth: "100%",
+        maxWidth: "100%"
     },
     container: {
         flex: 1,
@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        marginLeft: 10,
-        marginRight: 10,
+        // marginLeft: 10,
+        // marginRight: 10,
         minWidth: "100%",
     },
     text: {
