@@ -3,9 +3,10 @@ import { TouchableOpacity, StyleSheet, View, Image, Text, Alert, Modal, Button }
 import { ThemedText } from "@/components/ThemedText";
 import ClassicButton from "@/components/ClassicButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { EventDTO } from "@/DTO/EventDTO";
+import { EventTypes } from "@/types/EventTypes";
+import Fontisto from "@expo/vector-icons/Fontisto";
 
-const EventElement = ({ event }: EventDTO) => {
+const EventElement = ({ event }: EventTypes) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const openDetail = () => {
@@ -56,7 +57,7 @@ const EventElement = ({ event }: EventDTO) => {
                         </ThemedText>
                         <ThemedText style={styles.modalDescription}>{event.description}</ThemedText>
                         <View style={styles.addressBox}>
-                            <Image source={require('@/assets/images/map-point.png')} style={styles.icon}/>
+                            <Fontisto name="map-marker-alt" size={20} color="white" style={styles.icon}/>
                             <ThemedText>{event.address}</ThemedText>
                         </View>
                         <ClassicButton title="Fermer" onPress={closeDetail} style={styles.closeButton} />
@@ -132,10 +133,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     icon: {
-        width: 16,
-        height: 16,
         marginRight: 5,
-        resizeMode: "contain",
     },
     participantsText: {
         color: "#fff",

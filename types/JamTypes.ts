@@ -1,6 +1,6 @@
 import {ImageSourcePropType} from "react-native";
-import {CommentDTO} from "@/DTO/commentDTO";
-import {UserDTO} from "@/DTO/UserDTO";
+import {CommentTypes} from "@/types/commentTypes";
+import {UserTypes} from "@/types/UserTypes";
 
 export enum JamStatus {
     RUNNING = "RUNNING",
@@ -10,15 +10,15 @@ export enum JamStatus {
     CANCELED = "CANCELED",
 }
 
-export interface JamDTO {
+export interface JamTypes {
     id: number;
     name: string;
-    host: UserDTO;
+    host: UserTypes;
     status: JamStatus;
     background: ImageSourcePropType,
     description: string,
-    participants: UserDTO[];
+    participants: UserTypes[];
     themes: string[];
-    comments: CommentDTO[];
+    comments: CommentTypes[];
     likes: number;
 }

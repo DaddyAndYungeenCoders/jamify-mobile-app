@@ -1,4 +1,4 @@
-export interface TagDTO {
+export interface TagTypes {
     id: number;
     label: string;
 }

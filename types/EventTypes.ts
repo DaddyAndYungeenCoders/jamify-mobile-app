@@ -1,5 +1,5 @@
 import {ImageSourcePropType} from "react-native";
-import {UserDTO} from "@/DTO/UserDTO";
+import {UserTypes} from "@/types/UserTypes";
 
 export enum EventStatus {
     UPCOMING = "UPCOMING",
@@ -8,14 +8,14 @@ export enum EventStatus {
     CANCELED = "CANCELED",
 }
 
-export interface EventDTO {
+export interface EventTypes {
     id: number;
     name: string;
     status: EventStatus;
     background: ImageSourcePropType,
     description: string,
     scheduledDate: Date;
-    participants: UserDTO[];
+    participants: UserTypes[];
     themes: string[];
     address: string;
 }

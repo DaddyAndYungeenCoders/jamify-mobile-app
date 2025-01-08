@@ -1,8 +1,8 @@
 import {Alert} from "react-native";
-import {EventDTO, EventStatus} from "@/DTO/EventDTO";
-import {UserDTO} from "@/DTO/UserDTO";
+import {EventTypes, EventStatus} from "@/types/EventTypes";
+import {UserTypes} from "@/types/UserTypes";
 
-const event1: EventDTO = {
+const event1: EventTypes = {
     id: 1,
     name: "Concert Rock",
     status: EventStatus.UPCOMING,
@@ -14,11 +14,12 @@ const event1: EventDTO = {
     address:  "4 rue des lila 69003 LYON",
 };
 
-const user1: UserDTO = {
+const user1: UserTypes = {
+    country: "", email: "", imgUrl: "", provider: "", roles: [], userProviderId: "",
     badges: [], events: [], id: 0, jams: [], name: "", playlists: []
 }
 
-const event2: EventDTO = {
+const event2: EventTypes = {
     id: 1,
     name: "Concert JAZZ",
     status: EventStatus.ONGOING,
@@ -36,7 +37,7 @@ const EventService = {
     },
 
 
-    getEvents: (): EventDTO[] => {
+    getEvents: (): EventTypes[] => {
         return [
             event1,
             event2

@@ -1,6 +1,6 @@
-import {PlaylistDTO} from "@/DTO/PlaylistDTO";
+import {PlaylistTypes} from "@/types/PlaylistTypes";
 
-const play1: PlaylistDTO = {
+const play1: PlaylistTypes = {
     id: 1,
     likes: 10,
     musics: [],
@@ -9,7 +9,7 @@ const play1: PlaylistDTO = {
     background: require('@/assets/images/music-exemple.png'),
 }
 
-const play2: PlaylistDTO = {
+const play2: PlaylistTypes = {
     id: 2,
     likes: 15,
     musics: [],
@@ -19,7 +19,7 @@ const play2: PlaylistDTO = {
 }
 
 const PlaylistService = {
-    getPlaylists: (): PlaylistDTO[] => {
+    getPlaylists: (): PlaylistTypes[] => {
         return [
             play1, play2
         ];
