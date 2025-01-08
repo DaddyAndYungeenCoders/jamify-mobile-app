@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 import ClassicButton from "@/components/ClassicButton";
 import InputAndLabel, { inputType } from "@/components/InputAndLabel";
+import Fontisto from '@expo/vector-icons/Fontisto';
 
 export default function CreateEvent() {
     const [music, setMusic] = useState(null);
@@ -54,7 +55,7 @@ export default function CreateEvent() {
 
                     <InputAndLabel title={"Nombre de participant maximum"} type={inputType.NUMBER} placeHolder={"Entrez un nombre..."} />
                 </View>
-                <ClassicButton title={"Enregister"} onPress={save} style={styles.button} logo={require('@/assets/images/save-logo.png')}/>
+                <ClassicButton title={"Enregister"} onPress={save} style={styles.button} logo={"save"}/>
             </ScrollView>
         </LinearGradient>
     );
