@@ -1,33 +1,34 @@
-import React, {useEffect, useState} from "react";
-import {Alert, Image, StyleSheet, View} from "react-native";
-import {musicDisplayProps} from "@/types/music-display.types";
-import {ThemedText} from "@/components/ThemedText";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, StyleSheet, View } from "react-native";
+import { musicDisplayProps } from "@/types/music-display.types";
+import { ThemedText } from "@/components/ThemedText";
 import * as Progress from "react-native-progress";
 import JamerDisplay from "@/components/JamerDisplay";
 import ClassicButton from "@/components/ClassicButton";
-import {JamerDisplayProps} from "@/types/jamer-display.types";
-import {IconSymbol} from "@/components/ui/IconSymbol";
+import { JamerDisplayProps } from "@/types/jamer-display.types";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const MusicDisplay = ({
-                          title,
-                          image,
-                          artist,
-                          description,
-                          duration, // Durée totale de la musique en secondes
-                          lcurrentTime,
-                      }: musicDisplayProps) => {
+  title,
+  image,
+  artist,
+  description,
+  duration, // Durée totale de la musique en secondes
+  lcurrentTime,
+}: musicDisplayProps) => {
+  const [currentTime, setCurrentTime] = useState(
+    lcurrentTime ? lcurrentTime : 0,
+  ); // Temps écoulé en secondes
 
-    const [currentTime, setCurrentTime] = useState(lcurrentTime ? lcurrentTime : 0); // Temps écoulé en secondes
+  // Simuler la progression (pour tester)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime((prev) => (prev < duration ? prev + 1 : prev)); // Augmente le temps écoulé
+    }, 1000);
 
-    // Simuler la progression (pour tester)
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTime((prev) => (prev < duration ? prev + 1 : prev)); // Augmente le temps écoulé
-        }, 1000);
-
-        return () => clearInterval(interval); // Nettoyer l'intervalle
-    }, [duration]);
+    return () => clearInterval(interval); // Nettoyer l'intervalle
+  }, [duration]);
 
     // Formater le temps en "mm:ss"
     const formatTime = (time: number) => {
@@ -36,22 +37,22 @@ const MusicDisplay = ({
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     };
 
-    const [jamer, setJamer] : JamerDisplayProps = useState(null)
-    const [playing, setPlaying] : boolean = useState(false)
+  const [jamer, setJamer]: JamerDisplayProps = useState(null);
+  const [playing, setPlaying]: boolean = useState(false);
 
-function creerUnJam() {
+  function creerUnJam() {
     Alert.alert("Jam créé");
     setJamer({
-        name: "Marcel",
-        image: require('@/assets/images/jamer-exemple.png'),
-        listening: 15
-    })
-}
+      name: "Marcel",
+      image: require("@/assets/images/jamer-exemple.png"),
+      listening: 15,
+    });
+  }
 
-return (
-        <View style={styles.body}>
-            {/* Image de la musique */}
-            <Image source={image} style={styles.images}/>
+  return (
+    <View style={styles.body}>
+      {/* Image de la musique */}
+      <Image source={image} style={styles.images} />
 
             {/* Bannière contenant le titre et la barre de progression */}
             <View style={styles.banner}>
@@ -97,10 +98,10 @@ return (
                 }
             </View>
 
-            {/* Description */}
-            <ThemedText style={styles.description}>{description}</ThemedText>
-        </View>
-    );
+      {/* Description */}
+      <ThemedText style={styles.description}>{description}</ThemedText>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

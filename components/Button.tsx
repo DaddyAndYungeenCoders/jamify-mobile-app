@@ -26,7 +26,7 @@ const AnimatedTouchableOpacity =
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-interface ExtendedCustomButtonProps extends CustomButtonProps { }
+interface ExtendedCustomButtonProps extends CustomButtonProps {}
 
 const Button: React.FC<ExtendedCustomButtonProps> = ({
   label,
@@ -52,13 +52,21 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   const statusTextTranslateY = useSharedValue(20);
   const loaderOpacity = useSharedValue(0);
   const shake = useSharedValue(0);
-  const backgroundColor = useSharedValue(colors.base);
+  const backgroundColor = useSharedValue(disabled ? "#a1a1a1" : colors.base);
   const iconRotation = useSharedValue(0);
   const iconTranslateX = useSharedValue(0);
 
+  const isAnimating = useSharedValue(1);
+
   const handlePressIn = useCallback(() => {
     "worklet";
-    scale.value = withSpring(0.95, { damping: 20, stiffness: 120 });
+    if (isAnimating.value === 0) {
+      scale.value = withSpring(0.95, {
+        damping: 8,
+        stiffness: 40,
+        mass: 1.2,
+      });
+    }
   }, []);
 
   const handlePressOut = useCallback(() => {
@@ -90,7 +98,14 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   };
 
   useEffect(() => {
-    if (loading) {
+    if (loading || responseStatus !== null) {
+      isAnimating.value = 1;
+    }
+
+    if (disabled) {
+      backgroundColor.value = withTiming("#a1a1a1", { duration: 300 });
+      return;
+    } else if (loading) {
       textTranslateY.value = withTiming(50, {
         duration: 200,
         easing: Easing.inOut(Easing.ease),
@@ -103,15 +118,15 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       if (leftIcon || rightIcon) {
         const targetX = rightIcon ? -120 : 120;
         iconTranslateX.value = withTiming(targetX, {
-          duration: 500,
+          duration: 400,
           easing: Easing.bounce,
         });
 
         iconRotation.value = withDelay(
-          500,
+          200,
           withRepeat(
             withTiming(360, {
-              duration: 1000,
+              duration: 700,
               easing: Easing.cubic,
             }),
             -1,
@@ -126,7 +141,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
           }),
         );
       }
-    } else if (responseStatus !== undefined) {
+    } else if (responseStatus !== null) {
       loaderOpacity.value = withTiming(0, { duration: 100 });
       mainTextOpacity.value = withTiming(0, { duration: 100 });
 
@@ -153,6 +168,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
         statusTextTranslateY.value = withTiming(20, { duration: 200 });
         textTranslateY.value = withTiming(0, { duration: 300 });
         mainTextOpacity.value = withTiming(1, { duration: 300 });
+        isAnimating.value = withDelay(200, withTiming(0, { duration: 100 }));
       }, delay);
     } else {
       loaderOpacity.value = withTiming(0, { duration: 200 });
@@ -166,6 +182,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       textTranslateY.value = withTiming(0, { duration: 300 });
       mainTextOpacity.value = withTiming(1, { duration: 300 });
       backgroundColor.value = colors.base;
+      isAnimating.value = withDelay(200, withTiming(0, { duration: 100 }));
     }
   }, [loading, responseStatus, colors.base]);
 
@@ -201,6 +218,12 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       { rotate: `${iconRotation.value}deg` },
     ],
   }));
+
+  const isDisabled = useAnimatedStyle(() => {
+    return {
+      pointerEvents: isAnimating.value === 1 ? "none" : "auto",
+    };
+  });
 
   const getVariantStyles = (): ViewStyle => {
     const baseStyle: ViewStyle = {
@@ -250,6 +273,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
         getVariantStyles(),
         getSizeStyles(),
         animatedContainerStyle,
+        isDisabled,
         containerStyle,
       ]}
     >
@@ -277,7 +301,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
               animatedMainTextStyle,
             ]}
           >
-            {label}
+            {label.toUpperCase()}
           </AnimatedText>
           <Animated.View style={[animatedStatusTextStyle]}>
             <AnimatedText

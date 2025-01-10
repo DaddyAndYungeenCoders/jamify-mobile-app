@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { Easing, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
+  Easing,
 } from "react-native-reanimated";
 
 const CircularLoader = () => {

@@ -15,11 +15,15 @@ import AuthenticationScreen from "./authentication-screen";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
+import { useAuthenticationStore } from "@/store/authentication.store";
+import Button from "@/components/Button";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 //SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const { token, loading, error, setJWTToken, removeJWTToken } =
+    useAuthenticationStore();
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -47,7 +51,7 @@ export default function RootLayout() {
   if (!loaded || !isAppReady) {
     return <SplashScreen />;
   }
-  if (false) {
+  if (token === null) {
     return <AuthenticationScreen />;
   }
 
@@ -55,6 +59,15 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       <LinearGradient style={{ flex: 1 }} colors={Colors.light.background}>
         <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+          <Button
+            label="Disconnect"
+            ///leftIcon={require("../assets/images/music-logos/apple.png")}
+            //loading={buttonLoading.apple}
+            onPress={() => removeJWTToken()}
+            colors={{ base: "#fc3c44", pressed: "#f94c57" }}
+            //responseStatus={buttonStatus.apple}
+            //disabled={f}
+          />
           <Stack
             screenOptions={{
               contentStyle: { backgroundColor: "transparent" },
