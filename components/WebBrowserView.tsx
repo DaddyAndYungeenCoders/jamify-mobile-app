@@ -1,7 +1,10 @@
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { Modal, StyleSheet, Text, View } from "react-native";
-import WebView from "react-native-webview";
+import WebView, {
+  WebViewMessageEvent,
+  WebViewNavigation,
+} from "react-native-webview";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebBrowserViewProps } from "@/types/web-browser-view.types";
 import Animated, {
@@ -21,6 +24,7 @@ const WebBrowserView = ({
   showWebView,
   setShowWebView,
   url,
+  onTokenReceived,
 }: WebBrowserViewProps) => {
   const insets = useSafeAreaInsets();
   const rotation = useSharedValue(0);
@@ -102,9 +106,54 @@ const WebBrowserView = ({
   const closeWebView = () => {
     setShowWebView(false);
   };
+  const handleNavigationStateChange = (navState: WebViewNavigation) => {
+    const { url } = navState;
+
+    if (url.includes("/login/oauth2/code/spotify")) {
+      // Inject JavaScript immediately when we detect the redirect URL
+      webViewRef.current?.injectJavaScript(`
+        try {
+          const content = document.body.textContent || document.documentElement.textContent;
+          window.ReactNativeWebView.postMessage(content);
+        } catch (e) {
+          console.error('Parsing error:', e);
+          // Send the error back to React Native
+          window.ReactNativeWebView.postMessage('Error: ' + e.message);
+        }
+        true;
+      `);
+    }
+  };
+
+  const handleMessage = (event: WebViewMessageEvent) => {
+    try {
+      const messageContent = event.nativeEvent.data;
+
+      const jsonMatch = messageContent.match(/\{[^]*\}/);
+
+      if (jsonMatch) {
+        const jsonStr = jsonMatch[0];
+        const data = JSON.parse(jsonStr);
+
+        if (data.jwt && data.access_token) {
+          setShowWebView(false);
+          setTimeout(() => {
+            onTokenReceived?.(data.access_token);
+          }, 100);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing message:", error);
+      console.log("Message content:", event.nativeEvent.data);
+    }
+  };
 
   return (
-    <Modal visible={showWebView} onRequestClose={() => setShowWebView(false)}>
+    <Modal
+      visible={showWebView}
+      onRequestClose={() => setShowWebView(false)}
+      animationType="slide"
+    >
       <LinearGradient
         colors={Colors.light.background}
         style={{
@@ -129,6 +178,7 @@ const WebBrowserView = ({
         <View style={styles.webView}>
           <View style={styles.webViewPage}>
             <WebView
+              incognito={true}
               ref={webViewRef}
               source={{ uri: url }}
               style={{
@@ -137,11 +187,13 @@ const WebBrowserView = ({
                 borderBottomRightRadius: 20,
                 overflow: "hidden",
               }}
+              onNavigationStateChange={handleNavigationStateChange}
+              onMessage={handleMessage}
               onError={(error) => {
-                console.log("ERROR : ", error);
+                console.error("WebView error:", error);
               }}
               onHttpError={(error) => {
-                console.log("ERROR HTTP : ", error);
+                console.error("HTTP error:", error);
               }}
             />
           </View>
@@ -219,7 +271,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   iconContainer: {
-    width: 60, // Réduit de 200 à 40
+    width: 60,
     height: 30,
     justifyContent: "center",
     alignItems: "center",

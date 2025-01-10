@@ -56,7 +56,6 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   const iconRotation = useSharedValue(0);
   const iconTranslateX = useSharedValue(0);
 
-  // Utilise 1 pour true et 0 pour false
   const isAnimating = useSharedValue(1);
 
   const handlePressIn = useCallback(() => {
@@ -119,15 +118,15 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
       if (leftIcon || rightIcon) {
         const targetX = rightIcon ? -120 : 120;
         iconTranslateX.value = withTiming(targetX, {
-          duration: 500,
+          duration: 400,
           easing: Easing.bounce,
         });
 
         iconRotation.value = withDelay(
-          500,
+          200,
           withRepeat(
             withTiming(360, {
-              duration: 1000,
+              duration: 700,
               easing: Easing.cubic,
             }),
             -1,
@@ -302,7 +301,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
               animatedMainTextStyle,
             ]}
           >
-            {label}
+            {label.toUpperCase()}
           </AnimatedText>
           <Animated.View style={[animatedStatusTextStyle]}>
             <AnimatedText

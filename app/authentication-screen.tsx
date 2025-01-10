@@ -10,10 +10,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AuthenticationScreen = () => {
   const [showWebView, setShowWebView] = useState<boolean>(false);
-
-  const { token, loading, error, getJWTToken, removeJWTToken } =
+  const { token, loading, error, setJWTToken, removeJWTToken } =
     useAuthenticationStore();
-
   const [url, setUrl] = useState<string>("");
 
   const [buttonLoading, setButtonLoading] = useState<{
@@ -36,42 +34,36 @@ const AuthenticationScreen = () => {
     amazon: null,
   });
 
-  const handleSpotifyConnect = async () => {
+  const handleSpotifyConnect = () => {
     setButtonLoading((prev) => ({ ...prev, spotify: true }));
-    await getJWTToken(null);
-    setUrl("http://localhost:8081/oauth2/authorization/spotify");
-    setShowWebView(true);
-    setButtonLoading((prev) => ({ ...prev, spotify: false }));
+
+    setTimeout(() => {
+      setUrl("https://jamify.daddyornot.xyz/oauth2/authorization/spotify");
+      setShowWebView(true);
+      setButtonLoading((prev) => ({ ...prev, spotify: false }));
+    }, 700);
+  };
+
+  const handleTokenReceived = (token: string) => {
+    setJWTToken(token);
+    // Set success status for the button
+    setButtonStatus((prev) => ({
+      ...prev,
+      spotify: 200,
+    }));
   };
 
   const handleAppleConnect = async () => {
     setButtonLoading((prev) => ({ ...prev, apple: true }));
-    await getJWTToken(null);
+    setShowWebView(true);
     setButtonLoading((prev) => ({ ...prev, apple: false }));
   };
 
   const handleAmazonConnect = async () => {
     setButtonLoading((prev) => ({ ...prev, amazon: true }));
-    await getJWTToken(null);
+    setShowWebView(true);
     setButtonLoading((prev) => ({ ...prev, amazon: false }));
   };
-
-  useEffect(() => {
-    if (token != null) {
-      const status = token ? 200 : 400;
-      setButtonStatus({
-        spotify: status,
-        apple: null,
-        amazon: null,
-      });
-      if (status) {
-        removeJWTToken();
-      }
-    }
-  }, [token]);
-  useEffect(() => {
-    console.log("showWebView changed:", showWebView);
-  }, [showWebView]);
 
   return (
     <LinearGradient colors={Colors.light.background} style={styles.container}>
@@ -94,7 +86,7 @@ const AuthenticationScreen = () => {
             onPress={handleSpotifyConnect}
             colors={{ base: "#35BE62", pressed: "#5dba7c" }}
             responseStatus={buttonStatus.spotify}
-            successMessage={token ?? "CONNECTED !"}
+            successMessage={"CONNECTED!"}
             errorMessage={error ?? ""}
           />
 
@@ -122,6 +114,7 @@ const AuthenticationScreen = () => {
           showWebView={showWebView}
           setShowWebView={setShowWebView}
           url={url}
+          onTokenReceived={handleTokenReceived}
         />
       </SafeAreaView>
     </LinearGradient>

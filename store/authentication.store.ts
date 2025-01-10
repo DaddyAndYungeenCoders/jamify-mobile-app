@@ -5,14 +5,10 @@ export const useAuthenticationStore = create<AuthenticationState>((set) => ({
   token: null,
   loading: false,
   error: null,
-  getJWTToken: async (urlProvider: string | null) => {
+  setJWTToken: (token: string) => {
     set({ loading: true });
     try {
-      const response = await fetch(
-        "https://random-word-api.herokuapp.com/word",
-      );
-      const data = await response.json();
-      set({ token: data[0], loading: false });
+      set({ token: token, loading: false });
     } catch (error) {
       set({ error: "Connexion Failed", loading: false });
     }
