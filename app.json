@@ -18,6 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "fr.cpe.jamify",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -46,6 +47,7 @@
       "eas": {
         "projectId": "164bb2e3-4dcd-4056-9865-fe7fcae5cc53"
       }
-    }
+    },
+    "owner": "maxime.dubois.1"
   }
 }
