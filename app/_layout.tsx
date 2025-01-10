@@ -12,6 +12,9 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import SplashScreen from "./splash-screen";
 import AuthenticationScreen from "./authentication-screen";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { Colors } from "@/constants/Colors";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 //SplashScreen.preventAutoHideAsync();
@@ -44,17 +47,25 @@ export default function RootLayout() {
   if (!loaded || !isAppReady) {
     return <SplashScreen />;
   }
-  if (true) {
+  if (false) {
     return <AuthenticationScreen />;
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+    <ThemeProvider value={DefaultTheme}>
+      <LinearGradient style={{ flex: 1 }} colors={Colors.light.background}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </SafeAreaView>
+        <StatusBar style="auto" />
+      </LinearGradient>
     </ThemeProvider>
   );
 }
