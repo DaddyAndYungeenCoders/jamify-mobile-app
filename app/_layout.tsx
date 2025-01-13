@@ -18,9 +18,6 @@ import { Colors } from "@/constants/Colors";
 import { useAuthenticationStore } from "@/store/authentication.store";
 import Button from "@/components/Button";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-//SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
   const { token, loading, error, setJWTToken, removeJWTToken } =
     useAuthenticationStore();
@@ -61,12 +58,8 @@ export default function RootLayout() {
         <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
           <Button
             label="Disconnect"
-            ///leftIcon={require("../assets/images/music-logos/apple.png")}
-            //loading={buttonLoading.apple}
             onPress={() => removeJWTToken()}
             colors={{ base: "#fc3c44", pressed: "#f94c57" }}
-            //responseStatus={buttonStatus.apple}
-            //disabled={f}
           />
           <Stack
             screenOptions={{
