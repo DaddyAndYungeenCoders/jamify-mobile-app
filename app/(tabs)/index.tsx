@@ -3,7 +3,7 @@ import ProfilHeader from "@/components/header/Profil-Header";
 import Playlists from "@/components/home/Playlists";
 import Jams from "@/components/home/Jams";
 import Events from "@/components/home/Events";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import EventService from "@/service/EventService";
 import PlaylistService from "@/service/PlaylistService";
 import JamService from "@/service/JamService";
@@ -40,6 +40,23 @@ export default function HomeScreen() {
     fetchData();
   }, []);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const handleRefresh = useCallback(async () => {
+    try {
+      setError(null);
+      const newPlaylists = await PlaylistService.getPlaylists();
+      setPlaylists(newPlaylists);
+    } catch (err) {
+      setError(err as Error);
+    }
+  }, []);
+
+  const handlePlaylistPress = useCallback((playlist: Playlist) => {
+    // Logique personnalisée pour la gestion des clics sur les playlists
+    console.log("Playlist sélectionnée:", playlist.id);
+  }, []);
   return (
     <ScrollView
       style={styles.container}
@@ -47,14 +64,24 @@ export default function HomeScreen() {
         flexGrow: 1,
       }}
     >
-      <ScrollView style={styles.front}>
+      <ScrollView
+        style={styles.front}
+        contentContainerStyle={{
+          rowGap: 30,
+        }}
+      >
         <ProfilHeader
           name={"TOTO"}
           image={require("@/assets/images/jamer-exemple.png")}
-          style={styles.profilHeader}
-          onPress={handlePress}
+          onPress={() => {}}
         />
-        <Playlists playlists={playlists} />
+        <Playlists
+          playlists={playlists}
+          isLoading={isLoading}
+          error={error}
+          onRefresh={handleRefresh}
+          onPlaylistPress={handlePlaylistPress}
+        />
         <Jams jams={jams} />
         <Events events={events} />
       </ScrollView>
@@ -67,21 +94,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flex: 1,
   },
-  profilHeader: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 10,
-  },
-  back: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#6e6c6c",
-    borderRadius: 10,
-    opacity: 0.7,
-    marginTop: 30,
-    margin: 10,
-  },
+  profilHeader: {},
   front: {
     flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 30,
   },
 });
