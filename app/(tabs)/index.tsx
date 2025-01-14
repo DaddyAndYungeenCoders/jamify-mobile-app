@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Alert } from "react-native"; // Ajout de Alert
 import ProfilHeader from "@/components/header/Profil-Header";
 import Playlists from "@/components/home/Playlists";
 import Jams from "@/components/home/Jams";
@@ -7,23 +7,39 @@ import { useEffect, useState } from "react";
 import EventService from "@/service/EventService";
 import PlaylistService from "@/service/PlaylistService";
 import JamService from "@/service/JamService";
+import { Playlist } from "@/types/playlist.types";
+import { Jam } from "@/types/jam.types";
+import { Event } from "@/types/event.types";
 
 export default function HomeScreen() {
   const handlePress = () => {
     Alert.alert("Bouton Pressé", "Vous avez cliqué sur le bouton!");
   };
 
-  const [playlists, setPlaylists] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [jams, setJams] = useState([]);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [jams, setJams] = useState<Jam[]>([]);
 
   useEffect(() => {
-    setEvents(EventService.getEvents());
+    const fetchData = async () => {
+      try {
+        const [eventsData, playlistsData, jamsData] = await Promise.all([
+          EventService.getEvents(),
+          PlaylistService.getPlaylists(),
+          JamService.getJams(),
+        ]);
 
-    setPlaylists(PlaylistService.getPlaylists());
+        setEvents(eventsData);
+        setPlaylists(playlistsData);
+        setJams(jamsData);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
+      }
+    };
 
-    setJams(JamService.getJams());
+    fetchData();
   }, []);
+
   return (
     <ScrollView
       style={styles.container}
@@ -38,9 +54,9 @@ export default function HomeScreen() {
           style={styles.profilHeader}
           onPress={handlePress}
         />
-        <Playlists style={styles.playlist} playlists={playlists}></Playlists>
-        <Jams jams={jams}></Jams>
-        <Events events={events}></Events>
+        <Playlists playlists={playlists} />
+        <Jams jams={jams} />
+        <Events events={events} />
       </ScrollView>
     </ScrollView>
   );
@@ -56,10 +72,6 @@ const styles = StyleSheet.create({
     top: 40,
     right: 20,
     zIndex: 10,
-  },
-  playlist: {
-    marginTop: 80,
-    marginBottom: 20,
   },
   back: {
     ...StyleSheet.absoluteFillObject,
