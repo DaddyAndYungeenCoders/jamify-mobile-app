@@ -57,6 +57,11 @@ export default function HomeScreen() {
     // Logique personnalisée pour la gestion des clics sur les playlists
     console.log("Playlist sélectionnée:", playlist.id);
   }, []);
+
+  const handleEventPress = useCallback((event: Event) => {
+    // Logique personnalisée pour la gestion des clics sur les playlists
+    console.log("Playlist sélectionnée:", event.id);
+  }, []);
   return (
     <ScrollView
       style={styles.container}
@@ -83,7 +88,14 @@ export default function HomeScreen() {
           onPlaylistPress={handlePlaylistPress}
         />
         <Jams jams={jams} />
-        <Events events={events} />
+
+        <Events
+          events={events}
+          isLoading={isLoading}
+          error={error}
+          onRefresh={handleRefresh}
+          onEventPress={handleEventPress}
+        />
       </ScrollView>
     </ScrollView>
   );

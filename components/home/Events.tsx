@@ -1,46 +1,111 @@
-import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import React, { useCallback, memo } from "react";
+import { View, StyleSheet, FlatList, ActivityIndicator } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
 import EventElement from "@/components/home/EventElement";
 import { Event } from "@/types/event.types";
 
-interface EventProps {
+interface EventsProps {
   events: Event[];
+  isLoading?: boolean;
+  error?: Error | null;
+  onRefresh?: () => void;
+  onEventPress?: (event: Event) => void;
 }
 
-const Events: React.FC<EventProps> = ({ events }) => {
-  return (
-    <View style={styles.content}>
-      <ThemedText style={styles.text}>Events</ThemedText>
+const MemoizedEventElement = memo(
+  ({ event, onPress }: { event: Event; onPress: (event: Event) => void }) => (
+    <EventElement event={event} onPress={() => onPress(event)} />
+  ),
+);
 
-      <ScrollView
-        horizontal={true}
+const Events: React.FC<EventsProps> = ({
+  events,
+  isLoading = false,
+  error = null,
+  onEventPress,
+}) => {
+  const navigation = useNavigation();
+
+  const handleEventPress = useCallback(
+    (event: Event) => {
+      if (onEventPress) {
+        onEventPress(event);
+      } else {
+        //      navigation.navigate('EventDetail' as never, { eventId: event.id } as never);
+      }
+    },
+    [navigation, onEventPress],
+  );
+
+  const renderItem = useCallback(
+    ({ item: event }: { item: Event }) => (
+      <MemoizedEventElement event={event} onPress={handleEventPress} />
+    ),
+    [handleEventPress],
+  );
+
+  const keyExtractor = useCallback(
+    (item: Event, key: number) =>
+      key.toString() + item.id.toString() + item.name,
+    [],
+  );
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ThemedText style={styles.title}>Events</ThemedText>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (error || !events?.length) {
+    return (
+      <View style={styles.container}>
+        <ThemedText style={styles.title}>Events</ThemedText>
+        <ThemedText style={styles.error}>
+          {error ? error.message : "Aucun event"}
+        </ThemedText>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <ThemedText style={styles.title}>Events</ThemedText>
+      <FlatList
+        horizontal
+        data={events}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
         contentContainerStyle={styles.scrollContainer}
-      >
-        {events ? (
-          events.map((event, index) => (
-            <EventElement event={event} key={index} />
-          ))
-        ) : (
-          <ThemedText style={styles.error}>Aucun Event</ThemedText>
-        )}
-      </ScrollView>
+        showsHorizontalScrollIndicator={false}
+        scrollEnabled={true}
+        scrollEventThrottle={16}
+        bounces={false}
+        overScrollMode="never"
+        showsVerticalScrollIndicator={false}
+        style={styles.flatList}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  content: {
-    flexDirection: "column",
-    alignItems: "flex-start",
+  container: {
+    width: "100%",
   },
-  text: {
+  title: {
     fontWeight: "600",
     fontSize: 18,
     textDecorationLine: "underline",
     marginBottom: 10,
     marginLeft: 15,
-    fontFamily: "Jost",
+    fontFamily: "Jost_600SemiBold",
+  },
+  flatList: {
+    flexGrow: 0,
   },
   scrollContainer: {
     paddingHorizontal: 10,
@@ -50,4 +115,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Events;
+export default memo(Events);
