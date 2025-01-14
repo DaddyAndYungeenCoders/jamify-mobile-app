@@ -31,7 +31,6 @@ export default function RootLayout() {
     async function prepare() {
       try {
         if (loaded) {
-          //          await SplashScreen.hideAsync();
           const timer = setTimeout(() => {
             setIsAppReady(true);
           }, 1000);
@@ -48,6 +47,7 @@ export default function RootLayout() {
   if (!loaded || !isAppReady) {
     return <SplashScreen />;
   }
+
   if (token === null) {
     return <AuthenticationScreen />;
   }

@@ -5,38 +5,59 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import Feather from "@expo/vector-icons/Feather";
 import Foundation from "@expo/vector-icons/Foundation";
 import BottomTabBar from "@/components/BottomTabBar";
+import {
+  getFocusedRouteNameFromRoute,
+  useRoute,
+} from "@react-navigation/native";
 
 export default function TabLayout() {
   const TAB_BAR_HEIGHT = 45;
   const screenHeight = Dimensions.get("window").height;
   const contentHeight = screenHeight - TAB_BAR_HEIGHT;
 
+  const route = useRoute();
+
   return (
     <View style={styles.container}>
-      <View style={styles.pageContainer}>
+      <View
+        style={[
+          styles.pageContainer,
+          {
+            marginHorizontal:
+              getFocusedRouteNameFromRoute(route) != "conversations" ? 0 : 16,
+          },
+        ]}
+      >
         <Tabs
           tabBar={(props) => <BottomTabBar {...props} />}
           screenOptions={{
             headerShown: false,
-            sceneStyle: {
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              borderRadius: 12,
-              overflow: "visible",
-              height: contentHeight,
-              maxHeight: contentHeight,
-              width: "100%",
-              marginBottom: TAB_BAR_HEIGHT + 30,
-              shadowColor: "black",
-              shadowOffset: {
-                width: 0,
-                height: 5,
+            sceneStyle:
+              //getFocusedRouteNameFromRoute(route) != "conversations"
+              // ? {}
+              //: {
+              {
+                //backgroundColor: "rgba(0, 0, 0, 0.2)",
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                //backgroundColor: "transparent",
+                borderRadius: 12,
+                overflow: "visible",
+                height: contentHeight,
+                maxHeight: contentHeight,
+                width: "100%",
+                marginBottom: TAB_BAR_HEIGHT + 30,
+                shadowColor: "black",
+                shadowOffset: {
+                  width: 0,
+                  height: 5,
+                },
+                shadowOpacity: 0.55,
+                shadowRadius: 3,
+                elevation: 5,
+                paddingTop: 10,
               },
-              shadowOpacity: 0.55,
-              shadowRadius: 3,
-              elevation: 5,
-              paddingTop: 10,
-            },
           }}
+          initialRouteName="index"
         >
           <Tabs.Screen
             name="map"
@@ -79,8 +100,8 @@ const styles = StyleSheet.create({
   },
   pageContainer: {
     flex: 1,
-    marginHorizontal: 16,
-    //paddingHorizontal: 16,
+
+    paddingHorizontal: 16,
     backgroundColor: "transparent",
   },
 });
