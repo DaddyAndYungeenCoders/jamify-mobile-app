@@ -45,6 +45,7 @@ export default function RootLayout() {
     prepare();
   }, [loaded]);
 
+  console.log("THIS IS THE TOKEN ", token);
   if (!loaded || !isAppReady) {
     return <SplashScreen />;
   }
