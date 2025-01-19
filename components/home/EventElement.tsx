@@ -12,10 +12,10 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import ClassicButton from "@/components/ClassicButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { EventTypes } from "@/types/event.types";
+import { Event } from "@/types/event.types";
 import Fontisto from "@expo/vector-icons/Fontisto";
 
-const EventElement = ({ event }: EventTypes) => {
+const EventElement = ({ event }:any) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const openDetail = () => {

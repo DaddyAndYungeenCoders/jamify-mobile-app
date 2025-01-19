@@ -5,17 +5,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import Foundation from "@expo/vector-icons/Foundation";
 import BottomTabBar from "@/components/BottomTabBar";
-import {
-  getFocusedRouteNameFromRoute,
-  useRoute,
-} from "@react-navigation/native";
 
 export default function TabLayout() {
   const TAB_BAR_HEIGHT = 45;
   const screenHeight = Dimensions.get("window").height;
   const contentHeight = screenHeight - TAB_BAR_HEIGHT;
-
-  const route = useRoute();
 
   return (
     <View style={styles.container}>

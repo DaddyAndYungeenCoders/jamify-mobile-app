@@ -6,8 +6,7 @@ import * as Progress from "react-native-progress";
 import JamerDisplay from "@/components/JamerDisplay";
 import ClassicButton from "@/components/ClassicButton";
 import { JamerDisplayProps } from "@/types/jamer-display.types";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import Icon from "react-native-vector-icons/FontAwesome";
+
 
 const MusicDisplay = ({
   title,

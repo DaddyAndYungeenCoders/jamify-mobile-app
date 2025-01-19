@@ -97,8 +97,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   title: {
-    fontWeight: "600",
     fontSize: 18,
+    color: "white",
     textDecorationLine: "underline",
     marginBottom: 10,
     marginLeft: 15,

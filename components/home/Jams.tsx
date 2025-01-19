@@ -17,9 +17,7 @@ const Jams: React.FC<JamProps> = ({ jams }) => {
         contentContainerStyle={styles.scrollContainer}
       >
         {jams ? (
-          jams.map((jam, index) => (
-            <JamElement style={styles.jamElement} key={index} jam={jam} />
-          ))
+          jams.map((jam, index) => <JamElement key={index} jam={jam} />)
         ) : (
           <ThemedText style={styles.error}>Aucun Jam</ThemedText>
         )}
@@ -34,12 +32,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   text: {
-    fontWeight: "600",
     fontSize: 18,
+    color: "white",
     textDecorationLine: "underline",
     marginBottom: 10,
     marginLeft: 15,
-    fontFamily: "Jost",
+    fontFamily: "Jost_600SemiBold",
   },
   scrollContainer: {
     flexDirection: "column", // Organisation en ligne

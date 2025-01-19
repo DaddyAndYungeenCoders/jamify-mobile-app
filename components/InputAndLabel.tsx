@@ -6,7 +6,6 @@ import {Input} from "postcss";
 import {Is} from "@sinclair/typebox/value/is";
 import Date = Is.Date;
 import RNDateTimePicker, {DateTimePickerAndroid} from "@react-native-community/datetimepicker";
-import {DatePicker} from "@/components/DatePicker";
 
 export enum inputType {
     TEXT = "default",

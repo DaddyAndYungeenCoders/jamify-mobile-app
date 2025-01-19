@@ -2,9 +2,9 @@ import React from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 
-const JamElement = ({ jam, style }) => {
+const JamElement = ({ jam }:any) => {
     return (
-        <TouchableOpacity style={[styles.container, style]} onPress={jam.onPress}>
+        <TouchableOpacity style={[styles.container]} onPress={jam.onPress}>
             <View style={styles.background} />
 
             <View style={styles.content}>
