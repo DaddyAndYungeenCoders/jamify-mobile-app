@@ -23,7 +23,7 @@ const user1: User = {
   userProviderId: "",
   badges: [],
   events: [],
-  id: 0,
+  id: "0",
   jams: [],
   name: "",
   playlists: [],

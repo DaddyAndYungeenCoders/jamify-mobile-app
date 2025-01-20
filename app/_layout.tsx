@@ -13,11 +13,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 import { useAuthenticationStore } from "@/store/authentication.store";
 import Button from "@/components/Button";
+import {useWebSocketConnection} from "@/hooks/useWebSocketConnection";
 
 export default function RootLayout() {
   const { token, loading, error, setJWTToken, removeJWTToken } =
     useAuthenticationStore();
   const colorScheme = useColorScheme();
+  useWebSocketConnection();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
