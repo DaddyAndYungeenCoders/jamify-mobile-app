@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "205233727210",
+    "project_id": "jamify-ed787",
+    "storage_bucket": "jamify-ed787.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205233727210:android:c20362ba2722478c781993",
+        "android_client_info": {
+          "package_name": "fr.cpe.jamify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIXWpfVDP51Y1o3uMI15v80XbWTqTimdU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

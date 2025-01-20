@@ -1,4 +1,4 @@
-package com.anonymous.jamify
+package fr.cpe.jamify
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
