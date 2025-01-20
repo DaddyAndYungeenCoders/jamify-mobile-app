@@ -136,7 +136,7 @@ const WebBrowserView = ({
         if (data.jwt && data.access_token) {
           setShowWebView(false);
           setTimeout(() => {
-            onTokenReceived?.(data.access_token);
+            onTokenReceived?.(data.jwt);
           }, 100);
         }
       }

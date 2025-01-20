@@ -1,21 +1,27 @@
-import { ImageSourcePropType } from "react-native";
-import { User } from "@/types/user.types";
+export interface AddressType {
+  street: string;
+  city: string;
+  country: string;
+  zipCode: string;
+}
 
-export enum EventStatus {
-  UPCOMING = "UPCOMING",
-  ONGOING = "ONGOING",
-  COMPLETED = "COMPLETED",
-  CANCELED = "CANCELED",
+export interface EventParticipant {
+  username: string;
+  email: string;
+  profilePicture: string;
 }
 
 export interface Event {
   id: number;
   name: string;
-  status: EventStatus;
-  background: ImageSourcePropType;
-  description: string;
-  scheduledDate: Date;
-  participants: User[];
-  themes: string[];
-  address: string;
+  scheduledStart: string;
+  status: "SCHEDULED" | "CANCELLED" | "STARTED" | "FINISHED";
+  address: AddressType;
+  participants: EventParticipant[];
+}
+
+export interface EventCreate {
+  name: string;
+  scheduledStart: string;
+  address: AddressType;
 }
