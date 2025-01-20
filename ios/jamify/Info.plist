@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>myapp</string>
-          <string>com.anonymous.jamify</string>
+          <string>fr.cpe.jamify</string>
         </array>
       </dict>
     </array>

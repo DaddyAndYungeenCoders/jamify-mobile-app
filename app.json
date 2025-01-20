@@ -10,14 +10,15 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.jamify"
+      "bundleIdentifier": "fr.cpe.jamify"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.jamify"
+      "package": "fr.cpe.jamify",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +39,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "164bb2e3-4dcd-4056-9865-fe7fcae5cc53"
+      }
+    },
+    "owner": "maxime.dubois.1"
   }
 }
