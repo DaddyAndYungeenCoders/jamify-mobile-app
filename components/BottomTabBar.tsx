@@ -6,7 +6,6 @@ import {
   Dimensions,
   LayoutRectangle,
 } from "react-native";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import Animated, {
   useAnimatedStyle,
   withSpring,

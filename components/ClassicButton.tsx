@@ -20,14 +20,14 @@ const ClassicButton = ({
             <TouchableOpacity
                 style={[
                     styles.button,
-                    {backgroundColor, width, height},
                     style,
                 ]}
                 onPress={onPress}
             >
                 <View style={styles.content}>
                     {logo ? (
-                        <Fontisto name={logo} size={24} color="white" style={styles.logo}/>
+                        <></>
+                        // <Fontisto name={logo} size={24} color="white" style={styles.logo}/>
                     ): (<View/>)}
                     <Text style={[styles.text, {color: textColor, fontSize}]}>{title}</Text>
                 </View>
@@ -38,12 +38,11 @@ const ClassicButton = ({
             <TouchableOpacity
                 style={[
                     styles.button,
-                    {width, height},
                     style,
                 ]}
                 onPress={onPress}
             >
-                <View style={styles.content}>
+                {/* <View style={styles.content}>
                     {logo && logoPosition === 'left' && (
                         <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
                     )}
@@ -51,7 +50,7 @@ const ClassicButton = ({
                     {logo && logoPosition === 'right' && (
                         <Image source={logo} style={[styles.logo, {width: logoSize, height: logoSize}]}/>
                     )}
-                </View>
+                </View> */}
             </TouchableOpacity>
         );
     }

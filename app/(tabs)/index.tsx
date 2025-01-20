@@ -1,28 +1,66 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Alert } from "react-native"; // Ajout de Alert
 import ProfilHeader from "@/components/header/Profil-Header";
 import Playlists from "@/components/home/Playlists";
 import Jams from "@/components/home/Jams";
 import Events from "@/components/home/Events";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import EventService from "@/service/EventService";
 import PlaylistService from "@/service/PlaylistService";
 import JamService from "@/service/JamService";
+import { Playlist } from "@/types/playlist.types";
+import { Jam } from "@/types/jam.types";
+import { Event } from "@/types/event.types";
 
 export default function HomeScreen() {
   const handlePress = () => {
     Alert.alert("Bouton Pressé", "Vous avez cliqué sur le bouton!");
   };
 
-  const [playlists, setPlaylists] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [jams, setJams] = useState([]);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [jams, setJams] = useState<Jam[]>([]);
 
   useEffect(() => {
-    setEvents(EventService.getEvents());
+    const fetchData = async () => {
+      try {
+        const [eventsData, playlistsData, jamsData] = await Promise.all([
+          EventService.getEvents(),
+          PlaylistService.getPlaylists(),
+          JamService.getJams(),
+        ]);
 
-    setPlaylists(PlaylistService.getPlaylists());
+        setEvents(eventsData);
+        setPlaylists(playlistsData);
+        setJams(jamsData);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
+      }
+    };
 
-    setJams(JamService.getJams());
+    fetchData();
+  }, []);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const handleRefresh = useCallback(async () => {
+    try {
+      setError(null);
+      const newPlaylists = await PlaylistService.getPlaylists();
+      setPlaylists(newPlaylists);
+    } catch (err) {
+      setError(err as Error);
+    }
+  }, []);
+
+  const handlePlaylistPress = useCallback((playlist: Playlist) => {
+    // Logique personnalisée pour la gestion des clics sur les playlists
+    console.log("Playlist sélectionnée:", playlist.id);
+  }, []);
+
+  const handleEventPress = useCallback((event: Event) => {
+    // Logique personnalisée pour la gestion des clics sur les playlists
+    console.log("Playlist sélectionnée:", event.id);
   }, []);
   return (
     <ScrollView
@@ -31,16 +69,33 @@ export default function HomeScreen() {
         flexGrow: 1,
       }}
     >
-      <ScrollView style={styles.front}>
+      <ScrollView
+        style={styles.front}
+        contentContainerStyle={{
+          rowGap: 30,
+        }}
+      >
         <ProfilHeader
           name={"TOTO"}
           image={require("@/assets/images/jamer-exemple.png")}
-          style={styles.profilHeader}
-          onPress={handlePress}
+          onPress={() => {}}
         />
-        <Playlists style={styles.playlist} playlists={playlists}></Playlists>
-        <Jams jams={jams}></Jams>
-        <Events events={events}></Events>
+        <Playlists
+          playlists={playlists}
+          isLoading={isLoading}
+          error={error}
+          onRefresh={handleRefresh}
+          onPlaylistPress={handlePlaylistPress}
+        />
+        <Jams jams={jams} />
+
+        <Events
+          events={events}
+          isLoading={isLoading}
+          error={error}
+          onRefresh={handleRefresh}
+          onEventPress={handleEventPress}
+        />
       </ScrollView>
     </ScrollView>
   );
@@ -51,25 +106,11 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flex: 1,
   },
-  profilHeader: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 10,
-  },
-  playlist: {
-    marginTop: 80,
-    marginBottom: 20,
-  },
-  back: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#6e6c6c",
-    borderRadius: 10,
-    opacity: 0.7,
-    marginTop: 30,
-    margin: 10,
-  },
+  profilHeader: {},
   front: {
     flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: 30,
   },
 });

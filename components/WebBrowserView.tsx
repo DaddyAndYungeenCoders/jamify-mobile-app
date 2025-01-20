@@ -42,7 +42,6 @@ const WebBrowserView = ({
         }),
       );
 
-      // Translation
       translateX.value = withSequence(
         withTiming(50, {
           duration: 1000,
@@ -55,7 +54,6 @@ const WebBrowserView = ({
         }),
       );
 
-      // Opacité
       opacity.value = withSequence(
         withTiming(0, {
           duration: 500,
