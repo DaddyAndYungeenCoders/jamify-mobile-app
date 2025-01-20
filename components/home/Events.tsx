@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ThemedText } from "@/components/ThemedText";
 import EventElement from "@/components/home/EventElement";
 import { Event } from "@/types/event.types";
+import { useRouter } from "expo-router";
 
 interface EventsProps {
   events: Event[];
@@ -27,13 +28,13 @@ const Events: React.FC<EventsProps> = ({
 }) => {
   const navigation = useNavigation();
 
+  const router = useRouter();
   const handleEventPress = useCallback(
     (event: Event) => {
-      if (onEventPress) {
-        onEventPress(event);
-      } else {
-        //      navigation.navigate('EventDetail' as never, { eventId: event.id } as never);
-      }
+      router.push({
+        pathname: "/(details)/event-detail",
+        params: { eventId: JSON.stringify(event.id) },
+      });
     },
     [navigation, onEventPress],
   );

@@ -43,6 +43,7 @@ export default function DetailLayout() {
           }}
         >
           <Stack.Screen name="conversation-detail" />
+          <Stack.Screen name="event-detail" />
         </Stack>
       </View>
       <StatusBar style="auto" />
