@@ -75,8 +75,11 @@ const Events: React.FC<EventsProps> = ({ onRefresh }) => {
   );
 
   const handleCreateEvent = useCallback(() => {
-    router.push("/(details)/create-event");
-  }, [router]);
+    router.push({
+      pathname: "/(details)/create-event",
+      params: { onRefresh: onRefresh },
+    });
+  }, [onRefresh]);
 
   const handleJoinEvent = useCallback(() => {
     router.push("/(details)/join-event");

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Event } from "@/types/event.types";
 import { eventService } from "@/services/event.service";
+import { useRefreshStore } from "@/store/refresh.store";
 
 interface UseEventsOptions {
   status?: Event["status"];
@@ -12,26 +13,13 @@ export const useEvents = (options: UseEventsOptions = {}) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const refreshTrigger = useRefreshStore((state) => state.refreshTrigger);
 
   const fetchEvents = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      let data: Event[];
-
-      /*
-      if (options.status) {
-        data = await eventService.getEventsByStatus(options.status);
-      } else if (options.hostId) {
-        data = await eventService.getEventsByHost(options.hostId);
-      } else {
-        */
-      data = await eventService.getAllEvents();
-      console.log(JSON.stringify(data));
-      /*
-      }
-
-        */
+      let data: Event[] = await eventService.getAllEvents();
       setEvents(data);
     } catch (err) {
       setError(
@@ -44,7 +32,7 @@ export const useEvents = (options: UseEventsOptions = {}) => {
 
   useEffect(() => {
     fetchEvents();
-  }, [options.status, options.hostId]);
+  }, [options.status, options.hostId, refreshTrigger]);
 
   return {
     events,

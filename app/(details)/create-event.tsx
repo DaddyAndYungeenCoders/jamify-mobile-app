@@ -9,93 +9,19 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import Button from "@/components/Button";
 import { eventService } from "@/services/event.service";
 import { EventCreate } from "@/types/event.types";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useRefreshStore } from "@/store/refresh.store";
 
 const CreateEventScreen = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [responseStatus, setResponseStatus] = useState<number | null>(null);
-  const [formData, setFormData] = useState<EventCreate>({
-    name: "",
-    scheduledStart: "",
-    address: {
-      street: "",
-      city: "",
-      country: "",
-      zipCode: "",
-    },
-  });
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
   /*
-  const handleDateChange = (event: any, date?: Date) => {
-    const currentDate = date || selectedDate;
-
-    if (Platform.OS === "android") {
-      setShowDatePicker(false);
-    }
-
-    setSelectedDate(currentDate);
-    const dateArray = [
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      currentDate.getDate(),
-      currentDate.getHours(),
-      currentDate.getMinutes(),
-      currentDate.getSeconds(),
-      0,
-    ];
-
-    setFormData((prev) => ({
-      ...prev,
-      scheduledStart: dateArray as any,
-    }));
-  };
-  */
-  const handleDateChange = (event: any, date?: Date) => {
-    const currentDate = date || selectedDate;
-
-    if (Platform.OS === "android") {
-      setShowDatePicker(false);
-    }
-
-    setSelectedDate(currentDate);
-
-    // Convertir la date en format ISO string
-    setFormData((prev) => ({
-      ...prev,
-      scheduledStart: currentDate.toISOString(),
-    }));
-  };
-
-  const formatDateTime = (date: Date) => {
-    return date.toLocaleString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const validateForm = () => {
-    return (
-      formData.name &&
-      formData.scheduledStart &&
-      formData.address.street &&
-      formData.address.city &&
-      formData.address.country &&
-      formData.address.zipCode
-    );
-  };
-
   const handleSubmit = async () => {
     if (!validateForm()) {
       setResponseStatus(400);
@@ -109,12 +35,141 @@ const CreateEventScreen = () => {
 
       setTimeout(() => {
         router.back();
-      }, 2500);
+      }, 1500);
     } catch (error) {
+      console.error("Erreur complète:", error);
       setResponseStatus(500);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  */
+  const [isLoading, setIsLoading] = useState(false);
+  const [responseStatus, setResponseStatus] = useState<number | null>(null);
+
+  // Calculer la date minimum (3 heures après l'heure actuelle)
+  const getMinimumDate = () => {
+    const date = new Date();
+    date.setHours(date.getHours() + 4);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
+  };
+
+  // Initialiser avec la date minimum
+  const initialDate = getMinimumDate();
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+  const [formData, setFormData] = useState<EventCreate>({
+    name: "",
+    scheduledStart: initialDate.toISOString(),
+    address: {
+      street: "",
+      city: "",
+      country: "France",
+      zipCode: "",
+    },
+  });
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const validateDate = (date: Date) => {
+    const minimumDate = getMinimumDate();
+    return date >= minimumDate;
+  };
+
+  const handleDateChange = (event: any, date?: Date) => {
+    if (!date) return;
+
+    if (Platform.OS === "android") {
+      setShowDatePicker(false);
+    }
+
+    // Vérifier si la date est valide (au moins 3h dans le futur)
+    if (!validateDate(date)) {
+      setResponseStatus(400);
+      return;
+    }
+
+    setSelectedDate(date);
+    setFormData((prev) => ({
+      ...prev,
+      scheduledStart: date.toISOString(),
+    }));
+  };
+
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      console.log("Nom manquant");
+      return false;
+    }
+    if (
+      !formData.scheduledStart ||
+      !validateDate(new Date(formData.scheduledStart))
+    ) {
+      console.log("Date invalide (doit être au moins 3h dans le futur)");
+      return false;
+    }
+    if (!formData.address.street.trim()) {
+      console.log("Rue manquante");
+      return false;
+    }
+    if (!formData.address.city.trim()) {
+      console.log("Ville manquante");
+      return false;
+    }
+    if (!formData.address.country.trim()) {
+      console.log("Pays manquant");
+      return false;
+    }
+    if (!formData.address.zipCode.trim()) {
+      console.log("Code postal manquant");
+      return false;
+    }
+    if (
+      !formData.address.zipCode.trim() ||
+      formData.address.zipCode.length !== 5
+    ) {
+      console.log("Code postal invalide (doit contenir exactement 5 chiffres)");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      console.log("Données envoyées:", JSON.stringify(formData, null, 2));
+      setResponseStatus(400);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      console.log("Envoi des données:", JSON.stringify(formData, null, 2));
+
+      await eventService.createEvent(formData);
+      setResponseStatus(200);
+
+      triggerRefresh(); // Déclencher le rafraîchissement
+      setTimeout(() => {
+        router.back();
+      }, 1500);
+    } catch (error) {
+      console.error("Erreur complète:", error);
+      setResponseStatus(500);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatDateTime = (date: Date) => {
+    return date.toLocaleString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -161,10 +216,9 @@ const CreateEventScreen = () => {
                 <DateTimePicker
                   value={selectedDate}
                   mode="datetime"
-                  is24Hour={true}
                   display="default"
                   onChange={handleDateChange}
-                  minimumDate={new Date()}
+                  minimumDate={getMinimumDate()}
                   style={styles.datePicker}
                 />
               )}
@@ -187,12 +241,16 @@ const CreateEventScreen = () => {
               <TextInput
                 style={styles.input}
                 value={formData.address.zipCode}
-                onChangeText={(text) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, zipCode: text },
-                  }))
-                }
+                onChangeText={(text) => {
+                  const numericText = text.replace(/[^0-9]/g, "");
+                  if (numericText.length <= 5) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      address: { ...prev.address, zipCode: numericText },
+                    }));
+                  }
+                }}
+                maxLength={5}
                 placeholder="Code postal"
                 placeholderTextColor="#666"
                 keyboardType="numeric"
@@ -227,12 +285,16 @@ const CreateEventScreen = () => {
             <Button
               label="Créer l'événement"
               onPress={handleSubmit}
+              disabled={!validateForm()}
               loading={isLoading}
               responseStatus={responseStatus}
               successMessage="Événement créé !"
-              errorMessage="Erreur lors de la création"
+              errorMessage="Attention"
               containerStyle={styles.submitButton}
-              colors={{ base: "#3498db", pressed: "#2980b9" }}
+              colors={{
+                base: !validateForm() ? "grey" : "#3498db",
+                pressed: "#2980b9",
+              }}
             />
           </View>
         </ScrollView>
@@ -293,7 +355,6 @@ const styles = StyleSheet.create({
   },
   datePicker: {
     backgroundColor: "#2a2a2a",
-    width: "100%",
   },
   submitButton: {
     marginTop: 20,

@@ -1,7 +1,15 @@
-import { ScrollView, StyleSheet, Alert, View } from "react-native"; // Ajout de Alert
+// screens/HomeScreen.tsx
+import { ScrollView, StyleSheet } from "react-native";
 import Events from "@/components/home/Events";
+import { useCallback, useState } from "react";
 
 export default function HomeScreen() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = useCallback(() => {
+    setRefreshKey((prev) => prev + 1);
+  }, []);
+
   return (
     <ScrollView
       style={styles.front}
@@ -10,11 +18,10 @@ export default function HomeScreen() {
         rowGap: 30,
       }}
     >
-      <Events onRefresh={() => {}} />
+      <Events key={refreshKey} onRefresh={handleRefresh} />
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "red",
