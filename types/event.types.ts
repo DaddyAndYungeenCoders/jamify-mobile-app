@@ -14,7 +14,7 @@ export interface EventParticipant {
 export interface Event {
   id: number;
   name: string;
-  scheduledStart: string;
+  scheduledStart: number[];
   status: "SCHEDULED" | "CANCELLED" | "STARTED" | "FINISHED";
   address: AddressType;
   participants: EventParticipant[];

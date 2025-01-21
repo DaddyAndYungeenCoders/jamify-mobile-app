@@ -30,7 +30,7 @@ export default function ConversationDetails() {
 
   useEffect(() => {
     const otherParticipant = conversationData?.participants.find(
-      (p) => p.id !== currentUserId,
+      (p) => p.id.toString() !== currentUserId,
     );
 
     if (otherParticipant) {
