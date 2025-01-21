@@ -44,6 +44,8 @@ export default function DetailLayout() {
         >
           <Stack.Screen name="conversation-detail" />
           <Stack.Screen name="event-detail" />
+          <Stack.Screen name="create-event" />
+          <Stack.Screen name="join-event" />
         </Stack>
       </View>
       <StatusBar style="auto" />
@@ -57,13 +59,6 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.2)",
     shadowColor: "black",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.55,
-    shadowRadius: 3,
-    elevation: 5,
     marginHorizontal: 10,
     borderRadius: 12,
     overflow: "hidden",
@@ -72,7 +67,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     height: "100%",
     width: "100%",
-    marginBottom: 45,
   },
   headerTitle: {
     color: "white",

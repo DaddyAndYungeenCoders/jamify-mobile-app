@@ -1,17 +1,15 @@
-import React, { useCallback, memo } from "react";
-import { View, StyleSheet, FlatList, ActivityIndicator } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useCallback, memo, useEffect, useRef } from "react";
+import { View, StyleSheet, FlatList, Animated, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import EventElement from "@/components/home/EventElement";
 import { Event } from "@/types/event.types";
-import { useRouter } from "expo-router";
+import { useEvents } from "@/hooks/useEvent";
+import { Feather } from "@expo/vector-icons";
+import DropDownMenu from "../DropDownMenu";
 
 interface EventsProps {
-  events: Event[];
-  isLoading?: boolean;
-  error?: Error | null;
   onRefresh?: () => void;
-  onEventPress?: (event: Event) => void;
 }
 
 const MemoizedEventElement = memo(
@@ -20,15 +18,52 @@ const MemoizedEventElement = memo(
   ),
 );
 
-const Events: React.FC<EventsProps> = ({
-  events,
-  isLoading = false,
-  error = null,
-  onEventPress,
-}) => {
-  const navigation = useNavigation();
+const CircularLoader = () => {
+  const spinValue = new Animated.Value(0);
 
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver: true,
+      }),
+    ).start();
+  }, []);
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
+  return (
+    <View style={styles.loaderContainer}>
+      <Animated.View
+        style={[
+          styles.loader,
+          {
+            transform: [{ rotate: spin }],
+          },
+        ]}
+      />
+    </View>
+  );
+};
+
+const Events: React.FC<EventsProps> = ({ onRefresh }) => {
   const router = useRouter();
+  const { events, isLoading, error, refetch } = useEvents();
+  const [isMenuVisible, setIsMenuVisible] = React.useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, []);
+
   const handleEventPress = useCallback(
     (event: Event) => {
       router.push({
@@ -36,8 +71,19 @@ const Events: React.FC<EventsProps> = ({
         params: { eventId: JSON.stringify(event.id) },
       });
     },
-    [navigation, onEventPress],
+    [router],
   );
+
+  const handleCreateEvent = useCallback(() => {
+    router.push({
+      pathname: "/(details)/create-event",
+      params: { onRefresh: onRefresh },
+    });
+  }, [onRefresh]);
+
+  const handleJoinEvent = useCallback(() => {
+    router.push("/(details)/join-event");
+  }, [router]);
 
   const renderItem = useCallback(
     ({ item: event }: { item: Event }) => (
@@ -52,11 +98,22 @@ const Events: React.FC<EventsProps> = ({
     [],
   );
 
+  // Dans le renderHeader
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      <ThemedText style={styles.title}>Events</ThemedText>
+      <DropDownMenu
+        onCreatePress={handleCreateEvent}
+        onJoinPress={handleJoinEvent}
+      />
+    </View>
+  );
+
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <ThemedText style={styles.title}>Events</ThemedText>
-        <ActivityIndicator size="large" color="#0000ff" />
+        {renderHeader()}
+        <CircularLoader />
       </View>
     );
   }
@@ -64,46 +121,70 @@ const Events: React.FC<EventsProps> = ({
   if (error || !events?.length) {
     return (
       <View style={styles.container}>
-        <ThemedText style={styles.title}>Events</ThemedText>
-        <ThemedText style={styles.error}>
-          {error ? error.message : "Aucun event"}
-        </ThemedText>
+        {renderHeader()}
+        <View style={styles.centerContainer}>
+          <ThemedText style={styles.error}>
+            {error ? error.message : "Aucun event"}
+          </ThemedText>
+        </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <ThemedText style={styles.title}>Events</ThemedText>
-      <FlatList
-        horizontal
-        data={events}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        contentContainerStyle={styles.scrollContainer}
-        showsHorizontalScrollIndicator={false}
-        scrollEnabled={true}
-        scrollEventThrottle={16}
-        bounces={false}
-        overScrollMode="never"
-        showsVerticalScrollIndicator={false}
-        style={styles.flatList}
-      />
+    <View style={styles.mainContainer}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        {renderHeader()}
+        <FlatList
+          horizontal
+          data={events}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          contentContainerStyle={styles.scrollContainer}
+          showsHorizontalScrollIndicator={false}
+          scrollEnabled={true}
+          scrollEventThrottle={16}
+          bounces={false}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
+          style={styles.flatList}
+          onRefresh={onRefresh || refetch}
+          refreshing={isLoading}
+        />
+      </Animated.View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    position: "relative",
+    width: "100%",
+    height: "100%",
+  },
   container: {
+    flex: 1,
     width: "100%",
   },
-  title: {
-    fontSize: 18,
-    color: "white",
-    textDecorationLine: "underline",
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingRight: 15,
     marginBottom: 10,
+  },
+  title: {
+    textDecorationLine: "underline",
     marginLeft: 15,
+    fontSize: 18,
     fontFamily: "Jost_600SemiBold",
+    color: "white",
+  },
+  addButton: {
+    padding: 8,
+    zIndex: 1001, // Plus grand que le zIndex du menu overlay
+    position: "relative",
   },
   flatList: {
     flexGrow: 0,
@@ -112,7 +193,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   error: {
-    marginLeft: 100,
+    fontSize: 18,
+    fontFamily: "Jost_600SemiBold",
+    color: "white",
+    textAlign: "center",
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 100,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 100,
+  },
+  loader: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: "white",
+    borderTopColor: "transparent",
+  },
+
+  plusButtonOverlay: {
+    position: "absolute",
+    top: 8, // Ajustez ces valeurs pour correspondre à la position de votre bouton +
+    right: 15, // Ajustez ces valeurs pour correspondre à la position de votre bouton +
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
   },
 });
 
