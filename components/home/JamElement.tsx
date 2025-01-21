@@ -1,14 +1,24 @@
 import React from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
+import {Image, StyleSheet, TouchableOpacity, View} from "react-native";
+import {ThemedText} from "@/components/ThemedText";
+import {Jam} from "@/types/jam.types";
+import {useRouter} from "expo-router";
 
-const JamElement = ({ jam }:any) => {
+const JamElement = ({ jam, token }) => {
+    const router = useRouter();
+    const showDetail = async (jam: Jam) => {
+        // console.log("[JamElement]" + JSON.stringify(jam.status))
+        router.push({
+            pathname: "/(details)/jam-detail",
+            params: {token, jamId: jam.id},
+        })
+    };
     return (
-        <TouchableOpacity style={[styles.container]} onPress={jam.onPress}>
+        <TouchableOpacity style={[styles.container]} onPress={() => showDetail(jam)}>
             <View style={styles.background} />
 
             <View style={styles.content}>
-                <Image source={jam.background} style={styles.image} />
+                <Image source={{uri: jam.host.imgUrl}} style={styles.image} />
                 <View style={styles.info}>
                     <ThemedText style={styles.text}>{jam.name}</ThemedText>
                     <View style={styles.detail}>

@@ -1,70 +1,101 @@
-import {StyleSheet, Image, Platform, View, ScrollView} from 'react-native';
+import React, {useEffect, useState} from "react";
+import {ActivityIndicator, ScrollView, StyleSheet, View,} from "react-native";
+import {ThemedText} from "@/components/ThemedText";
+import JamService from "@/service/jam-service";
+import {RouteProp, useRoute} from "@react-navigation/native";
+import {ThemedView} from "@/components/ThemedView";
+import {Jam} from "@/types/jam.types";
+import JamDisplay from "@/components/JamDisplay";
 
-import {Collapsible} from '@/components/Collapsible';
-import {ExternalLink} from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import {ThemedText} from '@/components/ThemedText';
-import {ThemedView} from '@/components/ThemedView';
-import {IconSymbol} from '@/components/ui/IconSymbol';
-import webView from "react-native-webview/src/WebView";
-import {Colors} from "@/constants/Colors";
-import {LinearGradient} from "expo-linear-gradient";
-import {opacity} from "react-native-reanimated/lib/typescript/Colors";
-import MusicDisplay from "@/components/MusicDisplay";
-import {useState} from "react";
-import {musicDisplayProps} from "@/types/music-display.types";
-import ClassicButton from "@/components/ClassicButton";
+const [refreshToken, setRefreshToken] = useState(0);
+
+type JamDetailRouteProp = RouteProp<{
+    JamDetail: { token: string, jamId: number };
+}, "JamDetail">;
+
+const JamDetail: React.FC = () => {
+    const route = useRoute<JamDetailRouteProp>();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    // const [jam, setJam] = useState<Jam>();
+
+    const jamId = route.params.jamId;
+    const token = route.params.token
 
 
-export default function PlayingScreen() {
-    const [music, setMusic]: musicDisplayProps = useState(null);
+    useEffect(() => {
+        // const fetchData = async () => {
+        //     try {
+        //         setJam(await JamService.getJamById(token, jamId));
+        //     } catch (error) {
+        //         console.error("Erreur lors du chargement des données:", error);
+        //     }
+        // };
+        // fetchData().then(() => {
+        // });
+            setIsLoading(false);
+    }, []);
 
+    if (isLoading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff"/>
+                <ThemedText style={styles.loadingText}>
+                    Chargement de la page...
+                </ThemedText>
+            </View>
+        );
+    }
 
-    function refresh() {
-        setMusic({
-            title: "Shinning Diamons",
-            image: require('@/assets/images/music-exemple.png'),
-            artist: "The Weekend",
-            description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
-            duration: 300,
-            lcurrentTime: 10
-        });
-
+    if (error) {
+        return (
+            <View style={styles.errorContainer}>
+                <ThemedText style={styles.errorText}>
+                    {error?.message || "Une erreur est survenue"}
+                </ThemedText>
+            </View>
+        );
     }
 
     return (
-        <LinearGradient colors={Colors.light.background} style={styles.container}>
-            <ScrollView>
-                <ThemedView style={styles.banner}>
-                    <ThemedText style={styles.titles}>Now Playing</ThemedText>
-                </ThemedView>
-                <View style={styles.body}>
-                    {music ? (
-                        <MusicDisplay title={music.title}
-                                      image={music.image}
-                                      artist={music.artist}
-                                      description={music.description}
-                                      duration={music.duration}
-                                      lcurrentTime={music.lcurrentTime}/>
+        <ScrollView>
+            <ThemedView style={styles.banner}>
+                <ThemedText style={styles.titles}>Now Playing</ThemedText>
+            </ThemedView>
+            <View style={styles.body}>
+                <JamDisplay jamId={jamId} token={token} />
+            </View>
 
-                    ) : (
-                        <ClassicButton title={"Pas de musique en cours ... Rafraichir ?"} onPress={refresh}
-                                       width={"100%"}/>
-                    )}
-
-                </View>
-
-            </ScrollView>
-
-
-        </LinearGradient>)
-}
+        </ScrollView>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-start", // Commence en haut
-        alignItems: "center", // Centré horizontalement
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+    },
+    errorText: {
+        fontSize: 16,
+        textAlign: "center",
+        color: "red",
+    },
+    contentContainer: {
+        padding: 20,
     },
     banner: {
         position: "absolute", // Permet de placer le bandeau
@@ -84,3 +115,5 @@ const styles = StyleSheet.create({
         top: 100
     }
 });
+
+export default JamDetail;

@@ -11,6 +11,7 @@ export enum JamStatus {
 }
 
 export interface Jam {
+    id: number;
     name: string;
     host: User;
     status: JamStatus;
@@ -24,6 +25,7 @@ export interface Jam {
 }
 
 export interface JamDTO {
+    id: number;
     name: string;
     hostId: number;
     status: JamStatus;

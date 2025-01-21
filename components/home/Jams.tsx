@@ -12,21 +12,6 @@ interface JamProps {
     jams: Jam[];
 }
 
-const user1: User = {
-    country: "",
-    email: "",
-    imgUrl: "",
-    provider: "",
-    roles: [],
-    userProviderId: "",
-    badges: [],
-    events: [],
-    id: 0,
-    jams: [],
-    name: "Titi",
-    playlists: [],
-};
-
 const user2: User = {
     country: "",
     email: "",
@@ -42,37 +27,6 @@ const user2: User = {
     playlists: [],
 };
 
-const jam1: Jam = {
-    background: require("@/assets/images/music-exemple.png"),
-    comments: [],
-    description: "",
-    host: user2,
-    likes: 0,
-    name: "jam1",
-    participants: [],
-    scheduledDate: "",
-    status: JamStatus.SCHEDULED,
-    themes: []
-
-};
-
-const jam2: Jam = {
-    background: require("@/assets/images/music-exemple.png"),
-    comments: [],
-    description: "",
-    host: user2,
-    likes: 0,
-    name: "Jam2",
-    participants: [],
-    scheduledDate: "",
-    status: JamStatus.SCHEDULED,
-    themes: []
-};
-
-const launch: LaunchDtoTypes = {
-    name: "Jam Max", themes: ["Rock"]
-
-}
 
 
 const Jams: React.FC<JamProps> = ({jams, token}) => {
@@ -95,7 +49,7 @@ const Jams: React.FC<JamProps> = ({jams, token}) => {
                 contentContainerStyle={styles.scrollContainer}
             >
                 {jams ? (
-                    jams.map((jam, index) => <JamElement key={index} jam={jam}/>)
+                    jams.map((jam, index) => <JamElement key={index} jam={jam} token={token}/>)
                 ) : (
                     <ThemedText style={styles.error}>Aucun Jam</ThemedText>
                 )}

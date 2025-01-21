@@ -24,6 +24,7 @@ const JamMapper = {
 
             // Transformation en Jam
             const jam: Jam = {
+                id: jamDTO.id,
                 name: jamDTO.name,
                 host: host,
                 status: jamDTO.status,
@@ -45,6 +46,7 @@ const JamMapper = {
 
     toDTO:(jam: Jam): JamDTO => {
         let jamDTO: JamDTO = {
+            id: jam.id,
             hostId: jam.host.id,
             messages: jam.comments.map(comment => {
                 return comment.id;

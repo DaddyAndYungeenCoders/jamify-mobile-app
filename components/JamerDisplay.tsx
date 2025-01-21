@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import {Image, ImageSourcePropType, StyleSheet, View} from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import * as Progress from "react-native-progress";
 import {JamerDisplayProps} from "@/types/jamer-display.types";
@@ -11,9 +11,10 @@ const JamerDisplay = ({
                           listening,
                       }: JamerDisplayProps) => {
 
+    // console.log("[JamerDisplay] " + image )
     return (
         <View style={styles.body}>
-            <Image source={image} style={styles.images}/>
+            <Image source={{uri : image}} style={styles.images}/>
             <ThemedText style={styles.title}>{name}</ThemedText>
             <View style={styles.bottom}>
                 <ThemedText style={styles.listening}>Listening : {listening}</ThemedText>
