@@ -9,10 +9,10 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import ClassicButton from "@/components/ClassicButton";
 import InputAndLabel, { inputType } from "@/components/InputAndLabel";
-import JamService from "@/service/jam-service";
 import {LaunchDtoTypes} from "@/types/launch.dto.types";
 import {RouteProp, useRoute} from "@react-navigation/native";
 import {useRouter} from "expo-router";
+import {jamService} from "@/services/jam.service";
 
 
 type NewJamRouteProp = RouteProp<{
@@ -41,7 +41,7 @@ const NewJam: React.FC = () => {
       name: newJam.name,
       themes: newJam.themes.split(" ")
     }
-    const resp = await JamService.launch(token, newlaunch);
+    const resp = await jamService.launch(token, newlaunch);
     if (resp){
 
       router.push({

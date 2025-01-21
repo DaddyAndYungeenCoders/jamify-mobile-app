@@ -1,42 +1,48 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {ScrollView, StyleSheet, View} from "react-native";
 import {ThemedText} from "@/components/ThemedText";
 import JamElement from "@/components/home/JamElement";
-import {Jam, JamStatus} from "@/types/jam.types";
-import {User} from "@/types/user.types";
-import {LaunchDtoTypes} from "@/types/launch.dto.types";
+import {Jam} from "@/types/jam.types";
 import ClassicButton from "@/components/ClassicButton";
 import {useRouter} from "expo-router";
+import {jamService} from "@/services/jam.service";
 
 interface JamProps {
-    jams: Jam[];
 }
 
-const user2: User = {
-    country: "",
-    email: "",
-    imgUrl: "",
-    provider: "",
-    roles: [],
-    userProviderId: "",
-    badges: [],
-    events: [],
-    id: 0,
-    jams: [],
-    name: "Toto",
-    playlists: [],
-};
 
-
-
-const Jams: React.FC<JamProps> = ({jams, token}) => {
+const Jams: React.FC<JamProps> = () => {
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+    const [jams, setJams] = useState<Jam[]>();
     const newJam = async () => {
         router.push({
             pathname: "/(details)/new-jam",
-            params: {token: token},
         })
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setJams(await jamService.getRunningJams());
+            } catch (error) {
+                console.error("Erreur lors du chargement des données:", error);
+            }
+        };
+
+        fetchData().then(() => {
+            setIsLoading(false)
+        });
+    }, [isLoading]);
+
+
+    useEffect(() => {
+        if (jams) {
+            console.log("Jams data:", jams);
+        }
+    }, [jams]);
+
+
     return (
         <View style={styles.content}>
             <View style={styles.header}>
@@ -49,7 +55,7 @@ const Jams: React.FC<JamProps> = ({jams, token}) => {
                 contentContainerStyle={styles.scrollContainer}
             >
                 {jams ? (
-                    jams.map((jam, index) => <JamElement key={index} jam={jam} token={token}/>)
+                    jams.map((jam, index) => <JamElement key={index} jam={jam} />)
                 ) : (
                     <ThemedText style={styles.error}>Aucun Jam</ThemedText>
                 )}

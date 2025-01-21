@@ -6,9 +6,10 @@ import ClassicButton from "@/components/ClassicButton";
 import {JamerDisplayProps} from "@/types/jamer-display.types";
 import {Jam} from "@/types/jam.types";
 import ParticipantDisplay from "@/components/ParticipantDisplay";
-import UserService from "@/service/user-service";
 import {User} from "@/types/user.types";
-import JamService from "@/service/jam-service";
+import UserService from "@/services/user-service";
+import {jamService} from "@/services/jam.service";
+import {userService} from "@/services/user.service";
 
 
 const JamDisplay = ({
@@ -24,8 +25,8 @@ const JamDisplay = ({
         useEffect(() => {
             const fetchData = async () => {
                 try {
-                    setJam(await JamService.getJamById(token, jamId));
-                    setMe(await UserService.whoAmi(token));
+                    setJam(await jamService.getById(jamId));
+                    setMe(await userService.getCurrentUser());
 
                 } catch (error) {
                     console.error("Erreur lors du chargement des données:", error);
@@ -38,17 +39,17 @@ const JamDisplay = ({
         }, [isLoading]);
 
         const join = async () => {
-            JamService.join(token, jam);
+            jamService.join(jam?.id);
             setIsLoading(true)
         };
 
         const close = async () => {
-            JamService.stop(token, jam);
+            jamService.stop(jam?.id);
             setIsLoading(true)
         }
 
         const leave = async () => {
-            JamService.leave(token, jam);
+            jamService.leave(jam?.id);
             setIsLoading(true)
         }
         // console.log(token);

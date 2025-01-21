@@ -1,13 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, ScrollView, StyleSheet, View,} from "react-native";
 import {ThemedText} from "@/components/ThemedText";
-import JamService from "@/service/jam-service";
 import {RouteProp, useRoute} from "@react-navigation/native";
 import {ThemedView} from "@/components/ThemedView";
-import {Jam} from "@/types/jam.types";
 import JamDisplay from "@/components/JamDisplay";
-
-const [refreshToken, setRefreshToken] = useState(0);
 
 type JamDetailRouteProp = RouteProp<{
     JamDetail: { token: string, jamId: number };
@@ -33,7 +29,7 @@ const JamDetail: React.FC = () => {
         // };
         // fetchData().then(() => {
         // });
-            setIsLoading(false);
+        setIsLoading(false);
     }, []);
 
     if (isLoading) {
@@ -63,7 +59,7 @@ const JamDetail: React.FC = () => {
                 <ThemedText style={styles.titles}>Now Playing</ThemedText>
             </ThemedView>
             <View style={styles.body}>
-                <JamDisplay jamId={jamId} token={token} />
+                <JamDisplay jamId={jamId} token={token}/>
             </View>
 
         </ScrollView>

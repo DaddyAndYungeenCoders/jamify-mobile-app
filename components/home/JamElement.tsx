@@ -4,13 +4,13 @@ import {ThemedText} from "@/components/ThemedText";
 import {Jam} from "@/types/jam.types";
 import {useRouter} from "expo-router";
 
-const JamElement = ({ jam, token }) => {
+const JamElement = ({ jam }) => {
     const router = useRouter();
     const showDetail = async (jam: Jam) => {
         // console.log("[JamElement]" + JSON.stringify(jam.status))
         router.push({
             pathname: "/(details)/jam-detail",
-            params: {token, jamId: jam.id},
+            params: {jamId: jam.id},
         })
     };
     return (
