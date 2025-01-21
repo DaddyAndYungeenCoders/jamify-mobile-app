@@ -1,6 +1,6 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, usePathname, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
@@ -13,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 import { useAuthenticationStore } from "@/store/authentication.store";
 import Button from "@/components/Button";
+import HeaderProfil from "@/components/Header";
 
 export default function RootLayout() {
   const { token, loading, error, setJWTToken, removeJWTToken } =
@@ -22,6 +23,12 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const [isAppReady, setIsAppReady] = useState(false);
+
+  const pathname = usePathname();
+
+  const segments = useSegments();
+  const fullPath = "/" + segments.join("/");
+  console.log("PATHNAME", fullPath);
 
   useEffect(() => {
     async function prepare() {
@@ -47,16 +54,11 @@ export default function RootLayout() {
   if (token === null) {
     return <AuthenticationScreen />;
   }
-
   return (
     <ThemeProvider value={DefaultTheme}>
       <LinearGradient style={{ flex: 1 }} colors={Colors.light.background}>
         <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
-          <Button
-            label="Disconnect"
-            onPress={() => removeJWTToken()}
-            colors={{ base: "#fc3c44", pressed: "#f94c57" }}
-          />
+          {fullPath.includes("(tabs)") && <HeaderProfil />}
           <Stack
             screenOptions={{
               contentStyle: { backgroundColor: "transparent" },
