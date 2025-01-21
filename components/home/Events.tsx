@@ -12,11 +12,9 @@ interface EventsProps {
   onRefresh?: () => void;
 }
 
-const MemoizedEventElement = memo(
-  ({ event, onPress }: { event: Event; onPress: (event: Event) => void }) => (
-    <EventElement event={event} onPress={() => onPress(event)} />
-  ),
-);
+const MemoizedEventElement = memo(({ event }: { event: Event }) => (
+  <EventElement event={event} />
+));
 
 const CircularLoader = () => {
   const spinValue = new Animated.Value(0);
