@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {useConversationStore} from "@/store/ConversationStore";
+import {useConversationStore} from "@/store/conversation.store";
 
 export const useConversation = (roomId: string) => {
     const {conversations, fetchConversationForRoom, sendMessage, refreshConversations} = useConversationStore();
@@ -7,7 +7,6 @@ export const useConversation = (roomId: string) => {
 
     useEffect(() => {
         console.log("useConversation");
-        // TODO fetch one conversation for room
         fetchConversationForRoom(roomId).then(r => console.log("Messages fetched : " + r));
     }, [roomId]);
 

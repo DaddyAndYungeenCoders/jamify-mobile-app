@@ -3,6 +3,7 @@ import {create} from "zustand";
 import {CHAT_API_URL} from "@/constants/Utils";
 import {useAuthenticationStore} from "@/store/authentication.store";
 import {fetchConversationsForCurrentUser} from "@/utils/fetchConversation";
+import {useUserStore} from "@/store/user.store";
 
 interface ConversationStore {
     conversations: Map<string, IConversationDetails>;
@@ -15,8 +16,8 @@ interface ConversationStore {
     // Async actions
     fetchConversationForRoom: (roomId: string) => Promise<void>;
     sendMessage: (roomId: string, content: string, senderId: string) => Promise<void>;
-    initializeConversations: () => Promise<void>;
-    refreshConversations: () => Promise<void>;
+    initializeConversations: (currentUserId: string) => Promise<void>;
+    refreshConversations: (currentUserId: string) => Promise<void>;
 }
 
 
@@ -59,14 +60,13 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 
     fetchConversationForRoom: async (roomId) => {
         console.log("fetchMessageForRoom");
+        const {token} = useAuthenticationStore.getState();
         try {
             const response = await fetch(`${CHAT_API_URL}/messages/conversation/room/${roomId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    // FIXME: This should be the actual token
-                    // 'Authorization': `Bearer ${token}`
-                    'Authorization': `Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJqYW1pZnktdWFhLWtleS1pZCIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJEYW1pZW4gTWFpbGhlYmlhdSIsImlzcyI6Imh0dHBzOi8vamFtaWZ5LmRhZGR5b3Jub3QueHl6L2phbWlmeS11YWEiLCJlbWFpbCI6ImRhbWllbm1haWxoZWJpYXVAZ21haWwuY29tIiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImNvdW50cnkiOiJGUiIsInByb3ZpZGVyIjoic3BvdGlmeSIsImlkIjoiMTEyMjI5MTQzMCIsImlhdCI6MTczNzQwOTgzNCwiZXhwIjoxNzM3NDk2MjM0fQ.QBpBMpnjTh1S87Q0ZoxtuIFNnQlc4A4Cwb6A5-o3-EQkmovNrq97Lx4SW9u4gA7LU6DqVkdhvdK8kA7RsSQP9TQrPuP9Au9VESxjobZOfHuLmk2gmjWb9QgsnX7YQSmQSvZbJ_Sz_DYaApPoCGeck-ayx_67r2wJ_WVdbIOIVeZFHF_AYkVknChYguNk3zPem5PspItHXwJ0xnJSGK7uWrnDftylGtNCUDN9xC_YOaxTh4fAkeC3KdwDCKt9hBBmGJIQSzibRgvd2PQ0Xt1Nfl2unV7J5Ddmf_dC7leiOqeXJ9Ti_P4H0z-xRd4d_awtMx47Ph5AAgod-htxjuEMJQ`
+                    'Authorization': `Bearer ${token}`
                 },
             });
             if (!response.ok) {
@@ -102,11 +102,11 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
         }
     },
 
-    initializeConversations: async () => {
+    initializeConversations: async (currentUserId: string) => {
         if (get().initialized) return;
 
         try {
-            const conversations = await fetchConversationsForCurrentUser();
+            const conversations = await fetchConversationsForCurrentUser(currentUserId);
 
             set(state => {
                 const conversationsMap = new Map(state.conversations);
@@ -120,10 +120,10 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
         }
     },
 
-    refreshConversations: async () => {
+    refreshConversations: async (currentUserId: string) => {
         console.log("refreshConversations");
         try {
-            const conversations = await fetchConversationsForCurrentUser();
+            const conversations = await fetchConversationsForCurrentUser(currentUserId);
 
             set(state => {
                 const conversationsMap = new Map(state.conversations);
@@ -138,4 +138,4 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
     },
 }));
 
-useConversationStore.getState().initializeConversations();
+// useConversationStore.getState().initializeConversations(useUserStore().getUser()?.userProviderId as string);

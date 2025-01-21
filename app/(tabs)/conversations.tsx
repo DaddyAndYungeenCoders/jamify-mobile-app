@@ -13,8 +13,9 @@ import {
 import {useEffect, useMemo} from "react";
 import {useRouter} from "expo-router";
 import {IConversationDetails} from "@/types/message.types";
-import {useConversationStore} from "@/store/ConversationStore";
+import {useConversationStore} from "@/store/conversation.store";
 import {User} from "@/types/user.types";
+import {useUserStore} from "@/store/user.store";
 
 interface Styles {
     container: ViewStyle;
@@ -38,10 +39,11 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
                                                                onPress,
                                                            }) => {
     const lastMessage = item.messages.length > 0 ? item.messages[item.messages.length - 1].content : "No messages yet";
-    //TODO get current user id from auth store
-    const userId = "123";
-    const otherParticipant: User | undefined = item.participants.find(p => p.id !== userId);
-    console.log("Other participant:", otherParticipant);
+    const user = useUserStore((state) => state.user);
+    const currentUserId = user?.userProviderId;
+
+    const otherParticipant: User | undefined = item.participants.find(p => p.userProviderId !== currentUserId);
+    console.log("Other participant in general:", otherParticipant?.name);
 
     return (
         <TouchableOpacity
@@ -67,10 +69,15 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
 export default function Conversation(): JSX.Element {
     const router = useRouter();
     const {conversations, initializeConversations, initialized} = useConversationStore();
+    const {getUser} = useUserStore();
+    const user = getUser();
 
     useEffect(() => {
+        console.log("conversations components : ", JSON.stringify(conversations));
         if (!initialized) {
-            initializeConversations();
+            if (user) {
+                initializeConversations(user.userProviderId);
+            }
         }
     }, [initialized, initializeConversations]);
 

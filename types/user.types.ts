@@ -6,14 +6,15 @@ import { Badge } from "./badges.types";
 export interface User {
   id: string;
   name: string;
-  playlists: Playlist[];
-  events: Event[];
+  playlists?: Playlist[];
+  events?: Event[];
   jams: Jam[];
-  badges: Badge[];
+  badges?: Badge[];
   email: string;
   country: string;
   provider: string;
   imgUrl: string;
   userProviderId: string;
   roles: string[];
+  hasJamRunning: boolean;
 }

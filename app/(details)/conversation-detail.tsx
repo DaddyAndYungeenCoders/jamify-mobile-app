@@ -16,13 +16,14 @@ import {useConversation} from "@/hooks/useConversation";
 import {MessageBubble} from "@/components/MessageBubble";
 import {ChatMessage, ChatMessageToSend, IConversationDetails} from "@/types/message.types";
 import {sendMessageToApi} from "@/utils/fetchConversation";
+import {useUserStore} from "@/store/user.store";
 
 export default function ConversationDetails() {
     const {conversation} = useLocalSearchParams();
     const parsedConversation: IConversationDetails = JSON.parse(conversation as string);
     const navigation = useNavigation();
-    // TODO: get current user id from auth store
-    const currentUserId = "123";
+    const user = useUserStore((state) => state.user);
+    const currentUserId = user?.userProviderId;
     const flatListRef = useRef<FlatList<ChatMessage>>(null);
     const [message, setMessage] = useState("");
 
@@ -32,7 +33,7 @@ export default function ConversationDetails() {
     useEffect(() => {
         console.log("Conversation data participant in component:", conversationData?.participants);
         const otherParticipant = conversationData?.participants?.find(
-            (p) => p.id !== currentUserId,
+            (p) => p.userProviderId !== currentUserId,
         );
         // console.log("Other participant:", otherParticipant);
 
@@ -55,7 +56,7 @@ export default function ConversationDetails() {
         if (message.trim()) {
             const messageToSend: ChatMessageToSend = {
                 content: message,
-                senderId: currentUserId,
+                senderId: currentUserId ? currentUserId : "",
                 roomId: conversationData?.id as string,
             }
 

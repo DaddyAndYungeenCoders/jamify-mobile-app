@@ -1,19 +1,19 @@
-import { AuthenticationState } from "@/types/authentication.store.types";
 import { create } from "zustand";
 import { storage } from "./mmkv";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
+interface AuthenticationState {
+  token: string | null;
+  loading: boolean;
+  error: string | null;
+  setJWTToken: (token: string) => void;
+  removeJWTToken: () => void;
+}
+
 const zustandStorage: StateStorage = {
-  setItem: (name, value) => {
-    return storage.set(name, value);
-  },
-  getItem: (name) => {
-    const value = storage.getString(name);
-    return value ?? null;
-  },
-  removeItem: (name) => {
-    return storage.delete(name);
-  },
+  setItem: (name, value) => storage.set(name, value),
+  getItem: (name) => storage.getString(name) ?? null,
+  removeItem: (name) => storage.delete(name),
 };
 
 export const useAuthenticationStore = create<AuthenticationState>()(
@@ -22,8 +22,12 @@ export const useAuthenticationStore = create<AuthenticationState>()(
       token: null,
       loading: false,
       error: null,
-      setJWTToken: (token) => set({ token }),
-      removeJWTToken: () => set({ token: null }),
+      setJWTToken: (token) => {
+        set({ token, loading: false, error: null });
+      },
+      removeJWTToken: () => {
+        set({ token: null, error: null });
+      },
     }),
     {
       name: "auth-storage",
