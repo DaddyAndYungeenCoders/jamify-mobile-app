@@ -7,8 +7,10 @@ import { useUserStore } from "@/store/user.store";
 import { userService } from "@/services/user.service";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import ModalPdfViewer from "@/components/cgu-page";
 
 const AuthenticationScreen = () => {
   const [showWebView, setShowWebView] = useState<boolean>(false);
@@ -47,9 +49,14 @@ const AuthenticationScreen = () => {
     amazon: null,
   });
 
+  const [showCGU, setShowCGU] = useState(false);
+
+  const handleConversationPress = (): void => {
+    setShowCGU(true);
+  };
+
   const handleSpotifyConnect = () => {
     setButtonLoading((prev) => ({ ...prev, spotify: true }));
-
     setTimeout(() => {
       setUrl("https://jamify.daddyornot.xyz/oauth2/authorization/spotify");
       setShowWebView(true);
@@ -150,6 +157,9 @@ const AuthenticationScreen = () => {
             responseStatus={buttonStatus.amazon}
             disabled={true}
           />
+          <Pressable onPress={handleConversationPress}>
+            <Text style={styles.cgu}>Read CGU</Text>
+          </Pressable>
         </View>
         <WebBrowserView
           showWebView={showWebView}
@@ -157,6 +167,8 @@ const AuthenticationScreen = () => {
           url={url}
           onTokenReceived={handleTokenReceived}
         />
+
+        <ModalPdfViewer visible={showCGU} onClose={() => setShowCGU(false)} />
       </SafeAreaView>
     </LinearGradient>
   );
@@ -197,5 +209,13 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_700Bold",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  cgu: {
+    fontSize: 22,
+    color: "white",
+    fontFamily: "Jost_700Bold",
+    fontWeight: "bold",
+    textAlign: "center",
+    textDecorationLine: "underline",
   },
 });
