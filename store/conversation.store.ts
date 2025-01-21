@@ -11,6 +11,7 @@ interface ConversationStore {
     initialized: boolean;
     // Actions
     addMessage: (roomId: string, message: ChatMessage) => void;
+    handleConversations: () => void;
     setCurrentConversation: (conversationId: string) => void;
     updateConversation: (conversation: IConversationDetails) => void;
     // Async actions
@@ -44,6 +45,12 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 
             return {conversations};
         });
+    },
+
+    handleConversations: () => {
+        // refresh conversations
+        const currentUserId = useUserStore.getState().user?.userProviderId as string;
+        useConversationStore.getState().refreshConversations(currentUserId);
     },
 
     setCurrentConversation: (roomId) => {

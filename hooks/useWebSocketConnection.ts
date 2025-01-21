@@ -7,6 +7,7 @@ import {useUserStore} from "@/store/user.store";
 
 export const useWebSocketConnection = () => {
     const addMessage = useConversationStore(state => state.addMessage);
+    const handleConversations = useConversationStore(state => state.handleConversations);
     // const usersId = ["123", "456", "789"];
     const {getUser} = useUserStore();
     const user = getUser();
@@ -29,6 +30,7 @@ export const useWebSocketConnection = () => {
             socket.on('new-message', (data: ChatMessage) => {
                 console.log('New message:', data);
                 addMessage(data.roomId, data);
+                handleConversations()
             });
 
             socket.on('disconnect', () => {
