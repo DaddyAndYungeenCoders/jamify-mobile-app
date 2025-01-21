@@ -121,6 +121,12 @@ export default function DetailLayout() {
               animation: "slide_from_right",
             }}
           />
+            <Stack.Screen
+                name="new-jam"
+                options={{
+                    animation: "slide_from_right",
+                }}
+            />
         </Stack>
       </View>
       <StatusBar style="auto" />

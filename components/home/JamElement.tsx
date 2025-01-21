@@ -12,7 +12,7 @@ const JamElement = ({ jam }:any) => {
                 <View style={styles.info}>
                     <ThemedText style={styles.text}>{jam.name}</ThemedText>
                     <View style={styles.detail}>
-                        <ThemedText style={styles.text}>par {jam.host.name}</ThemedText>
+                        <ThemedText style={styles.text}>par {jam.host.name.split(' ')[0]}</ThemedText>
                         <ThemedText style={[styles.text, styles.heure]}>{jam.status}</ThemedText>
                     </View>
                 </View>
@@ -57,12 +57,12 @@ const styles = StyleSheet.create({
     text: {
         color: "#fff",
         fontSize: 14,
-        marginLeft: 10,
+        marginLeft: 5,
     },
     heure: {
         flex: 1,
         textAlign: "right",
-        marginRight : 10,
+        marginRight : 5,
     },
 });
 

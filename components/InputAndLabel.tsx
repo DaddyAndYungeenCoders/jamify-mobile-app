@@ -18,11 +18,12 @@ const InputAndLabel = ({
                            title,
                            placeHolder = "Entrez du text...",
                            type = inputType.TEXT,
+                           onChangeText,
                        }) => {
     return (
         <View style={styles.body}>
             <ThemedText style={styles.text}>{title}</ThemedText>
-            <TextInput style={styles.input} placeholder={placeHolder} keyboardType={type} />
+            <TextInput style={styles.input} placeholder={placeHolder} keyboardType={type} onChangeText={onChangeText}/>
         </View>
     );
 };
