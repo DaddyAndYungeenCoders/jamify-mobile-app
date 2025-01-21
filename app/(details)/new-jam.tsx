@@ -9,11 +9,23 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import ClassicButton from "@/components/ClassicButton";
 import InputAndLabel, { inputType } from "@/components/InputAndLabel";
+import JamService from "@/service/jam-service";
+import {LaunchDtoTypes} from "@/types/launch.dto.types";
+import {RouteProp, useRoute} from "@react-navigation/native";
+import {useRouter} from "expo-router";
+
+
+type NewJamRouteProp = RouteProp<{
+  NewJam: {token: string };
+}, "NewJam">;
 
 const NewJam: React.FC = () => {
+  const route = useRoute<NewJamRouteProp>();
   const [newJam, setNewJam] = useState({ name: "", themes: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const token = route.params.token;
+  const router = useRouter();
 
   const handleChange = (key: keyof typeof newJam, value: string) => {
     setNewJam((prev) => ({
@@ -22,8 +34,21 @@ const NewJam: React.FC = () => {
     }));
   };
 
-  const creerJAM = () => {
-    Alert.alert("Nouveau JAM", `Nom : ${newJam.name}\nThèmes : ${newJam.themes}`);
+
+  const creerJAM = async () => {
+    // Alert.alert("Nouveau JAM", `Nom : ${newJam.name}\nThèmes : ${newJam.themes}`);
+    const newlaunch: LaunchDtoTypes = {
+      name: newJam.name,
+      themes: newJam.themes.split(" ")
+    }
+    const resp = await JamService.launch(token, newlaunch);
+    if (resp){
+
+      router.push({
+        pathname: "/",
+      })
+    }
+
   };
 
   useEffect(() => {

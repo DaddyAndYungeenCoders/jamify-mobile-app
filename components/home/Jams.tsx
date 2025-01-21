@@ -80,6 +80,7 @@ const Jams: React.FC<JamProps> = ({jams, token}) => {
     const newJam = async () => {
         router.push({
             pathname: "/(details)/new-jam",
+            params: {token: token},
         })
     };
     return (
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flexDirection: "column", // Organisation en ligne
         flexWrap: "wrap", // Les éléments passent à la ligne automatiquement
-        height: 200,
+        maxHeight: 200,
         justifyContent: "space-between", // Espacement entre les colonnes
         alignContent: "space-between",
     },
