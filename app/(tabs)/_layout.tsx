@@ -19,14 +19,15 @@ export default function TabLayout() {
           screenOptions={{
             headerShown: false,
             sceneStyle: {
-              backgroundColor: "rgba(0, 0, 0, 0.2)",
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
               //backgroundColor: "rgba(255, 255, 255, 0.5)",
               borderRadius: 12,
-              overflow: "visible",
+              overflow: "hidden",
               height: contentHeight,
               maxHeight: contentHeight,
               width: "100%",
               marginBottom: TAB_BAR_HEIGHT + 30,
+              /*
               shadowColor: "black",
               shadowOffset: {
                 width: 0,
@@ -35,7 +36,7 @@ export default function TabLayout() {
               shadowOpacity: 0.55,
               shadowRadius: 3,
               elevation: 5,
-              paddingTop: 10,
+              */
             },
           }}
           initialRouteName="index"
