@@ -1,7 +1,7 @@
-import { ChatMessage, IConversationDetails } from "@/types/message.types";
-import { create } from "zustand";
-import { CHAT_API_URL } from "@/constants/Utils";
-import { useAuthenticationStore } from "@/store/authentication.store";
+import {ChatMessage, IConversationDetails} from "@/types/message.types";
+import {create} from "zustand";
+import {CHAT_API_URL} from "@/constants/Utils";
+import {useAuthenticationStore} from "@/store/authentication.store";
 import {fetchConversationsForCurrentUser} from "@/utils/fetchConversation";
 
 interface ConversationStore {
@@ -31,25 +31,29 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
             const conversation = conversations.get(roomId);
 
             if (conversation) {
-                conversations.set(roomId, {
-                    ...conversation,
-                    messages: [...conversation.messages, message],
-                });
+                // Check if the message is already in the conversation
+                const messageExists = conversation.messages.some(m => m.id === message.id);
+                if (!messageExists) {
+                    conversations.set(roomId, {
+                        ...conversation,
+                        messages: [...conversation.messages, message],
+                    });
+                }
             }
 
-            return { conversations };
+            return {conversations};
         });
     },
 
     setCurrentConversation: (roomId) => {
-        set({ currentConversationId: roomId });
+        set({currentConversationId: roomId});
     },
 
     updateConversation: (conversation) => {
         set(state => {
             const conversations = new Map(state.conversations);
             conversations.set(conversation.id, conversation);
-            return { conversations };
+            return {conversations};
         });
     },
 
@@ -74,7 +78,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
             set(state => {
                 const conversations = new Map(state.conversations);
                 conversations.set(roomId, conversation);
-                return { conversations };
+                return {conversations};
             });
         } catch (error) {
             console.error('Failed to fetch ChatMessage for room:', error);
@@ -85,8 +89,8 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
         try {
             const response = await fetch(`${CHAT_API_URL}/messages`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ roomId: roomId, content, senderId }),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({roomId: roomId, content, senderId}),
             });
 
             if (!response.ok) {
@@ -109,7 +113,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
                 conversations.forEach((conversation: IConversationDetails) => {
                     conversationsMap.set(conversation.id, conversation);
                 });
-                return { conversations: conversationsMap, initialized: true };
+                return {conversations: conversationsMap, initialized: true};
             });
         } catch (error) {
             console.error('Failed to fetch conversations:', error);
@@ -126,7 +130,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
                 conversations.forEach((conversation: IConversationDetails) => {
                     conversationsMap.set(conversation.id, conversation);
                 });
-                return { conversations: conversationsMap };
+                return {conversations: conversationsMap};
             });
         } catch (error) {
             console.error('Failed to fetch conversations:', error);

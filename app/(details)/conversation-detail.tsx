@@ -26,9 +26,7 @@ export default function ConversationDetails() {
     const flatListRef = useRef<FlatList<ChatMessage>>(null);
     const [message, setMessage] = useState("");
 
-    const {conversation: conversationData, isLoading} = useConversation(
-        parsedConversation.id,
-    );
+    const {conversation: conversationData, isLoading} = useConversation(parsedConversation.id);
 
 
     useEffect(() => {
@@ -60,6 +58,7 @@ export default function ConversationDetails() {
                 senderId: currentUserId,
                 roomId: conversationData?.id as string,
             }
+
             await sendMessageToApi(messageToSend);
             setMessage("");
             // Scroll to bottom après envoi
