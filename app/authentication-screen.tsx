@@ -3,6 +3,8 @@ import OrbitAnimation from "@/components/orbit-animation/orbit-animation";
 import WebBrowserView from "@/components/WebBrowserView";
 import { Colors } from "@/constants/Colors";
 import { useAuthenticationStore } from "@/store/authentication.store";
+import { useUserStore } from "@/store/user.store";
+import { userService } from "@/services/user.service";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -10,8 +12,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AuthenticationScreen = () => {
   const [showWebView, setShowWebView] = useState<boolean>(false);
-  const { token, loading, error, setJWTToken, removeJWTToken } =
-    useAuthenticationStore();
+  const {
+    token,
+    loading: authLoading,
+    error: authError,
+    setJWTToken,
+  } = useAuthenticationStore();
+  const {
+    loading: userLoading,
+    error: userError,
+    setUser,
+    setLoading: setUserLoading,
+    setError: setUserError,
+  } = useUserStore();
   const [url, setUrl] = useState<string>("");
 
   const [buttonLoading, setButtonLoading] = useState<{
@@ -44,13 +57,41 @@ const AuthenticationScreen = () => {
     }, 700);
   };
 
-  const handleTokenReceived = (token: string) => {
-    setJWTToken(token);
-    // Set success status for the button
-    setButtonStatus((prev) => ({
-      ...prev,
-      spotify: 200,
-    }));
+  const handleTokenReceived = async (token: string) => {
+    try {
+      // 1. Met à jour le token
+      setJWTToken(token);
+
+      // 2. Récupère les infos utilisateur
+      setUserLoading(true);
+      try {
+        const userData = await userService.getCurrentUser();
+        setUser(userData);
+        setUserError(null);
+      } catch (error) {
+        setUserError(
+          error instanceof Error ? error.message : "Failed to fetch user",
+        );
+        throw error;
+      } finally {
+        setUserLoading(false);
+      }
+
+      // 3. Met à jour l'UI
+      setButtonLoading((prev) => ({ ...prev, spotify: false }));
+      setTimeout(() => {
+        setButtonStatus((prev) => ({
+          ...prev,
+          spotify: 200,
+        }));
+      }, 700);
+    } catch (error) {
+      setButtonLoading((prev) => ({ ...prev, spotify: false }));
+      setButtonStatus((prev) => ({
+        ...prev,
+        spotify: 400,
+      }));
+    }
   };
 
   const handleAppleConnect = async () => {
@@ -82,12 +123,12 @@ const AuthenticationScreen = () => {
           <Button
             label="CONNECT WITH SPOTIFY"
             leftIcon={require("../assets/images/music-logos/spotify.png")}
-            loading={buttonLoading.spotify || loading}
+            loading={buttonLoading.spotify || authLoading || userLoading}
             onPress={handleSpotifyConnect}
             colors={{ base: "#35BE62", pressed: "#5dba7c" }}
             responseStatus={buttonStatus.spotify}
             successMessage={"CONNECTED!"}
-            errorMessage={error ?? ""}
+            errorMessage={authError ?? userError ?? ""}
           />
 
           <Button
