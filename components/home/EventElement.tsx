@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -6,27 +6,31 @@ import {
   TouchableOpacityProps,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import ClassicButton from "@/components/ClassicButton";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Event } from "@/types/event.types";
+import { useRouter } from "expo-router";
+import Badge from "../Badge";
+import { useUserStore } from "@/store/user.store";
+import { User } from "@/types/user.types";
+import { getStatusColors, getStatusText } from "@/utils/event.utils";
+import DateDisplay from "../DateDisplay";
 
 interface EventElementProps extends Omit<TouchableOpacityProps, "onPress"> {
   event: Event;
-  onPress: (event: Event) => void;
 }
 
-const EventElement: React.FC<EventElementProps> = ({
-  event,
-  onPress,
-  ...props
-}) => {
+const EventElement: React.FC<EventElementProps> = ({ event, ...props }) => {
+  const router = useRouter();
+  const { getUser } = useUserStore();
+  const myUser: User = getUser()!;
+
   const formatDate = (dateArray: number[]) => {
-    if (!Array.isArray(dateArray) || dateArray.length < 6) {
+    if (!Array.isArray(dateArray) || dateArray.length < 5) {
       return "Date invalide";
     }
 
     const [year, month, day, hours, minutes] = dateArray;
-    const date = new Date(year, month - 1, day, hours, minutes); // month-1 car les mois commencent à 0 en JS
+    const date = new Date(year, month - 1, day, hours, minutes);
 
     return new Intl.DateTimeFormat("fr-FR", {
       day: "2-digit",
@@ -38,64 +42,36 @@ const EventElement: React.FC<EventElementProps> = ({
     }).format(date);
   };
 
-  const getStatusColor = (status: Event["status"]) => {
-    switch (status) {
-      case "SCHEDULED":
-        return "#4CAF50";
-      case "STARTED":
-        return "#2196F3";
-      case "CANCELLED":
-        return "#F44336";
-      case "FINISHED":
-        return "#9E9E9E";
-      default:
-        return "#9E9E9E";
-    }
-  };
-
-  const getStatusText = (status: Event["status"]) => {
-    switch (status) {
-      case "SCHEDULED":
-        return "Prévu";
-      case "STARTED":
-        return "En cours";
-      case "CANCELLED":
-        return "Annulé";
-      case "FINISHED":
-        return "Terminé";
-      default:
-        return status;
-    }
-  };
+  const handleEventPress = useCallback(() => {
+    router.push({
+      pathname: "/(details)/event-detail",
+      params: { eventId: JSON.stringify(event.id) },
+    });
+  }, [router]);
+  const isCurrentUserMember: boolean = event.participants.some(
+    (member) => member.email === myUser.email,
+  );
 
   return (
     <TouchableOpacity
       style={[styles.container]}
-      onPress={() => onPress(event)}
+      onPress={() => handleEventPress()}
       {...props}
     >
       <View style={styles.content}>
         {/* En-tête avec statut et date */}
         <View style={styles.header}>
-          <View
-            style={[
-              styles.statusBadge,
-              { backgroundColor: getStatusColor(event.status) },
-            ]}
-          >
-            <ThemedText style={styles.statusText}>
-              {getStatusText(event.status)}
-            </ThemedText>
-          </View>
-          <ThemedText style={styles.date}>
-            {formatDate(event.scheduledStart as unknown as number[])}
+          <ThemedText style={styles.name} numberOfLines={2}>
+            {event.name}
           </ThemedText>
+          <DateDisplay
+            dateArray={event.scheduledStart}
+            backgroundColor="rgba(42, 42, 42, 0.9)"
+            borderColor="rgba(255, 255, 255, 0.2)"
+          />
         </View>
 
         {/* Titre de l'événement */}
-        <ThemedText style={styles.name} numberOfLines={2}>
-          {event.name}
-        </ThemedText>
 
         {/* Adresse */}
         <View style={styles.addressContainer}>
@@ -129,12 +105,29 @@ const EventElement: React.FC<EventElementProps> = ({
               {event.participants.length}
             </ThemedText>
           </View>
-          <ClassicButton
-            title="Participer"
-            onPress={() => onPress(event)}
-            style={styles.participateButton}
-            backgroundColor="rgba(52, 152, 219, 0.8)"
-          />
+
+          <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+            <Badge
+              text={getStatusText(event.status)}
+              backgroundColor={getStatusColors(event.status).background}
+              borderColor={getStatusColors(event.status).border}
+            />
+            {isCurrentUserMember && (
+              <Badge
+                text="membre"
+                backgroundColor="rgba(14, 128, 86,1)"
+                borderColor="rgba(6, 64, 43,0.5)"
+              />
+            )}
+
+            {!isCurrentUserMember && (
+              <Badge
+                text="pas membre"
+                backgroundColor="rgba(161, 20, 18,1)"
+                borderColor="rgba(128, 16, 14,0.5)"
+              />
+            )}
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -147,7 +140,8 @@ const styles = StyleSheet.create({
     height: 200,
     marginHorizontal: 10,
     borderRadius: 12,
-    backgroundColor: "#2a2a2a",
+    //backgroundColor: "#2a2a2a",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
     overflow: "hidden",
     elevation: 3,
     shadowColor: "#000",

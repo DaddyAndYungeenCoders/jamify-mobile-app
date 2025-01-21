@@ -30,12 +30,10 @@ export default function ConversationDetails() {
     const {conversation: conversationData, isLoading} = useConversation(parsedConversation.id);
 
 
-    useEffect(() => {
-        console.log("Conversation data participant in component:", conversationData?.participants);
-        const otherParticipant = conversationData?.participants?.find(
-            (p) => p.userProviderId !== currentUserId,
-        );
-        // console.log("Other participant:", otherParticipant);
+  useEffect(() => {
+    const otherParticipant = conversationData?.participants.find(
+      (p) => p.id.toString() !== currentUserId,
+    );
 
         if (otherParticipant) {
             navigation.setOptions({

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,9 +7,10 @@ import {
   Platform,
   TextInput,
   TouchableOpacity,
+  Text,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import Button from "@/components/Button";
 import { eventService } from "@/services/event.service";
@@ -21,34 +22,30 @@ const CreateEventScreen = () => {
   const router = useRouter();
   const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
 
-  /*
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      setResponseStatus(400);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await eventService.createEvent(formData);
-      setResponseStatus(200);
-
-      setTimeout(() => {
-        router.back();
-      }, 1500);
-    } catch (error) {
-      console.error("Erreur complète:", error);
-      setResponseStatus(500);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  */
   const [isLoading, setIsLoading] = useState(false);
   const [responseStatus, setResponseStatus] = useState<number | null>(null);
 
-  // Calculer la date minimum (3 heures après l'heure actuelle)
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      centerComponent: (
+        <View
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Text style={{ fontSize: 16, color: "white", fontWeight: "600" }}>
+            Event
+          </Text>
+        </View>
+      ),
+    });
+  }, []); // Dépendances vides car nous ne voulons l'exécuter qu'une fois
   const getMinimumDate = () => {
     const date = new Date();
     date.setHours(date.getHours() + 4);
@@ -57,7 +54,6 @@ const CreateEventScreen = () => {
     return date;
   };
 
-  // Initialiser avec la date minimum
   const initialDate = getMinimumDate();
   const [selectedDate, setSelectedDate] = useState(initialDate);
   const [formData, setFormData] = useState<EventCreate>({
@@ -309,7 +305,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#1a1a1a",
+    //    backgroundColor: "#1a1a1a",
+    backgroundColor: "rgba(0, 0, 0, 0)",
   },
   scrollView: {
     flex: 1,
