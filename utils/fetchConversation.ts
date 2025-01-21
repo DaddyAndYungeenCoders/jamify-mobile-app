@@ -1,8 +1,8 @@
 import {CHAT_API_URL} from "@/constants/Utils";
-import {ChatMessage, ChatMessageToSend, ConversationDetails} from "@/types/message.types";
+import {ChatMessageToSend, IConversationDetails} from "@/types/message.types";
 import {useAuthenticationStore} from "@/store/authentication.store";
 
-export const fetchConversationsForCurrentUser = async (): Promise<ConversationDetails[]> => {
+export const fetchConversationsForCurrentUser = async (): Promise<IConversationDetails[]> => {
     const {token} = useAuthenticationStore.getState();
     // FIXME: Replace with actual user ID
     const userId = "123";

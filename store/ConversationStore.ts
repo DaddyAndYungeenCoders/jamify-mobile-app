@@ -1,17 +1,17 @@
-import { ChatMessage, ConversationDetails } from "@/types/message.types";
+import { ChatMessage, IConversationDetails } from "@/types/message.types";
 import { create } from "zustand";
 import { CHAT_API_URL } from "@/constants/Utils";
 import { useAuthenticationStore } from "@/store/authentication.store";
 import {fetchConversationsForCurrentUser} from "@/utils/fetchConversation";
 
 interface ConversationStore {
-    conversations: Map<string, ConversationDetails>;
+    conversations: Map<string, IConversationDetails>;
     currentConversationId: string | null;
     initialized: boolean;
     // Actions
     addMessage: (roomId: string, message: ChatMessage) => void;
     setCurrentConversation: (conversationId: string) => void;
-    updateConversation: (conversation: ConversationDetails) => void;
+    updateConversation: (conversation: IConversationDetails) => void;
     // Async actions
     fetchConversationForRoom: (roomId: string) => Promise<void>;
     sendMessage: (roomId: string, content: string, senderId: string) => Promise<void>;
@@ -106,7 +106,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 
             set(state => {
                 const conversationsMap = new Map(state.conversations);
-                conversations.forEach((conversation: ConversationDetails) => {
+                conversations.forEach((conversation: IConversationDetails) => {
                     conversationsMap.set(conversation.id, conversation);
                 });
                 return { conversations: conversationsMap, initialized: true };
@@ -123,7 +123,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 
             set(state => {
                 const conversationsMap = new Map(state.conversations);
-                conversations.forEach((conversation: ConversationDetails) => {
+                conversations.forEach((conversation: IConversationDetails) => {
                     conversationsMap.set(conversation.id, conversation);
                 });
                 return { conversations: conversationsMap };

@@ -14,27 +14,29 @@ import {useLocalSearchParams, useNavigation} from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {useConversation} from "@/hooks/useConversation";
 import {MessageBubble} from "@/components/MessageBubble";
-import {ChatMessage, ChatMessageToSend} from "@/types/message.types";
+import {ChatMessage, ChatMessageToSend, IConversationDetails} from "@/types/message.types";
 import {sendMessageToApi} from "@/utils/fetchConversation";
 
 export default function ConversationDetails() {
-    // const {conversation} = useLocalSearchParams();
-    // const parsedConversation = JSON.parse(conversation as string);
+    const {conversation} = useLocalSearchParams();
+    const parsedConversation: IConversationDetails = JSON.parse(conversation as string);
     const navigation = useNavigation();
+    // TODO: get current user id from auth store
     const currentUserId = "123";
     const flatListRef = useRef<FlatList<ChatMessage>>(null);
     const [message, setMessage] = useState("");
 
     const {conversation: conversationData, isLoading} = useConversation(
-        //TODO: real roomId
-        "private-room_123_qsdqsd",
+        parsedConversation.id,
     );
 
+
     useEffect(() => {
-        console.log("Conversation data in component:", conversationData);
+        console.log("Conversation data participant in component:", conversationData?.participants);
         const otherParticipant = conversationData?.participants?.find(
             (p) => p.id !== currentUserId,
         );
+        // console.log("Other participant:", otherParticipant);
 
         if (otherParticipant) {
             navigation.setOptions({

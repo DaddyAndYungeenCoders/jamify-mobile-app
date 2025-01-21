@@ -1,13 +1,5 @@
 import { User } from "./user.types";
 
-// export interface Message {
-//   id: string;
-//   content: string;
-//   timestamp: number;
-//   senderId: string;
-//   status?: "sent" | "delivered" | "read";
-// }
-//
 export interface ChatMessageToSend {
   content: string;
   senderId: string;
@@ -23,7 +15,7 @@ export interface ChatMessage {
   metadata?: any;
 }
 
-export interface ConversationDetails {
+export interface IConversationDetails {
   id: string;
   participants: User[];
   messages: ChatMessage[];
