@@ -8,6 +8,11 @@ import { User } from "./user.types";
 //   status?: "sent" | "delivered" | "read";
 // }
 //
+export interface ChatMessageToSend {
+  content: string;
+  senderId: string;
+  roomId: string;
+}
 
 export interface ChatMessage {
   id: string;

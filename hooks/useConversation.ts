@@ -2,13 +2,13 @@ import {useEffect} from "react";
 import {useConversationStore} from "@/store/ConversationStore";
 
 export const useConversation = (roomId: string) => {
-    const {conversations, fetchConversation, sendMessage} = useConversationStore();
+    const {conversations, fetchConversationForRoom, sendMessage, refreshConversations} = useConversationStore();
     const conversation = conversations.get(roomId);
 
     useEffect(() => {
-        if (!conversation) {
-            fetchConversation(roomId);
-        }
+        console.log("useConversation");
+        // TODO fetch one conversation for room
+        fetchConversationForRoom(roomId).then(r => console.log("Messages fetched : " + r));
     }, [roomId]);
 
     return {

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import io from "socket.io-client";
 import { useConversationStore } from "@/store/ConversationStore";
 import { WS_API_URL } from "@/constants/Utils";
+import {ChatMessage} from "@/types/message.types";
 
 export const useWebSocketConnection = () => {
     const addMessage = useConversationStore(state => state.addMessage);
@@ -17,8 +18,9 @@ export const useWebSocketConnection = () => {
             socket.emit('register', '123');
         });
 
-        socket.on('NEW_MESSAGE', (data) => {
-            addMessage(data.conversationId, data.message);
+        socket.on('new-message', (data: ChatMessage) => {
+            console.log('New message:', data);
+            addMessage(data.roomId, data);
         });
 
         socket.on('disconnect', () => {

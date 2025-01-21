@@ -14,7 +14,8 @@ import {useLocalSearchParams, useNavigation} from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {useConversation} from "@/hooks/useConversation";
 import {MessageBubble} from "@/components/MessageBubble";
-import {ChatMessage} from "@/types/message.types";
+import {ChatMessage, ChatMessageToSend} from "@/types/message.types";
+import {sendMessageToApi} from "@/utils/fetchConversation";
 
 export default function ConversationDetails() {
     // const {conversation} = useLocalSearchParams();
@@ -25,11 +26,13 @@ export default function ConversationDetails() {
     const [message, setMessage] = useState("");
 
     const {conversation: conversationData, isLoading} = useConversation(
-        "123",
+        //TODO: real roomId
+        "private-room_123_qsdqsd",
     );
 
     useEffect(() => {
-        const otherParticipant = conversationData?.participants.find(
+        console.log("Conversation data in component:", conversationData);
+        const otherParticipant = conversationData?.participants?.find(
             (p) => p.id !== currentUserId,
         );
 
@@ -48,10 +51,14 @@ export default function ConversationDetails() {
         }
     }, [conversationData]);
 
-    const sendMessage = () => {
+    const sendMessage = async () => {
         if (message.trim()) {
-            // Ici viendra la logique d'envoi à l'API
-            console.log("Sending message:", message);
+            const messageToSend: ChatMessageToSend = {
+                content: message,
+                senderId: currentUserId,
+                roomId: conversationData?.id as string,
+            }
+            await sendMessageToApi(messageToSend);
             setMessage("");
             // Scroll to bottom après envoi
             flatListRef.current?.scrollToEnd();

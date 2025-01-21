@@ -13,7 +13,7 @@ interface ConversationStore {
     setCurrentConversation: (conversationId: string) => void;
     updateConversation: (conversation: ConversationDetails) => void;
     // Async actions
-    fetchConversation: (roomId: string) => Promise<void>;
+    fetchConversationForRoom: (roomId: string) => Promise<void>;
     sendMessage: (roomId: string, content: string, senderId: string) => Promise<void>;
     initializeConversations: () => Promise<void>;
     refreshConversations: () => Promise<void>;
@@ -53,9 +53,10 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
         });
     },
 
-    fetchConversation: async (roomId) => {
+    fetchConversationForRoom: async (roomId) => {
+        console.log("fetchMessageForRoom");
         try {
-            const response = await fetch(`${CHAT_API_URL}/messages/${roomId}`, {
+            const response = await fetch(`${CHAT_API_URL}/messages/conversation/room/${roomId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -65,9 +66,10 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
                 },
             });
             if (!response.ok) {
-                throw new Error(`Failed to fetch conversation in room : ${roomId} (response : ${response.status}) because of ${response.statusText}`);
+                throw new Error(`Failed to fetch messages for room : ${roomId} (response : ${response.status}) because of ${response.statusText}`);
             }
             const conversation = await response.json();
+            console.log("Nb of ChatMessage fetched: " + conversation.length);
 
             set(state => {
                 const conversations = new Map(state.conversations);
@@ -75,7 +77,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
                 return { conversations };
             });
         } catch (error) {
-            console.error('Failed to fetch conversation:', error);
+            console.error('Failed to fetch ChatMessage for room:', error);
         }
     },
 
@@ -115,6 +117,7 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
     },
 
     refreshConversations: async () => {
+        console.log("refreshConversations");
         try {
             const conversations = await fetchConversationsForCurrentUser();
 
