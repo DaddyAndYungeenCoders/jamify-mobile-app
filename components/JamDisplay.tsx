@@ -10,6 +10,7 @@ import {User} from "@/types/user.types";
 import {jamService} from "@/services/jam.service";
 import {userService} from "@/services/user.service";
 import Badge from "@/components/Badge";
+import Participants from "@/components/Participants";
 
 
 const JamDisplay = ({
@@ -155,16 +156,16 @@ const JamDisplay = ({
                             }
                         </View>
                         <View style={styles.participants}>
-
-                            {
-                                jam.participants?.length > 0 ? (
-                                    jam.participants.map((participant, index) => (
-                                        <ParticipantDisplay key={index} user={participant}/>
-                                    ))
-                                ) : (
-                                    <ThemedText>Aucun participant</ThemedText>
-                                )
-                            }
+<Participants users={jam.participants}/>
+                            {/*{*/}
+                            {/*    jam.participants?.length > 0 ? (*/}
+                            {/*        jam.participants.map((participant, index) => (*/}
+                            {/*            <ParticipantDisplay key={index} user={participant}/>*/}
+                            {/*        ))*/}
+                            {/*    ) : (*/}
+                            {/*        <ThemedText>Aucun participant</ThemedText>*/}
+                            {/*    )*/}
+                            {/*}*/}
                         </View>
                     </View>
 

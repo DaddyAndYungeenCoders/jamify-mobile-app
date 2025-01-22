@@ -1,8 +1,9 @@
 import React from "react";
 import {Image, StyleSheet, TouchableOpacity, View} from "react-native";
 import {ThemedText} from "@/components/ThemedText";
-import {Jam} from "@/types/jam.types";
+import {Jam, JamStatus} from "@/types/jam.types";
 import {useRouter} from "expo-router";
+import Badge from "@/components/Badge";
 
 const JamElement = ({ jam }) => {
     const router = useRouter();
@@ -23,7 +24,44 @@ const JamElement = ({ jam }) => {
                     <ThemedText style={styles.text}>{jam.name}</ThemedText>
                     <View style={styles.detail}>
                         <ThemedText style={styles.text}>par {jam.host.name.split(' ')[0]}</ThemedText>
-                        <ThemedText style={[styles.text, styles.heure]}>{jam.status}</ThemedText>
+                        {/*<ThemedText style={[styles.text, styles.heure]}>{jam.status}</ThemedText>*/}
+                        {jam.status === JamStatus.SCHEDULED ? (
+                            <Badge
+                                text="Planifié"
+                                backgroundColor="rgba(34, 139, 34, 1)" // Vert foncé (succès, planifié)
+                                borderColor="rgba(34, 139, 34, 0.5)"
+                            />
+                        ) : jam.status === JamStatus.CANCELED ? (
+                            <Badge
+                                text="Annulé"
+                                backgroundColor="rgba(255, 69, 58, 1)" // Rouge vif (erreur, annulé)
+                                borderColor="rgba(255, 69, 58, 0.5)"
+                            />
+                        ) : jam.status === JamStatus.RUNNING ? (
+                            <Badge
+                                text="En cours"
+                                backgroundColor="rgba(30, 144, 255, 1)" // Bleu vif (activité en cours)
+                                borderColor="rgba(30, 144, 255, 0.5)"
+                            />
+                        ) : jam.status === JamStatus.PAUSED ? (
+                            <Badge
+                                text="En pause"
+                                backgroundColor="rgba(255, 165, 0, 1)" // Orange (pause)
+                                borderColor="rgba(255, 165, 0, 0.5)"
+                            />
+                        ) : jam.status === JamStatus.STOPPED ? (
+                            <Badge
+                                text="Arrêté"
+                                backgroundColor="rgba(128, 128, 128, 1)" // Gris (inactif)
+                                borderColor="rgba(128, 128, 128, 0.5)"
+                            />
+                        ) : (
+                            <Badge
+                                text="Erreur"
+                                backgroundColor="rgba(128, 0, 128, 1)" // Violet (erreur ou inconnu)
+                                borderColor="rgba(128, 0, 128, 0.5)"
+                            />
+                        )}
                     </View>
                 </View>
             </View>

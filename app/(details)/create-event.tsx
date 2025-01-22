@@ -15,7 +15,7 @@ import { ThemedText } from "@/components/ThemedText";
 import Button from "@/components/Button";
 import { eventService } from "@/services/event.service";
 import { EventCreate } from "@/types/event.types";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, {AndroidNativeProps, DateTimePickerAndroid} from "@react-native-community/datetimepicker";
 import { useRefreshStore } from "@/store/refresh.store";
 
 const CreateEventScreen = () => {
@@ -67,7 +67,6 @@ const CreateEventScreen = () => {
     },
   });
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const validateDate = (date: Date) => {
     const minimumDate = getMinimumDate();
@@ -168,6 +167,17 @@ const CreateEventScreen = () => {
     });
   };
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const openAndroidDatePicker = () => {
+    DateTimePickerAndroid.open({
+      value: selectedDate,
+      // mode: "datetime",
+      onChange: handleDateChange,
+      minimumDate: getMinimumDate(),
+    });
+  };
+
   return (
     <GestureHandlerRootView style={styles.gestureRoot}>
       <KeyboardAvoidingView
@@ -197,16 +207,43 @@ const CreateEventScreen = () => {
 
             <View style={styles.inputGroup}>
               <ThemedText style={styles.label}>Date et heure</ThemedText>
-              <TouchableOpacity
-                style={styles.datePickerButton}
-                onPress={() => setShowDatePicker(true)}
-              >
-                <ThemedText style={styles.datePickerText}>
-                  {formData.scheduledStart
-                    ? formatDateTime(selectedDate)
-                    : "Sélectionner une date"}
-                </ThemedText>
-              </TouchableOpacity>
+              {Platform.OS === "android" ? (
+                <TouchableOpacity
+                  style={styles.datePickerButton}
+                  onPress={openAndroidDatePicker}
+                >
+                  <ThemedText style={styles.datePickerText}>
+                    {selectedDate.toLocaleString("fr-FR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </ThemedText>
+                </TouchableOpacity>
+              ) : (
+                showDatePicker && (
+                  <DateTimePicker
+                    value={selectedDate}
+                    mode="datetime"
+                    display="default"
+                    onChange={handleDateChange}
+                    minimumDate={getMinimumDate()}
+                  />
+                )
+              )}
+
+              {/*<TouchableOpacity*/}
+              {/*  style={styles.datePickerButton}*/}
+              {/*  onPress={() => setShowDatePicker(true)}*/}
+              {/*>*/}
+              {/*  <ThemedText style={styles.datePickerText}>*/}
+              {/*    {formData.scheduledStart*/}
+              {/*      ? formatDateTime(selectedDate)*/}
+              {/*      : "Sélectionner une date"}*/}
+              {/*  </ThemedText>*/}
+              {/*</TouchableOpacity>*/}
 
               {showDatePicker && (
                 <DateTimePicker

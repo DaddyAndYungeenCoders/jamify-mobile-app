@@ -68,7 +68,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
 
 export default function Conversation(): JSX.Element {
     const router = useRouter();
-    const {conversations, initializeConversations, initialized} = useConversationStore();
+    const {conversations, initializeConversations, initialized, refreshConversations} = useConversationStore();
     const {getUser} = useUserStore();
     const user = getUser();
 
@@ -77,6 +77,11 @@ export default function Conversation(): JSX.Element {
         if (!initialized) {
             if (user) {
                 initializeConversations(user.userProviderId);
+            }
+        }
+        else {
+            if (user){
+                refreshConversations(user.userProviderId);
             }
         }
     }, [initialized, initializeConversations]);
