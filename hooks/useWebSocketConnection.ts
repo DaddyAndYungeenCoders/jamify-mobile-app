@@ -46,7 +46,7 @@ export const useWebSocketConnection = () => {
       handleConversations();
     });
 
-    socket.on("new-notif", (data: NotificationTypes) => {
+    socket.on("new-notification", (data: NotificationTypes) => {
       console.log("New notif:", data);
       addNotification(data);
     });
