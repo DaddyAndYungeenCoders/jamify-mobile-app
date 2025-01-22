@@ -4,7 +4,7 @@ import { Playlist } from "@/types/playlist.types";
 import { Badge } from "./badges.types";
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   playlists?: Playlist[];
   events?: Event[];

@@ -48,6 +48,7 @@ class UserService {
       // Transformer la réponse API en objet User
       const user: User = {
         id: userData.userProviderId,
+        userProviderId: userData.userProviderId,
         name: userData.name,
         email: userData.email,
         country: userData.country,

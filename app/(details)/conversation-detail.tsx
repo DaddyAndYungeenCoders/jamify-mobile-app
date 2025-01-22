@@ -1,36 +1,45 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
   FlatList,
-  TextInput,
+  Image,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
+  Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useConversation } from "@/hooks/useConversation";
 import { MessageBubble } from "@/components/MessageBubble";
-import { Message } from "@/types/message.types";
+import {
+  ChatMessage,
+  ChatMessageToSend,
+  IConversationDetails,
+} from "@/types/message.types";
+import { sendMessageToApi } from "@/utils/fetchConversation";
+import { useUserStore } from "@/store/user.store";
 
 export default function ConversationDetails() {
   const { conversation } = useLocalSearchParams();
-  const parsedConversation = JSON.parse(conversation as string);
+  const parsedConversation: IConversationDetails = JSON.parse(
+    conversation as string,
+  );
   const navigation = useNavigation();
-  const currentUserId = "1";
-  const flatListRef = useRef<FlatList<Message>>(null);
+  const user = useUserStore((state) => state.user);
+  const currentUserId = user?.userProviderId;
+  const flatListRef = useRef<FlatList<ChatMessage>>(null);
   const [message, setMessage] = useState("");
 
-  const { data: conversationData, isLoading } = useConversation(
+  const { conversation: conversationData, isLoading } = useConversation(
     parsedConversation.id,
   );
 
   useEffect(() => {
     const otherParticipant = conversationData?.participants.find(
-      (p) => p.id.toString() !== currentUserId,
+      (p) => p.userProviderId.toString() !== currentUserId,
     );
 
     if (otherParticipant) {
@@ -48,10 +57,15 @@ export default function ConversationDetails() {
     }
   }, [conversationData]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (message.trim()) {
-      // Ici viendra la logique d'envoi à l'API
-      console.log("Sending message:", message);
+      const messageToSend: ChatMessageToSend = {
+        content: message,
+        senderId: currentUserId ? currentUserId : "",
+        roomId: conversationData?.id as string,
+      };
+
+      await sendMessageToApi(messageToSend);
       setMessage("");
       // Scroll to bottom après envoi
       flatListRef.current?.scrollToEnd();
