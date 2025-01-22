@@ -20,8 +20,8 @@ export default function HomeScreen() {
     <ScrollView
       style={styles.front}
       contentContainerStyle={{
-        flex: 1,
-        rowGap: 30,
+        // flex: 1,
+        // rowGap: 30,
       }}
     >
       <Events key={refreshKey} onRefresh={handleRefresh} />
@@ -31,15 +31,11 @@ export default function HomeScreen() {
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "red",
-    flex: 1,
-  },
   profilHeader: {},
   front: {
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: 30,
+    // gap: 30,
   },
 });

@@ -50,10 +50,14 @@ class PlaylistService {
 
     public async generate(generatePlaylist: GeneratePlaylistDtoTypes) : Promise<Playlist> {
         try {
+            const user: User = await userService.getCurrentUser();
             const response = await fetch(this.baseUrl + "/generate", {
                 method: "POST",
                 headers: this.getAuthHeaders(),
-                body: JSON.stringify(generatePlaylist),
+                body: JSON.stringify({
+                    userId : user.id,
+                    data: generatePlaylist,
+                }),
             });
             // console.log("BODY : ", response);
             console.log(response.url)

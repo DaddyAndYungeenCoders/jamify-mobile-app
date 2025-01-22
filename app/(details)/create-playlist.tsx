@@ -138,7 +138,7 @@ const CreatePlaylistScreen = () => {
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <ThemedText style={styles.label}>Thèmes (séparer par un espace)</ThemedText>
+                            <ThemedText style={styles.label}>Thèmes (séparés par un espace)</ThemedText>
                             <TextInput
                                 style={styles.input}
                                 value={formData.tags.join(" ")}
