@@ -12,8 +12,8 @@ import {userService} from "@/services/user.service";
 
 
 const JamDisplay = ({
-                        jamId, token
-                    }: number, string) => {
+                        jamId
+                    }: number) => {
 
         const [jamer, setJamer]: JamerDisplayProps = useState(null);
         const [playing, setPlaying]: boolean = useState(false);
@@ -79,7 +79,7 @@ const JamDisplay = ({
                     <View>
 
                         <ThemedText style={styles.title}>{jam.name}</ThemedText>
-                        <ThemedText>{jam.status}</ThemedText>
+                        <ThemedText>Status : {jam.status}</ThemedText>
                         <ThemedText>Thèmes : {jam.themes.join(", ")}</ThemedText>
                         {/*<ThemedText>{jam.messages}</ThemedText>*/}
                         <ThemedText>{jam.scheduledDate}</ThemedText>
@@ -87,24 +87,29 @@ const JamDisplay = ({
                             <JamerDisplay name={jam.host.name} image={jam.host.imgUrl}
                                           listening={jam.participants.length}/>
                         </View>
-                        {
-                            jam.participants?.length > 0 ? (
-                                jam.participants.map((participant, index) => (
-                                    <ParticipantDisplay key={index} user={participant} />
-                                ))
-                            ) : (
-                                <ThemedText>Aucun participant</ThemedText>
-                            )
-                        }
-                        {
-                            me?.name === jam.host.name ? (
-                                <ClassicButton title={"Fermer le JAM"} onPress={close}/>
-                            ) : jam.participants.some((participant) => participant.name === me?.name) ? (
-                                <ClassicButton title={"Quitter le JAM"} onPress={leave}/>
-                            ) : (
-                                <ClassicButton title={"Rejoindre le JAM"} onPress={join}/>
-                            )
-                        }
+                        <View style={styles.actionButton}>
+                            {
+                                me?.name === jam.host.name ? (
+                                    <ClassicButton title={"Fermer le JAM"} onPress={close}/>
+                                ) : jam.participants.some((participant) => participant.name === me?.name) ? (
+                                    <ClassicButton title={"Quitter le JAM"} onPress={leave}/>
+                                ) : (
+                                    <ClassicButton title={"Rejoindre le JAM"} onPress={join}/>
+                                )
+                            }
+                        </View>
+                        <View style={styles.participants}>
+
+                            {
+                                jam.participants?.length > 0 ? (
+                                    jam.participants.map((participant, index) => (
+                                        <ParticipantDisplay key={index} user={participant}/>
+                                    ))
+                                ) : (
+                                    <ThemedText>Aucun participant</ThemedText>
+                                )
+                            }
+                        </View>
                     </View>
 
                 ) : (
@@ -147,40 +152,19 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     title: {
+        textAlign: "center",
         fontSize: 18,
         fontWeight: "bold",
         color: "#fff",
         marginBottom: 10,
     },
-    progressSection: {
-        flexDirection: "row", // Aligne les enfants horizontalement
-        alignItems: "center",
-        justifyContent: "space-between",
-        width: "100%",
-        marginTop: 10,
+    actionButton: {
+        margin: 15,
     },
-    progressBar: {
-        flex: 1, // Permet à la barre de prendre l'espace restant
-        marginHorizontal: 10, // Espacement entre les temps et la barre
-    },
-    time: {
-        fontSize: 14,
-        color: "#fff",
-    },
-    description: {
-        marginTop: 20,
-        fontSize: 16,
-        textAlign: "center",
-        color: "#777",
-    },
-    playButton: {
-        // marginTop: 10,
-        // width: 20,
-        // height: 20,
-        backgroundColor: "transparent",
-        justifyContent: "center",
-        alignItems: "center",
-    },
+    participants: {
+
+    }
+
 });
 
 export default JamDisplay;

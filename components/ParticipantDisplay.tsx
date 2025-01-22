@@ -20,6 +20,9 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flexDirection: "row",
         width: "100%",
+        backgroundColor: "#9b9b9b",
+        borderRadius: 8,
+        marginBottom: 10,
     },
     images: {
         width: 100,
@@ -30,21 +33,13 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end",
         flexDirection: "row",
     },
-    people: {
-        margin: 5,
-        width: 15,
-        height: 15,
-    },
     title: {
         flex: 1,
         fontSize: 18,
         fontWeight: "bold",
         color: "#fff",
         marginLeft: 10,
-    },
-    listening: {
-        fontSize: 14,
-        color: "#fff",
+        alignSelf: "center",
     },
 });
 
