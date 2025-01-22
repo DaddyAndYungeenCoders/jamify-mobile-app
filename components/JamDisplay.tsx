@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     jamDetails: {
-        flex: 2, // Prend plus d'espace à gauche
+        flex: 2,
         justifyContent: "flex-start",
     },
     themesContainer: {
