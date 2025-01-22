@@ -27,7 +27,7 @@ export interface Jam {
 export interface JamDTO {
     id: number;
     name: string;
-    hostId: number;
+    host_user_provider_id: string;
     status: JamStatus;
     participants: number[];
     themes: string[];

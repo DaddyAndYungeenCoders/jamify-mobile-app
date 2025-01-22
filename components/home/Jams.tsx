@@ -1,5 +1,5 @@
 import React, {useEffect, useCallback, useRef, memo} from "react";
-import {View, StyleSheet, FlatList, Animated, ScrollView} from "react-native";
+import {View, StyleSheet, FlatList, Animated, ScrollView, RefreshControl} from "react-native";
 import {useRouter} from "expo-router";
 import {ThemedText} from "@/components/ThemedText";
 import JamElement from "@/components/home/JamElement";
@@ -125,6 +125,13 @@ const Jams: React.FC<JamsProps> = ({onRefresh}) => {
             <ScrollView
                 horizontal={true}
                 contentContainerStyle={styles.scrollContainer}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoading}
+                        onRefresh={onRefresh || refetch} // Appelle la fonction de rafraîchissement
+                        tintColor="white" // Couleur de l'indicateur
+                    />
+                }
             >
                 {jams ? (
                     jams.map((jam, index) => <JamElement key={index} jam={jam} />)
@@ -132,6 +139,7 @@ const Jams: React.FC<JamsProps> = ({onRefresh}) => {
                     <ThemedText style={styles.error}>Aucun Jam</ThemedText>
                 )}
             </ScrollView>
+
 
         </Animated.View>
     );

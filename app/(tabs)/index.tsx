@@ -1,10 +1,9 @@
 // screens/HomeScreen.tsx
 import {ScrollView, StyleSheet} from "react-native";
 import {useCallback, useState} from "react";
-import JamsBack from "@/components/home/JamsBack";
-import JamsTofix from "@/components/home/JamToFIx";
 import Jams from "@/components/home/Jams";
 import Events from "@/components/home/Events";
+import Playlists from "@/components/home/Playlists";
 
 export default function HomeScreen() {
   const [refreshKey, setRefreshKey] = useState("event" + 0);
@@ -19,25 +18,22 @@ export default function HomeScreen() {
     <ScrollView
       style={styles.front}
       contentContainerStyle={{
-        flex: 1,
-        rowGap: 30,
+        // flex: 1,
+        // rowGap: 30,
       }}
     >
       <Events key={refreshKey} onRefresh={handleRefresh} />
       <Jams key={jamRefreshKey} onRefresh={handleRefresh}/>
+      <Playlists/>
     </ScrollView>
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "red",
-    flex: 1,
-  },
   profilHeader: {},
   front: {
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: 30,
+    // gap: 30,
   },
 });

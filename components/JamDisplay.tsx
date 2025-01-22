@@ -28,6 +28,7 @@ const JamDisplay = ({
                 try {
                     setJam(await jamService.getById(jamId));
                     setMe(await userService.getCurrentUser());
+                    console.log("Fetch")
 
                 } catch (error) {
                     console.error("Erreur lors du chargement des données:", error);
@@ -41,26 +42,24 @@ const JamDisplay = ({
 
         const join = async () => {
             if ("id" in jam) {
+                setIsLoading(true)
                 await jamService.join(jam.id);
             }
-            setIsLoading(true)
         };
 
         const close = async () => {
             if ("id" in jam) {
+                setIsLoading(true)
                 await jamService.stop(jam.id);
             }
-            setIsLoading(true)
         }
 
         const leave = async () => {
             if ("id" in jam) {
+                setIsLoading(true)
                 await jamService.leave(jam.id);
             }
-            setIsLoading(true)
         }
-        // console.log(token);
-        // console.log(JSON.stringify(jam.participants))
 
 
         if (isLoading) {
@@ -156,7 +155,7 @@ const JamDisplay = ({
                             }
                         </View>
                         <View style={styles.participants}>
-<Participants users={jam.participants}/>
+                            <Participants users={jam.participants}/>
                             {/*{*/}
                             {/*    jam.participants?.length > 0 ? (*/}
                             {/*        jam.participants.map((participant, index) => (*/}
