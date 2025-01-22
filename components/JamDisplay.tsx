@@ -4,11 +4,12 @@ import {ThemedText} from "@/components/ThemedText";
 import JamerDisplay from "@/components/JamerDisplay";
 import ClassicButton from "@/components/ClassicButton";
 import {JamerDisplayProps} from "@/types/jamer-display.types";
-import {Jam} from "@/types/jam.types";
+import {Jam, JamStatus} from "@/types/jam.types";
 import ParticipantDisplay from "@/components/ParticipantDisplay";
 import {User} from "@/types/user.types";
 import {jamService} from "@/services/jam.service";
 import {userService} from "@/services/user.service";
+import Badge from "@/components/Badge";
 
 
 const JamDisplay = ({
@@ -79,10 +80,65 @@ const JamDisplay = ({
                     <View>
 
                         <ThemedText style={styles.title}>{jam.name}</ThemedText>
-                        <ThemedText>Status : {jam.status}</ThemedText>
-                        <ThemedText>Thèmes : {jam.themes.join(", ")}</ThemedText>
+                        <View style={styles.details}>
+                            <View style={styles.jamDetails}>
+                                {jam.status === JamStatus.SCHEDULED ? (
+                                    <Badge
+                                        text="Planifié"
+                                        backgroundColor="rgba(34, 139, 34, 1)" // Vert foncé (succès, planifié)
+                                        borderColor="rgba(34, 139, 34, 0.5)"
+                                    />
+                                ) : jam.status === JamStatus.CANCELED ? (
+                                    <Badge
+                                        text="Annulé"
+                                        backgroundColor="rgba(255, 69, 58, 1)" // Rouge vif (erreur, annulé)
+                                        borderColor="rgba(255, 69, 58, 0.5)"
+                                    />
+                                ) : jam.status === JamStatus.RUNNING ? (
+                                    <Badge
+                                        text="En cours"
+                                        backgroundColor="rgba(30, 144, 255, 1)" // Bleu vif (activité en cours)
+                                        borderColor="rgba(30, 144, 255, 0.5)"
+                                    />
+                                ) : jam.status === JamStatus.PAUSED ? (
+                                    <Badge
+                                        text="En pause"
+                                        backgroundColor="rgba(255, 165, 0, 1)" // Orange (pause)
+                                        borderColor="rgba(255, 165, 0, 0.5)"
+                                    />
+                                ) : jam.status === JamStatus.STOPPED ? (
+                                    <Badge
+                                        text="Arrêté"
+                                        backgroundColor="rgba(128, 128, 128, 1)" // Gris (inactif)
+                                        borderColor="rgba(128, 128, 128, 0.5)"
+                                    />
+                                ) : (
+                                    <Badge
+                                        text="Erreur"
+                                        backgroundColor="rgba(128, 0, 128, 1)" // Violet (erreur ou inconnu)
+                                        borderColor="rgba(128, 0, 128, 0.5)"
+                                    />
+                                )}
+                            </View>
+                            <View style={styles.themesContainer}>
+                                {jam.themes?.length > 0 ? (
+                                    jam.themes.map((theme, index) => (
+                                        <Badge
+                                            key={index}
+                                            text={theme}
+                                            backgroundColor="rgba(128, 0, 128, 1)"
+                                            borderColor="rgba(128, 16, 14, 0.5)"
+                                            style={styles.themeBadge}
+                                        />
+                                    ))
+                                ) : (
+                                    <ThemedText>Aucun Thème</ThemedText>
+                                )}
+                            </View>
+                        </View>
+
                         {/*<ThemedText>{jam.messages}</ThemedText>*/}
-                        <ThemedText>{jam.scheduledDate}</ThemedText>
+                        {/*<ThemedText>{jam.scheduledDate}</ThemedText>*/}
                         <View style={styles.banner}>
                             <JamerDisplay name={jam.host.name} image={jam.host.imgUrl}
                                           listening={jam.participants.length}/>
@@ -161,9 +217,27 @@ const styles = StyleSheet.create({
     actionButton: {
         margin: 15,
     },
-    participants: {
-
-    }
+    participants: {},
+    details: {
+        flexDirection: "row",
+        width: "100%",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        marginVertical: 10,
+    },
+    jamDetails: {
+        flex: 2, // Prend plus d'espace à gauche
+        justifyContent: "flex-start",
+    },
+    themesContainer: {
+        alignSelf: "flex-end",
+        flexDirection: "row",
+        maxWidth: "60%",
+        flexWrap: "wrap",
+    },
+    themeBadge: {
+        margin: 5,
+    },
 
 });
 
