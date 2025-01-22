@@ -33,9 +33,7 @@ class JamService {
 
     private async handleResponse<T>(response: Response): Promise<T> {
         if (!response.ok) {
-            if (response.status === 401) {
-                useAuthenticationStore.getState().removeJWTToken();
-            }
+            Alert.alert("Error", await response.text());
             const errorData = await response.json().catch(() => ({}));
             throw new Error(
                 errorData.message || `HTTP error! status: ${response.status}`,

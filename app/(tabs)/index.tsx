@@ -1,8 +1,6 @@
 // screens/HomeScreen.tsx
 import {ScrollView, StyleSheet} from "react-native";
 import {useCallback, useState} from "react";
-import JamsBack from "@/components/home/JamsBack";
-import JamsTofix from "@/components/home/JamToFIx";
 import Jams from "@/components/home/Jams";
 import Events from "@/components/home/Events";
 import Playlists from "@/components/home/Playlists";
