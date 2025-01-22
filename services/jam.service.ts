@@ -17,7 +17,7 @@ class JamService {
     }
 
     public static getInstance(): JamService {
-        if (!JamService.instance){
+        if (!JamService.instance) {
             JamService.instance = new JamService();
         }
         return JamService.instance;
@@ -31,7 +31,7 @@ class JamService {
         };
     }
 
-    private async handleResponse<T>(response: Response): Promise<T>{
+    private async handleResponse<T>(response: Response): Promise<T> {
         if (!response.ok) {
             if (response.status === 401) {
                 useAuthenticationStore.getState().removeJWTToken();
@@ -64,19 +64,19 @@ class JamService {
             const response = await fetch(this.baseUrl + "/running", {
                 headers: this.getAuthHeaders(),
             });
-            // console.log(this.getAuthHeaders())
+            console.log(useAuthenticationStore.getState().token)
             // console.log(response)
             // console.log("BODY : ", await response.json());
             const jamDTOs = await this.handleResponse<JamDTO[]>(response);
             const jams = await this.toJams(jamDTOs);
-            console.log("jams" + JSON.stringify(jams));
+            // console.log("jams" + JSON.stringify(jams));
             return jams
         } catch (error) {
             throw this.handleError(error);
         }
     }
 
-    public async getById(id: number): Promise<Jam>{
+    public async getById(id: number): Promise<Jam> {
         try {
             const response = await fetch(this.baseUrl + "/" + id, {
                 headers: this.getAuthHeaders(),
@@ -123,14 +123,15 @@ class JamService {
 
     public async stop(jamId: number): Promise<boolean> {
         try {
-            const response = await fetch(`this.baseUrl/stop/${jamId}`, {
+            const response = await fetch(this.baseUrl + "/stop/" + jamId, {
                 method: "POST",
                 headers: this.getAuthHeaders(),
             });
-            // console.log("BODY : ", response);
+            // console.log(useAuthenticationStore.getState().token)
             console.log(response.url)
-            this.handleResponse<boolean>(response);
-            return response.json();
+            console.log(response.status)
+            // console.log("BODY : ", await response.json());
+            return response.json()
         } catch (error) {
             throw this.handleError(error);
         }
@@ -138,19 +139,17 @@ class JamService {
 
     public async join(jamId: number): Promise<boolean> {
         try {
-            const response = await fetch(`this.baseUrl/join/${jamId}`, {
+            const response = await fetch(this.baseUrl + "/join/" + jamId, {
                 method: "PUT",
                 headers: this.getAuthHeaders(),
             });
-            // console.log("BODY : ", response);
             console.log(response.url)
+            console.log(response.status)
             if (!response.ok) {
-                if (response.status == 401){
-                    Alert.alert("ERROR", await response.text());
-                }
+                Alert.alert("ERROR", await response.text());
                 throw new Error(`Erreur HTTP : ${response.status}`);
             }
-            return true;
+            return response.json()
         } catch (error) {
             throw this.handleError(error);
         }
@@ -159,16 +158,17 @@ class JamService {
 
     public async leave(jamId: number): Promise<boolean> {
         try {
-            const response = await fetch(`this.baseUrl/leave/${jamId}`, {
+            const response = await fetch(this.baseUrl + "/leave/" + jamId, {
                 method: "PUT",
                 headers: this.getAuthHeaders(),
             });
-            // console.log("BODY : ", response);
             console.log(response.url)
+            console.log(response.status)
             if (!response.ok) {
+                Alert.alert("ERROR", await response.text());
                 throw new Error(`Erreur HTTP : ${response.status}`);
             }
-            return true;
+            return response.json()
         } catch (error) {
             throw this.handleError(error);
         }
@@ -211,15 +211,15 @@ class JamService {
         }
     }
 
-    public async toJams(jamDTOs: JamDTO[]): Promise<Jam[]>{
-        let newJam:Jam[] = [];
+    public async toJams(jamDTOs: JamDTO[]): Promise<Jam[]> {
+        let newJam: Jam[] = [];
         for (const jamDTO of jamDTOs) {
             newJam.push(await this.toJam(jamDTO))
         }
         return newJam
     }
 
-    public async toDTOs(jams: Jam[]): Promise<JamDTO[]>{
+    public async toDTOs(jams: Jam[]): Promise<JamDTO[]> {
         jams.forEach((jam) => {
             return this.toDTO(jam)
         })

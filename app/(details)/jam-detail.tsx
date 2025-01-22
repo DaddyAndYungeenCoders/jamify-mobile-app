@@ -20,15 +20,6 @@ const JamDetail: React.FC = () => {
 
 
     useEffect(() => {
-        // const fetchData = async () => {
-        //     try {
-        //         setJam(await JamService.getJamById(token, jamId));
-        //     } catch (error) {
-        //         console.error("Erreur lors du chargement des données:", error);
-        //     }
-        // };
-        // fetchData().then(() => {
-        // });
         setIsLoading(false);
     }, []);
 
@@ -55,9 +46,9 @@ const JamDetail: React.FC = () => {
 
     return (
         <ScrollView>
-            <ThemedView style={styles.banner}>
-                <ThemedText style={styles.titles}>Now Playing</ThemedText>
-            </ThemedView>
+            {/*<ThemedView style={styles.banner}>*/}
+            {/*    <ThemedText style={styles.titles}>Now Playing</ThemedText>*/}
+            {/*</ThemedView>*/}
             <View style={styles.body}>
                 <JamDisplay jamId={jamId} token={token}/>
             </View>
@@ -108,7 +99,7 @@ const styles = StyleSheet.create({
         color: "#fff", // Couleur du texte noir
     },
     body: {
-        top: 100
+        // top: 100
     }
 });
 

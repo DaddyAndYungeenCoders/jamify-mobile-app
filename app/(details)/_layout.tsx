@@ -122,7 +122,7 @@ export default function DetailLayout() {
             }}
           />
             <Stack.Screen
-                name="new-jam"
+                name="create-jam"
                 options={{
                     animation: "slide_from_right",
                 }}

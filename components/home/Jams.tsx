@@ -1,55 +1,127 @@
-import React, {useEffect, useState} from "react";
-import {ScrollView, StyleSheet, View} from "react-native";
+import React, {useEffect, useCallback, useRef, memo} from "react";
+import {View, StyleSheet, FlatList, Animated, ScrollView} from "react-native";
+import {useRouter} from "expo-router";
 import {ThemedText} from "@/components/ThemedText";
 import JamElement from "@/components/home/JamElement";
-import {Jam} from "@/types/jam.types";
+import {useJams} from "@/hooks/useJams";
 import ClassicButton from "@/components/ClassicButton";
-import {useRouter} from "expo-router";
-import {jamService} from "@/services/jam.service";
+import {Jam} from "@/types/jam.types";
 
-interface JamProps {
+interface JamsProps {
+    onRefresh?: () => void;
 }
 
+const MemoizedJamElement = memo(({jam}: { jam: Jam }) => <JamElement jam={jam}/>);
 
-const Jams: React.FC<JamProps> = () => {
+const CircularLoader = () => {
+    const spinValue = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        const animation = Animated.loop(
+            Animated.timing(spinValue, {
+                toValue: 1,
+                duration: 1500,
+                useNativeDriver: true,
+            })
+        );
+        animation.start();
+
+        return () => animation.stop(); // Cleanup
+    }, [spinValue]);
+
+    const spin = spinValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: ["0deg", "360deg"],
+    });
+
+    return (
+        <View style={styles.loaderContainer}>
+            <Animated.View
+                style={[
+                    styles.loader,
+                    {
+                        transform: [{rotate: spin}],
+                    },
+                ]}
+            />
+        </View>
+    );
+};
+
+const Jams: React.FC<JamsProps> = ({onRefresh}) => {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
-    const [jams, setJams] = useState<Jam[]>();
-    const newJam = async () => {
-        router.push({
-            pathname: "/(details)/new-jam",
-        })
-    };
+    const {jams, isLoading, error, refetch} = useJams();
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setJams(await jamService.getRunningJams());
-            } catch (error) {
-                console.error("Erreur lors du chargement des données:", error);
-            }
-        };
-
-        fetchData().then(() => {
-            setIsLoading(false)
-        });
-    }, [isLoading]);
-
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     useEffect(() => {
-        if (jams) {
-            console.log("Jams data:", jams);
-        }
+        // console.log("Jams data:", jams);
     }, [jams]);
 
 
-    return (
-        <View style={styles.content}>
-            <View style={styles.header}>
+    const handleNewJam = useCallback(() => {
+        router.push("/(details)/create-jam");
+    }, [router]);
 
-                <ThemedText style={styles.text}>Ecoutez un JAM</ThemedText>
-                <ClassicButton style={styles.newJam} title="NewJam" onPress={newJam}/>
+    const renderJam = useCallback(
+        ({ item }: { item: Jam }) => <MemoizedJamElement jam={item} />,
+        []
+    );
+
+    // const keyExtractor = useCallback((item: Jam) => item.id.toString(), []);
+    const keyExtractor = useCallback((item: Jam, index: number) => `jam-${item.id}-${index}`, []);
+
+
+    const renderHeader = () => (
+        <View style={styles.header}>
+            <ThemedText style={styles.text}>Écoutez un JAM</ThemedText>
+            <ClassicButton style={styles.newJamButton} title="Nouveau Jam" onPress={handleNewJam}/>
+        </View>
+    );
+
+    if (isLoading) {
+        return (
+            <View style={styles.loaderWrapper}>
+                {renderHeader()}
+                <CircularLoader/>
             </View>
+        );
+    }
+
+    if (error || !jams?.length) {
+        return (
+            <View style={styles.errorWrapper}>
+                {renderHeader()}
+                <ThemedText style={styles.errorText}>
+                    {error ? error.message : "Aucun JAM disponible"}
+                </ThemedText>
+            </View>
+        );
+    }
+
+    return (
+        <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
+            {renderHeader()}
+            {/*<FlatList*/}
+            {/*    data={jams}*/}
+            {/*    renderItem={renderJam}*/}
+            {/*    keyExtractor={keyExtractor}*/}
+            {/*    contentContainerStyle={styles.listContainer}*/}
+            {/*    refreshing={isLoading}*/}
+            {/*    onRefresh={onRefresh || refetch}*/}
+            {/*    nestedScrollEnabled={false} // Permet un défilement imbriqué*/}
+            {/*    horizontal={true} // Active le défilement horizontal*/}
+            {/*    // numColumns={3} // Affiche les éléments sur 3 lignes*/}
+            {/*    // columnWrapperStyle={styles.columnWrapper} // Style pour l'espacement entre colonnes*/}
+            {/*/>*/}
+
             <ScrollView
                 horizontal={true}
                 contentContainerStyle={styles.scrollContainer}
@@ -60,28 +132,22 @@ const Jams: React.FC<JamProps> = () => {
                     <ThemedText style={styles.error}>Aucun Jam</ThemedText>
                 )}
             </ScrollView>
-        </View>
+
+        </Animated.View>
     );
+
 };
 
 const styles = StyleSheet.create({
-    content: {
-        flexDirection: "column",
-        alignItems: "flex-start",
+    container: {
+        flex: 1,
+        padding: 16,
     },
     header: {
         flexDirection: "row",
-        alignItems: "center",
         justifyContent: "space-between",
-        width: "100%",
-        paddingHorizontal: 15,
-        marginBottom: 10,
-    },
-    text: {
-        fontSize: 18,
-        color: "white",
-        textDecorationLine: "underline",
-        fontFamily: "Jost_600SemiBold",
+        alignItems: "center",
+        marginBottom: 16,
     },
     scrollContainer: {
         flexDirection: "column", // Organisation en ligne
@@ -90,16 +156,58 @@ const styles = StyleSheet.create({
         justifyContent: "space-between", // Espacement entre les colonnes
         alignContent: "space-between",
     },
-    jamElement: {
-        marginBottom: 10,
-        height: 55,
+    text: {
+        fontSize: 18,
+        color: "white",
+        fontFamily: "Jost_600SemiBold",
+        textDecorationLine: "underline",
     },
-    newJam: {
+    newJamButton: {
         alignSelf: "flex-end",
     },
-    error: {
-        marginLeft: 150,
+    listContainer: {
+        paddingBottom: 16,
+    },
+    loaderWrapper: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#1c1c1c",
+    },
+    loaderContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    loader: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        borderWidth: 3,
+        borderColor: "white",
+        borderTopColor: "transparent",
+    },
+    errorWrapper: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 16,
+    },
+    errorText: {
+        fontSize: 16,
+        color: "#ff4d4d",
+        textAlign: "center",
+    },
+    columnWrapper: {
+        justifyContent: "space-between",
+        marginBottom: 16,
+    },
+    jamElement: {
+        flex: 1,
+        margin: 8,
+        aspectRatio: 1, // Assure un ratio carré
+        maxWidth: '30%', // Définit une largeur maximale pour chaque colonne
     },
 });
 
-export default Jams;
+export default memo(Jams);

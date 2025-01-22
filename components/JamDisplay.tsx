@@ -7,7 +7,6 @@ import {JamerDisplayProps} from "@/types/jamer-display.types";
 import {Jam} from "@/types/jam.types";
 import ParticipantDisplay from "@/components/ParticipantDisplay";
 import {User} from "@/types/user.types";
-import UserService from "@/services/user-service";
 import {jamService} from "@/services/jam.service";
 import {userService} from "@/services/user.service";
 
@@ -39,17 +38,23 @@ const JamDisplay = ({
         }, [isLoading]);
 
         const join = async () => {
-            jamService.join(jam?.id);
+            if ("id" in jam) {
+                await jamService.join(jam.id);
+            }
             setIsLoading(true)
         };
 
         const close = async () => {
-            jamService.stop(jam?.id);
+            if ("id" in jam) {
+                await jamService.stop(jam.id);
+            }
             setIsLoading(true)
         }
 
         const leave = async () => {
-            jamService.leave(jam?.id);
+            if ("id" in jam) {
+                await jamService.leave(jam.id);
+            }
             setIsLoading(true)
         }
         // console.log(token);
