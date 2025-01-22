@@ -10,7 +10,7 @@ const HeaderProfil = () => {
     const {removeJWTToken} = useAuthenticationStore();
     const {getUser} = useUserStore();
     const {notifications} = useNotificationStore();
-    const clearNotification = useNotificationStore().cleatNotifications;
+    const clearNotification = useNotificationStore().clearNotifications;
     const [isModalVisible, setModalVisible] = useState(false);
 
     function getFirstAndMiddleLetter(str: string): string {

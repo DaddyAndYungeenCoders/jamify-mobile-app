@@ -5,7 +5,7 @@ interface NotificationStore {
     notifications: NotificationTypes[];
     // Actions
     addNotification: (notification: NotificationTypes) => void;
-    cleatNotifications: () => void;
+    clearNotifications: () => void;
 }
 
 export const useNotificationStore = create<NotificationStore>((set, get) => ({
@@ -17,7 +17,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
             notifications: [...state.notifications, notification],
         }));
     },
-    cleatNotifications: () => {
+    clearNotifications: () => {
         set((state) => ({
             notifications: [],
         }));
