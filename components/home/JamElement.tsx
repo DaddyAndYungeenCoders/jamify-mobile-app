@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
         width: 200,
         height: 55,
         marginLeft: 20,
+        marginBottom: 10,
     },
     info: {
         flexDirection: "column",
