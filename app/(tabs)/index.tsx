@@ -5,6 +5,7 @@ import JamsBack from "@/components/home/JamsBack";
 import JamsTofix from "@/components/home/JamToFIx";
 import Jams from "@/components/home/Jams";
 import Events from "@/components/home/Events";
+import Playlists from "@/components/home/Playlists";
 
 export default function HomeScreen() {
   const [refreshKey, setRefreshKey] = useState("event" + 0);
@@ -25,6 +26,7 @@ export default function HomeScreen() {
     >
       <Events key={refreshKey} onRefresh={handleRefresh} />
       <Jams key={jamRefreshKey} onRefresh={handleRefresh}/>
+      <Playlists/>
     </ScrollView>
   );
 }
