@@ -44,7 +44,7 @@ class EventService {
       const response = await fetch(this.baseUrl, {
         headers: this.getAuthHeaders(),
       });
-      console.log("C EST LE BODY ", response);
+      // console.log("C EST LE BODY ", response);
       return this.handleResponse<Event[]>(response);
     } catch (error) {
       throw this.handleError(error);
@@ -91,9 +91,9 @@ class EventService {
         headers: this.getAuthHeaders(),
         body: JSON.stringify(event),
       });
-      console.log("TOKEN ", this.getAuthHeaders());
-      console.log(JSON.stringify(response.body));
-      console.log("CE QUON ENVOIE ", JSON.stringify(event));
+      // console.log("TOKEN ", this.getAuthHeaders());
+      // console.log(JSON.stringify(response.body));
+      // console.log("CE QUON ENVOIE ", JSON.stringify(event));
       return this.handleResponse<Event>(response);
     } catch (error) {
       throw this.handleError(error);

@@ -68,6 +68,23 @@ class UserService {
       throw error;
     }
   }
+
+  public async getById(userId: number): Promise<User> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${userId}`, {
+        headers: this.getAuthHeaders(),
+      });
+      const user = await this.handleResponse<User>(response);
+
+      return user;
+    } catch (error) {
+      console.error("UserService Error:", error);
+      throw error;
+    }
+
+  }
+
+
 }
 
 export const userService = UserService.getInstance();
