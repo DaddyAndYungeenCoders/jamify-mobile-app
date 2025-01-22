@@ -14,6 +14,7 @@ export const useWebSocketConnection = () => {
   const { loading, getUser } = useUserStore();
   const user = getUser();
   const currentUserId = user?.userProviderId;
+  //modifier
   // usersId.push(currentUserId);
 
   useEffect(() => {
@@ -59,4 +60,3 @@ export const useWebSocketConnection = () => {
     // }
   }, [loading]);
 };
-
