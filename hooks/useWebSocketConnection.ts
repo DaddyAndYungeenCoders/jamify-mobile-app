@@ -17,7 +17,8 @@ export const useWebSocketConnection = () => {
     useEffect(() => {
         //FIXME : just for testing, remove for loop after
         // for (const userId of usersId) {
-            const socket = io(`http://${WS_API_URL}`, {
+            const socket = io(`${WS_API_URL}`, {
+                path: '/socket.io',
                 transports: ['websocket'],
             });
 
