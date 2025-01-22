@@ -1,45 +1,36 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
-  FlatList,
+  View,
+  Text,
   Image,
+  StyleSheet,
+  FlatList,
+  TextInput,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
-  View,
 } from "react-native";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useConversation } from "@/hooks/useConversation";
 import { MessageBubble } from "@/components/MessageBubble";
-import {
-  ChatMessage,
-  ChatMessageToSend,
-  IConversationDetails,
-} from "@/types/message.types";
-import { sendMessageToApi } from "@/utils/fetchConversation";
-import { useUserStore } from "@/store/user.store";
+import { Message } from "@/types/message.types";
 
 export default function ConversationDetails() {
   const { conversation } = useLocalSearchParams();
-  const parsedConversation: IConversationDetails = JSON.parse(
-    conversation as string,
-  );
+  const parsedConversation = JSON.parse(conversation as string);
   const navigation = useNavigation();
-  const user = useUserStore((state) => state.user);
-  const currentUserId = user?.userProviderId;
-  const flatListRef = useRef<FlatList<ChatMessage>>(null);
+  const currentUserId = "1";
+  const flatListRef = useRef<FlatList<Message>>(null);
   const [message, setMessage] = useState("");
 
-  const { conversation: conversationData, isLoading } = useConversation(
+  const { data: conversationData, isLoading } = useConversation(
     parsedConversation.id,
   );
 
   useEffect(() => {
     const otherParticipant = conversationData?.participants.find(
-      (p) => p.userProviderId.toString() !== currentUserId,
+      (p) => p.id.toString() !== currentUserId,
     );
 
     if (otherParticipant) {
@@ -57,15 +48,10 @@ export default function ConversationDetails() {
     }
   }, [conversationData]);
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (message.trim()) {
-      const messageToSend: ChatMessageToSend = {
-        content: message,
-        senderId: currentUserId ? currentUserId : "",
-        roomId: conversationData?.id as string,
-      };
-
-      await sendMessageToApi(messageToSend);
+      // Ici viendra la logique d'envoi à l'API
+      console.log("Sending message:", message);
       setMessage("");
       // Scroll to bottom après envoi
       flatListRef.current?.scrollToEnd();

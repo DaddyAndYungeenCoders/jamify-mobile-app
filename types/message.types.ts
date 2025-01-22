@@ -1,23 +1,16 @@
 import { User } from "./user.types";
 
-export interface ChatMessageToSend {
-  content: string;
-  senderId: string;
-  roomId: string;
-}
-
-export interface ChatMessage {
+export interface Message {
   id: string;
   content: string;
-  timestamp: string;
+  timestamp: number;
   senderId: string;
-  roomId: string;
-  metadata?: any;
+  status?: "sent" | "delivered" | "read";
 }
 
-export interface IConversationDetails {
+export interface ConversationDetails {
   id: string;
   participants: User[];
-  messages: ChatMessage[];
+  messages: Message[];
   lastMessageAt: number;
 }
