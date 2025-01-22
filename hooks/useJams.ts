@@ -23,6 +23,7 @@ export const useJams = (options: UseJamsOptions = {}) => {
             setIsLoading(true);
             const data: Jam[] = await jamService.getRunningJams();
             setJams(data);
+            // console.log(data)
         } catch (err) {
             console.error("Error fetching jams:", err);
             setError(err instanceof Error ? err : new Error("Failed to fetch jams"));

@@ -84,6 +84,20 @@ class UserService {
 
   }
 
+  public async getByProviderId(userId: string): Promise<User> {
+    try {
+      const response = await fetch(`${this.baseUrl}/providerId/${userId}`, {
+        headers: this.getAuthHeaders(),
+      });
+      const user = await this.handleResponse<User>(response);
+
+      return user;
+    } catch (error) {
+      console.error("UserService Error:", error);
+      throw error;
+    }
+  }
+
 
 }
 

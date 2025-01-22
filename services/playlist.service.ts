@@ -70,7 +70,7 @@ class PlaylistService {
 
 
     private handleError(error: any): Error {
-        console.error("EventService Error:", error);
+        console.error("PlaylistService Error:", error);
         if (error instanceof Error) {
             return error;
         }

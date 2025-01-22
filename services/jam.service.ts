@@ -1,4 +1,4 @@
-import {Jam, JamDTO} from "@/types/jam.types";
+import {Jam, JamDTO, JamStatus} from "@/types/jam.types";
 import {LaunchDtoTypes} from "@/types/launch.dto.types";
 import {useAuthenticationStore} from "@/store/authentication.store";
 import {User} from "@/types/user.types";
@@ -66,7 +66,7 @@ class JamService {
             });
             console.log(useAuthenticationStore.getState().token)
             // console.log(response)
-            // console.log("BODY : ", await response.json());
+            // console.log("BODY : ", await response.text());
             const jamDTOs = await this.handleResponse<JamDTO[]>(response);
             const jams = await this.toJams(jamDTOs);
             // console.log("jams" + JSON.stringify(jams));
@@ -177,7 +177,7 @@ class JamService {
 
     public async toJam(jamDTO: JamDTO): Promise<Jam> {
         try {
-            const host: User = await userService.getById(jamDTO.hostId);
+            const host: User = await userService.getByProviderId(jamDTO.host_user_provider_id);
 
             const participants: User[] = await Promise.all(
                 jamDTO.participants.map((participantId) =>
@@ -227,25 +227,37 @@ class JamService {
 
     public async toDTO(jam: Jam): Promise<JamDTO> {
         let jamDTO: JamDTO = {
-            id: jam.id,
             hostId: jam.host.id,
+            id: jam.id,
             messages: jam.comments.map(comment => {
-                return comment.id;
-            }),
+                        return comment.id;
+                    }),
             name: jam.name,
-            participants: jam.participants.map(participant => {
-                return participant.id;
-            }),
+            participants: jam.participants,
             scheduledDate: jam.scheduledDate,
-            status: jam.status,
+            status: JamStatus.RUNNING,
             themes: jam.themes
-        };
+        }
+        // let jamDTO: JamDTO = {
+        //     id: jam.id,
+        //     hostId: jam.host.id,
+        //     messages: jam.comments.map(comment => {
+        //         return comment.id;
+        //     }),
+        //     name: jam.name,
+        //     participants: jam.participants.map(participant => {
+        //         return participant.id;
+        //     }),
+        //     scheduledDate: jam.scheduledDate,
+        //     status: jam.status,
+        //     themes: jam.themes
+        // };
         return jamDTO
     }
 
 
     private handleError(error: any): Error {
-        console.error("EventService Error:", error);
+        console.error("JamService Error:", error);
         if (error instanceof Error) {
             return error;
         }

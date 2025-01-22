@@ -32,7 +32,7 @@ const CreatePlaylistScreen = () => {
 
 
     const [formData, setFormData] = useState<GeneratePlaylistDtoTypes>({
-        description: "", name: "", preferedNumberOfTitle: 1, tags: []
+        description: "", name: "", preferedNumberOfTitle: 20, tags: []
     })
 
     const validateForm = () => {
