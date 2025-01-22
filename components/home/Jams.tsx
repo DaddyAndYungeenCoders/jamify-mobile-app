@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         flexDirection: "column", // Organisation en ligne
         flexWrap: "wrap", // Les éléments passent à la ligne automatiquement
         maxHeight: 200,
-        justifyContent: "space-between", // Espacement entre les colonnes
+        justifyContent: "flex-start", // Espacement entre les colonnes
         alignContent: "space-between",
     },
     text: {
