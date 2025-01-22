@@ -15,7 +15,7 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <ScrollView
+  <ScrollView
       style={styles.front}
       contentContainerStyle={{
         // flex: 1,

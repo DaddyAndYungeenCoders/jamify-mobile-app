@@ -4,6 +4,8 @@ import { useConversationStore } from "@/store/conversation.store";
 import { WS_API_URL } from "@/constants/Utils";
 import { ChatMessage } from "@/types/message.types";
 import { useUserStore } from "@/store/user.store";
+import {NotificationTypes} from "@/types/notification.types";
+import {useNotificationStore} from "@/store/notification.store";
 
 export const useWebSocketConnection = () => {
   const addMessage = useConversationStore((state) => state.addMessage);
@@ -16,6 +18,7 @@ export const useWebSocketConnection = () => {
   const currentUserId = user?.userProviderId;
   //modifier
   // usersId.push(currentUserId);
+  const addNotification = useNotificationStore((state) => state.addNotification);
 
   useEffect(() => {
     if (loading) {
@@ -36,10 +39,16 @@ export const useWebSocketConnection = () => {
       socket.emit("register", currentUserId ? currentUserId : "");
     });
 
+
     socket.on("new-message", (data: ChatMessage) => {
       console.log("New message:", data);
       addMessage(data.roomId, data);
       handleConversations();
+    });
+
+    socket.on("new-notif", (data: NotificationTypes) => {
+      console.log("New notif:", data);
+      addNotification(data);
     });
 
     socket.on("disconnect", () => {

@@ -1,14 +1,12 @@
 // hooks/useJams.ts
-import { useState, useEffect } from "react";
-import { Event } from "@/types/event.types";
-import { eventService } from "@/services/event.service";
-import { useRefreshStore } from "@/store/refresh.store";
-import JamsBack from "@/components/home/JamsBack";
-import {Jam, JamDTO} from "@/types/jam.types";
+import {useEffect, useState} from "react";
+import {useRefreshStore} from "@/store/refresh.store";
+import {Jam} from "@/types/jam.types";
 import {jamService} from "@/services/jam.service";
+import Jams from "@/components/home/Jams";
 
 interface UseJamsOptions {
-    status?: JamsBack["status"];
+    status?: Jams["status"];
     hostId?: number;
 }
 
