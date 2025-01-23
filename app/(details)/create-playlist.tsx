@@ -32,7 +32,7 @@ const CreatePlaylistScreen = () => {
 
 
     const [formData, setFormData] = useState<GeneratePlaylistDtoTypes>({
-        description: "", name: "", preferedNumberOfTitle: 20, tags: []
+        description: "", name: "", numberOfTitle: 20, tags: []
     })
 
     const validateForm = () => {
@@ -44,7 +44,7 @@ const CreatePlaylistScreen = () => {
             console.log("Description manquant");
             return false;
         }
-        if (!formData.preferedNumberOfTitle) {
+        if (!formData.numberOfTitle) {
             console.log("Nombre de titre manquant");
             return false;
         }
@@ -125,10 +125,10 @@ const CreatePlaylistScreen = () => {
                             <ThemedText style={styles.label}>Nombre de titre dans la playlist</ThemedText>
                             <TextInput
                                 style={styles.input}
-                                value={formData.preferedNumberOfTitle.toString()}
+                                value={formData.numberOfTitle.toString()}
                                 onChangeText={(text) => {
                                     const numericText = text.replace(/[^0-9]/g, "");
-                                    setFormData((prev) => ({...prev, preferedNumberOfTitle: numericText}))
+                                    setFormData((prev) => ({...prev, numberOfTitle: numericText}))
                                 }
                                 }
                                 placeholder="Nombre de titre dans la playlist"
