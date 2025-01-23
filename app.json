@@ -4,7 +4,7 @@
     "slug": "jamify",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/Designer.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/Designer.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "fr.cpe.jamify",
