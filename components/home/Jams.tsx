@@ -13,18 +13,7 @@ import { useJams } from "@/hooks/useJams";
 import ClassicButton from "@/components/ClassicButton";
 import { Jam } from "@/types/jam.types";
 
-interface JamsProps {
-  onRefresh?: () => void;
-}
-
-const MemoizedJamElement = memo(({ jam }: { jam: Jam }) => (
-  <JamElement jam={jam} />
-));
-
-/**
- * Petit loader circulaire animé, similaire à votre CircularLoader
- * mais en version "répétition infinie" avec Animated.
- */
+/** ----- Petit loader circulaire animé ----- */
 const CircularLoader = () => {
   const spinValue = useRef(new Animated.Value(0)).current;
 
@@ -37,8 +26,7 @@ const CircularLoader = () => {
       }),
     );
     animation.start();
-
-    return () => animation.stop(); // Cleanup
+    return () => animation.stop();
   }, [spinValue]);
 
   const spin = spinValue.interpolate({
@@ -60,13 +48,32 @@ const CircularLoader = () => {
   );
 };
 
+/** ----- Mémo pour éviter de rerendre le JamElement ----- */
+const MemoizedJamElement = memo(({ jam }: { jam: Jam }) => (
+  <JamElement jam={jam} />
+));
+
+/** ----- Chunk util : coupe le tableau de jams en paquets de 3 ----- */
+function chunkArray<T>(data: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < data.length; i += size) {
+    result.push(data.slice(i, i + size));
+  }
+  return result;
+}
+
+/** ----- Composant Jams ----- */
+interface JamsProps {
+  onRefresh?: () => void;
+}
+
 const Jams: React.FC<JamsProps> = ({ onRefresh }) => {
   const router = useRouter();
   const { jams, isLoading, error, refetch } = useJams();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  // Animation d'apparition (fade-in) du conteneur
   useEffect(() => {
+    // Animation d'apparition (fade-in)
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 300,
@@ -78,19 +85,29 @@ const Jams: React.FC<JamsProps> = ({ onRefresh }) => {
     router.push("/(details)/create-jam");
   }, [router]);
 
-  // Rendu d’un jam
-  const renderJam = useCallback(
-    ({ item }: { item: Jam }) => <MemoizedJamElement jam={item} />,
-    [],
-  );
+  /** ---------- ÉTAPE 1 : chunker le tableau de jams par colonnes de 3 ---------- */
+  const columnsData = jams ? chunkArray(jams, 3) : [];
 
-  // Clé unique par jam
+  /** ----- Rendu d'une "colonne" (paquet de 3 Jams max) ----- */
+  const renderColumn = useCallback(({ item }: { item: Jam[] }) => {
+    // item est un tableau de 1 à 3 jams
+    return (
+      <View style={styles.columnContainer}>
+        {item.map((jam) => (
+          <View key={jam.id} style={styles.jamWrapper}>
+            <MemoizedJamElement jam={jam} />
+          </View>
+        ))}
+      </View>
+    );
+  }, []);
+
   const keyExtractor = useCallback(
-    (item: Jam, index: number) => `jam-${item.id}-${index}`,
+    (item: Jam[], index: number) => `column-${index}`, // chaque colonne
     [],
   );
 
-  // En-tête (titre + bouton)
+  /** ----- En-tête : Titre + Bouton Nouveau Jam ----- */
   const renderHeader = () => (
     <View style={styles.header}>
       <ThemedText style={styles.text}>Écoutez un JAM</ThemedText>
@@ -102,7 +119,7 @@ const Jams: React.FC<JamsProps> = ({ onRefresh }) => {
     </View>
   );
 
-  // Affichage du loading
+  /** ----- Loading ----- */
   if (isLoading) {
     return (
       <View style={styles.loaderWrapper}>
@@ -112,7 +129,7 @@ const Jams: React.FC<JamsProps> = ({ onRefresh }) => {
     );
   }
 
-  // Gestion d'erreur ou de liste vide
+  /** ----- Erreur ou Liste vide ----- */
   if (error || !jams?.length) {
     return (
       <View style={styles.errorWrapper}>
@@ -124,17 +141,25 @@ const Jams: React.FC<JamsProps> = ({ onRefresh }) => {
     );
   }
 
-  // Liste des jams en vertical
+  /**
+   * ----- Liste horizontale -----
+   * Ici, "columnsData" est un tableau de "colonnes"
+   * => Chaque colonne est rendue verticalement (max 3 Jams)
+   */
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       {renderHeader()}
+
       <FlatList
-        data={jams}
-        renderItem={renderJam}
+        data={columnsData}
+        renderItem={renderColumn}
         keyExtractor={keyExtractor}
-        contentContainerStyle={styles.listContainer}
-        horizontal={true}
-        // Le pull-to-refresh natif du FlatList
+        // Défilement horizontal
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        // Pull-to-refresh en horizontal => Attention :
+        // Ce n'est pas officiellement pris en charge sur iOS.
+        // Sur Android, ça peut passer. Sur iOS, c'est souvent inactif.
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
@@ -142,7 +167,7 @@ const Jams: React.FC<JamsProps> = ({ onRefresh }) => {
             tintColor="white"
           />
         }
-        // Par défaut, FlatList est vertical
+        contentContainerStyle={styles.listContent}
       />
     </Animated.View>
   );
@@ -150,20 +175,18 @@ const Jams: React.FC<JamsProps> = ({ onRefresh }) => {
 
 export default memo(Jams);
 
+/** ----- Styles ----- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
   },
+  /** En-tête */
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
-  },
-  listContainer: {
-    // Style interne de la liste
-    paddingBottom: 16,
   },
   text: {
     fontSize: 18,
@@ -174,6 +197,29 @@ const styles = StyleSheet.create({
   newJamButton: {
     alignSelf: "flex-end",
   },
+
+  /** Contenu de la FlatList (espacement supplémentaire si besoin) */
+  listContent: {
+    paddingRight: 16, // marge à droite pour la liste
+  },
+
+  /** Conteneur pour chaque "colonne" */
+  columnContainer: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    // Largeur fixe ou adaptative possible :
+    // On peut mettre une largeur fixe pour chaque colonne,
+    // ou laisser "width: 'auto'" si JamElement se dimensionne tout seul
+    width: 250, // par exemple, 250px de large par colonne
+    marginRight: 16,
+  },
+  /** Wrapper autour de chaque JamElement */
+  jamWrapper: {
+    marginBottom: 16,
+    // Contrôlez la hauteur de chaque bloc si nécessaire
+  },
+
+  /** Loader */
   loaderWrapper: {
     flex: 1,
     justifyContent: "center",
@@ -193,6 +239,7 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderTopColor: "transparent",
   },
+  /** Erreur */
   errorWrapper: {
     flex: 1,
     justifyContent: "center",
