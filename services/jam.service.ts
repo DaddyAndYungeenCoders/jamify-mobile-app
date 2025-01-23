@@ -102,16 +102,17 @@ class JamService {
     }
   }
 
-  public async play(musicId: number, jamId: number): Promise<boolean> {
+  public async play(): Promise<boolean> {
     try {
-      const response = await fetch(`this.baseUrl/play/${musicId}/${jamId}`, {
+      const response = await fetch(`${this.baseUrl}/play`, {
         method: "POST",
         headers: this.getAuthHeaders(),
       });
       // console.log("BODY : ", response);
       console.log(response.url);
-      this.handleResponse<boolean>(response);
-      return response.json();
+      console.log(response.status);
+      // this.handleResponse<boolean>(response);
+      return this.handleResponse<boolean>(response);
     } catch (error) {
       throw this.handleError(error);
     }
