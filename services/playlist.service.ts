@@ -4,7 +4,7 @@ import {useAuthenticationStore} from "@/store/authentication.store";
 import {User} from "@/types/user.types";
 import {userService} from "@/services/user.service";
 import {Comment} from "@/types/comment.types";
-import {API_BASE_URL} from "@/constants/Server";
+import {API_BASE_URL, API_KEY_ORCHESTRATEUR, ORCHESTRATEUR_BASE_URL} from "@/constants/Server";
 import {Alert} from "react-native";
 import {GeneratePlaylistDtoTypes} from "@/types/generatePlaylist.dto.types";
 import {Playlist} from "@/types/playlist.types";
@@ -13,9 +13,11 @@ import {Playlist} from "@/types/playlist.types";
 class PlaylistService {
     private static instance: PlaylistService;
     private baseUrl: string;
+    private engineUrl: string;
 
     private constructor() {
-        this.baseUrl = `${API_BASE_URL}/playlist`
+        this.baseUrl = `${ORCHESTRATEUR_BASE_URL}/playlist`
+        this.engineUrl = `${API_BASE_URL}/playlist`
     }
 
     public static getInstance(): PlaylistService {
@@ -26,25 +28,19 @@ class PlaylistService {
     }
 
     private getAuthHeaders(): HeadersInit {
-        const token = useAuthenticationStore.getState().token;
         return {
             "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
+            "X-API-KEY": API_KEY_ORCHESTRATEUR,
         };
     }
 
     private async handleResponse<T>(response: Response): Promise<T> {
         if (!response.ok) {
-            if (response.status === 401) {
-                useAuthenticationStore.getState().removeJWTToken();
-            }
             const errorData = await response.json().catch(() => ({}));
             throw new Error(
                 errorData.message || `HTTP error! status: ${response.status}`,
             );
         }
-
-
         return response.json();
     }
 
@@ -55,12 +51,29 @@ class PlaylistService {
                 method: "POST",
                 headers: this.getAuthHeaders(),
                 body: JSON.stringify({
-                    userId : user.id,
+                    userId : user.userProviderId,
                     data: generatePlaylist,
                 }),
             });
             // console.log("BODY : ", response);
             console.log(response.url)
+            console.log(await response.text())
+            const playlistPromise = this.handleResponse<Playlist>(response);
+            return playlistPromise
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    public async getAllPlaylist(): Promise<Playlist>{
+        try {
+            const response = await fetch(this.engineUrl + "/generated", {
+                method: "GET",
+                headers: this.getAuthHeaders(),
+            });
+            // console.log("BODY : ", response);
+            console.log(response.url)
+            console.log(await response.text())
             const playlistPromise = this.handleResponse<Playlist>(response);
             return playlistPromise
         } catch (error) {
