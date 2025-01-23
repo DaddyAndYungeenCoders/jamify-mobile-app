@@ -1,6 +1,6 @@
 // screens/HomeScreen.tsx
-import {ScrollView, StyleSheet} from "react-native";
-import {useCallback, useState} from "react";
+import { ScrollView, StyleSheet } from "react-native";
+import { useCallback, useState } from "react";
 import Jams from "@/components/home/Jams";
 import Events from "@/components/home/Events";
 import Playlists from "@/components/home/Playlists";
@@ -8,23 +8,27 @@ import Playlists from "@/components/home/Playlists";
 export default function HomeScreen() {
   const [refreshKey, setRefreshKey] = useState("event" + 0);
   const [jamRefreshKey, setJamRefreshKey] = useState("jam" + 0);
+  const [playlistRefreshKey, setPlaylistRefreshKey] = useState("playlist" + 0);
 
   const handleRefresh = useCallback(() => {
     setRefreshKey((prev) => prev + 1);
     setJamRefreshKey((prev) => prev + 1);
+    setPlaylistRefreshKey((prev) => prev + 1);
   }, []);
 
   return (
-  <ScrollView
+    <ScrollView
       style={styles.front}
-      contentContainerStyle={{
-        // flex: 1,
-        // rowGap: 30,
-      }}
+      contentContainerStyle={
+        {
+          // flex: 1,
+          // rowGap: 30,
+        }
+      }
     >
       <Events key={refreshKey} onRefresh={handleRefresh} />
-      <Jams key={jamRefreshKey} onRefresh={handleRefresh}/>
-      <Playlists/>
+      <Jams key={jamRefreshKey} onRefresh={handleRefresh} />
+      <Playlists key={playlistRefreshKey} />
     </ScrollView>
   );
 }
