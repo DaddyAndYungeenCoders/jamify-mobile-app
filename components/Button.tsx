@@ -98,7 +98,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
   };
 
   useEffect(() => {
-    if (loading || responseStatus !== null) {
+    if (loading || typeof responseStatus === "number") {
       isAnimating.value = 1;
     }
 
@@ -141,7 +141,7 @@ const Button: React.FC<ExtendedCustomButtonProps> = ({
           }),
         );
       }
-    } else if (responseStatus !== null) {
+    } else if (responseStatus !== null && responseStatus !== undefined) {
       loaderOpacity.value = withTiming(0, { duration: 100 });
       mainTextOpacity.value = withTiming(0, { duration: 100 });
 

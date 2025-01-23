@@ -46,7 +46,13 @@ const EventDetail: React.FC = () => {
             gap: 10,
           }}
         >
-          <Text style={{ fontSize: 16, color: "white", fontWeight: "600" }}>
+          <Text
+            style={{
+              fontSize: 16,
+              color: "white",
+              fontFamily: "Jost_600SemiBold",
+            }}
+          >
             Event Detail
           </Text>
         </View>
