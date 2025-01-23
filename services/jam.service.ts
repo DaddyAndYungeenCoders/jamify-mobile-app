@@ -152,7 +152,7 @@ class JamService {
     }
   }
 
-  public async leave(jamId: number): Promise<boolean> {
+  public async leave(jamId: number): void {
     try {
       const response = await fetch(this.baseUrl + "/leave/" + jamId, {
         method: "PUT",
@@ -164,7 +164,6 @@ class JamService {
         Alert.alert("ERROR", await response.text());
         throw new Error(`Erreur HTTP : ${response.status}`);
       }
-      return response.json();
     } catch (error) {
       throw this.handleError(error);
     }
