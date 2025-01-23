@@ -57,7 +57,7 @@ class PlaylistService {
             });
             // console.log("BODY : ", response);
             console.log(response.url)
-            console.log(await response.text())
+            // console.log(await response.text())
             const playlistPromise = this.handleResponse<Playlist>(response);
             return playlistPromise
         } catch (error) {
