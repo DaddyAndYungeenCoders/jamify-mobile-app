@@ -32,7 +32,7 @@ class JamService {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      Alert.alert("Error", await response.text());
+      // Alert.alert("Error", await response.text());
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
         errorData.message || `HTTP error! status: ${response.status}`,
@@ -134,7 +134,7 @@ class JamService {
     }
   }
 
-  public async join(jamId: number): Promise<boolean> {
+  public async join(jamId: number): void {
     try {
       const response = await fetch(this.baseUrl + "/join/" + jamId, {
         method: "PUT",
@@ -144,9 +144,9 @@ class JamService {
       console.log(response.status);
       if (!response.ok) {
         Alert.alert("ERROR", await response.text());
-        throw new Error(`Erreur HTTP : ${response.status}`);
+        // throw new Error(`Erreur HTTP : ${response.status}`);
       }
-      return response.json();
+      // return response.json();
     } catch (error) {
       throw this.handleError(error);
     }
